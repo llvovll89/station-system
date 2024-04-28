@@ -37,68 +37,70 @@ export const Login = () => {
 
     return (
         <LoginWrap>
-            <div className="logo_box">
-                <h1>STATION-SYSTEM</h1>
-            </div>
+            <article className="content">
+                <header className="logo_box">
+                    <h1>STATION-SYSTEM</h1>
+                </header>
 
-            <article>
-                <form>
-                    <div>
-                        <label htmlFor="id">아이디</label>
-                        <Input
-                            id="id"
-                            type="email"
-                            value={loginData.email}
-                            onChange={(e) => {
-                                setLoginData({
-                                    ...loginData,
-                                    email: e.target.value,
-                                });
-                            }}
-                        />
+                <article>
+                    <form>
+                        <div>
+                            <label htmlFor="id">아이디</label>
+                            <Input
+                                id="id"
+                                type="email"
+                                value={loginData.email}
+                                onChange={(e) => {
+                                    setLoginData({
+                                        ...loginData,
+                                        email: e.target.value,
+                                    });
+                                }}
+                            />
 
-                        <AiOutlineUser />
+                            <AiOutlineUser />
+                        </div>
+                        <div className="password-box">
+                            <label htmlFor="password">비밀번호</label>
+                            <Input
+                                id="password"
+                                type="password"
+                                value={loginData.password}
+                                onChange={(e) => {
+                                    setLoginData({
+                                        ...loginData,
+                                        password: e.target.value,
+                                    });
+                                }}
+                            />
+
+                            <AiOutlineLock />
+                        </div>
+                    </form>
+
+                    <div className="center">
+                        <input type="checkbox" className="checkbox" id="login_check" />
+                        <label htmlFor="login_check">로그인 상태 유지</label>
                     </div>
-                    <div className="password-box">
-                        <label htmlFor="password">비밀번호</label>
-                        <Input
-                            id="password"
-                            type="password"
-                            value={loginData.password}
-                            onChange={(e) => {
-                                setLoginData({
-                                    ...loginData,
-                                    password: e.target.value,
-                                });
-                            }}
-                        />
 
-                        <AiOutlineLock />
+                    {failedMsg && <span className="fail">{failedMsg}</span>}
+
+                    <div className="btn-box">
+                        <Button text="로그인" onClick={onClick}></Button>
                     </div>
-                </form>
+                </article>
 
-                <div className="center">
-                    <input type="checkbox" className="checkbox" id="login_check" />
-                    <label htmlFor="login_check">로그인 상태 유지</label>
-                </div>
-
-                {failedMsg && <span className="fail">{failedMsg}</span>}
-
-                <div className="btn-box">
-                    <Button text="로그인" onClick={onClick}></Button>
-                </div>
+                <ul className="bt_list">
+                    <li>
+                        <Link to="/join">회원가입</Link></li>
+                    <li>
+                        <Link to="#">비밀번호 찾기</Link>
+                    </li>
+                    <li>
+                        <Link to="#">아이디 찾기</Link>
+                    </li>
+                </ul>
             </article>
-
-            <ul className="bt_list">
-                <li>
-                    <Link to="/join">회원가입</Link></li>
-                <li>
-                    <Link to="#">비밀번호 찾기</Link>
-                </li>
-                <li>
-                    <Link to="#">아이디 찾기</Link>
-                </li>
-            </ul>
         </LoginWrap>
     )
 }
