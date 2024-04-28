@@ -1,0 +1,62 @@
+import { createGlobalStyle } from "styled-components";
+import PretendardRegular from "../assets/fonts/Pretendard-Regular.woff2";
+import reset from "styled-reset";
+
+export const GlobalStyles = createGlobalStyle`
+    ${reset}
+
+    @font-face {
+        font-family: "Pretendard";
+        src: local('PretendardRegular'), local('PretendardRegular');
+        font-style: normal;
+        src: url(${PretendardRegular}) format('woff2');
+    }
+
+    * {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+    }
+
+    html, body, div, h1, h2, h3, h4, h5, h6, span, ul, li, button, input {
+        font-family: 'Pretendard', sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    ol, ul {
+        list-style: none;
+    }
+    
+    a{
+        text-decoration: none;
+        color: inherit;
+    
+        &:hover {
+            text-decoration: none;
+            color: none;
+        }
+        
+        &:active {
+            text-decoration: none;
+            color: black;
+        }
+            
+        &:visited {
+            text-decoration: none;
+            color: black;
+        }
+            
+        &:link {
+            text-decoration: none;
+            color: black; 
+        }
+    }
+
+    input, button, textarea, select {
+        outline: none;
+        border: none;
+        background-color: transparent;
+    }
+    
+`
