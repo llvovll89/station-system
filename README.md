@@ -3,4 +3,5 @@
  2024-04-25 start
 ```
 
-``` port - 5000 ```
+``` port - 8080 ``` 
+``` vite / Proxy server 사용 ``` 
