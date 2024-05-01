@@ -2,10 +2,11 @@ import styled from "styled-components";
 import theme from "../styles/theme";
 import { Link } from "react-router-dom";
 
-interface ButtonStyle {
+interface ButtonProps {
     text: string;
     onClick?: React.MouseEventHandler<HTMLButtonElement>
     to?: string; 
+    type:  "button" | "submit";
     className?: string;
 }
 
@@ -31,7 +32,7 @@ const ButtonComponent = styled.button`
     }
 `
 
-export const Button = (btn: ButtonStyle) => {
+export const Button = (btn: ButtonProps) => {
     return btn.to ? (
         <ButtonComponent type="button">
             <Link to={btn.to}>
@@ -40,7 +41,7 @@ export const Button = (btn: ButtonStyle) => {
         </ButtonComponent>
         
     ) : (
-        <ButtonComponent onClick={btn.onClick} type="button" className={btn.className}>
+        <ButtonComponent onClick={btn.onClick} type={btn.type} className={btn.className}>
             <span>{btn.text}</span>
         </ButtonComponent>
     );

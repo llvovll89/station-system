@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { LoginWrap } from "./LoginStyle";
@@ -18,10 +18,13 @@ export const Login = () => {
         password: "",
     });
     const [failedMsg, setFailedMsg] = useState<string>("");
+    const [localUserData, setLocalUserData] = useState<string>("");
     const navigate = useNavigate();
 
-    const onClick = async () => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         if (loginData.email && loginData.password) {
+            e.preventDefault();
+            
             try {
                 const response = await axios.post("/api/login", {
                     id: loginData.email,
@@ -29,24 +32,40 @@ export const Login = () => {
                 });
 
                 const data: LoginDto = await response.data;
-                console.log(data);
+
+                if (response.status === 200) {
+                    localStorage.setItem('user', data.id);
+                }
             } catch (error) {
                 console.error(error);
-                setLoginData(() => {
-                    return {
-                        email: "",
-                        password: "",
-                    }
-                })
+                setFailedMsg("로그인 실패, id / password를 잘못 입력 하셨습니다.");
+
+                setLoginData(() => ({
+                    email: "",
+                    password: "",
+                }));
+
+                setTimeout(() => {
+                    setFailedMsg("");
+                }, 2000);
             }
         } else {
-            setFailedMsg("로그인 실패, 아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+            setFailedMsg("로그인 실패, id / password를 둘 다 입력해 주시기 바랍니다.");
 
             setTimeout(() => {
                 setFailedMsg("");
-            }, 1500);
+            }, 2000);
         }
     }
+
+    useEffect(() => {
+        if(localStorage.getItem("user")) {
+            setLocalUserData(JSON.stringify(localStorage.getItem("user")));
+            navigate("/34242");
+        } else {
+            setLocalUserData("");
+        }
+    }, [localUserData, navigate]);
 
     return (
         <LoginWrap>
@@ -56,7 +75,7 @@ export const Login = () => {
                 </header>
 
                 <article>
-                    <form>
+                    <form onSubmit={onSubmit}>
                         <div>
                             <label htmlFor="id">아이디</label>
                             <Input
@@ -73,6 +92,7 @@ export const Login = () => {
 
                             <AiOutlineUser />
                         </div>
+
                         <div className="password-box">
                             <label htmlFor="password">비밀번호</label>
                             <Input
@@ -89,18 +109,18 @@ export const Login = () => {
 
                             <AiOutlineLock />
                         </div>
-                    </form>
 
-                    <div className="center">
-                        <input type="checkbox" className="checkbox" id="login_check" />
-                        <label htmlFor="login_check">로그인 상태 유지</label>
-                    </div>
+                        <div className="center">
+                            <input type="checkbox" className="checkbox" id="login_check" />
+                            <label htmlFor="login_check">로그인 상태 유지</label>
+                        </div>
 
                     {failedMsg && <span className="fail">{failedMsg}</span>}
 
-                    <div className="btn-box">
-                        <Button text="로그인" onClick={onClick}></Button>
-                    </div>
+                        <div className="btn-box">
+                            <Button text="로그인" type="submit"></Button>
+                        </div>
+                    </form>
                 </article>
 
                 <ul className="bt_list">

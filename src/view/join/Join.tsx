@@ -136,7 +136,7 @@ export const Join = () => {
                     </form>
 
                     <div className="bt_list">
-                        <Button text="회원가입" onClick={submitJoin}></Button>
+                        <Button text="회원가입" type="submit" onClick={submitJoin}></Button>
                     </div>
                 </section>
             </article>

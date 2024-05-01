@@ -18,6 +18,7 @@ interface Color {
     primary: string;
     black: string;
     white: string;
+    subWhite: string;
     red: string;
     subPrimary: string;
 }
@@ -52,6 +53,7 @@ const theme:Theme = {
         white: "#FDFEFE",
         red: "#ff0000",
         subPrimary: "#F5F7F8",
+        subWhite: "#F5F7F8"
     },
 
     boxShadow: {

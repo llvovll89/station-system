@@ -81,40 +81,42 @@ export const LoginWrap = styled.section`
                     flex-direction: column;
                     gap: 12px;
                 }
+
+                & .center {
+                    width: 100%;
+                    display: flex;
+                    gap: 6px;
+                    flex-direction: row;
+
+                    & input[type='checkbox'] {
+                        cursor: pointer;
+                        height: 16px;
+                        width: 16px;
+                    }
+                
+                    & label {
+                        font-size: ${theme.fonsize.xs};
+                        cursor: pointer;
+                    }
             }
-        
-            & .center {
-                width: 100%;
-                display: flex;
-                gap: 6px;
-            
-                & label {
-                    font-size: ${theme.fonsize.xs};
-                    cursor: pointer;
+
+                & .fail {
+                    color: ${theme.color.red};
+                    font-size: ${theme.fonsize.sm};
+                    padding: 2px 3px;
+                    background-color: ${theme.color.subWhite};
                 }
-    
-            & input[type='checkbox'] {
-                cursor: pointer;
+            
+                
+                & .btn-box {
+                    & button {
+                        background-color: ${theme.color.primary};
+                        color: ${theme.color.white};
+                        height: 50px;
+                    }
+                }
+                }
             }
-        }
-    
-        & .fail {
-            color: ${theme.color.red};
-            font-size: ${theme.fonsize.sm};
-        }
-    
-        
-        & .btn-box {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-    
-            & button {
-                background-color: ${theme.color.primary};
-                color: ${theme.color.white};
-                height: 50px;
-            }
-        }
         }
     
         & .bt_list {
