@@ -3,8 +3,10 @@ import { JoinWrap } from "./JoinStyle"
 import { AiOutlineLeft, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
 import { Input } from "../../components/Input";
 import { RiLockPasswordFill } from "react-icons/ri";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
+import axios from "axios";
+import { JoinDto } from "../../dto/JoinDto";
 
 interface JoinData {
     id: string;
@@ -27,12 +29,33 @@ export const Join = () => {
         navigate(-1);
     }
 
-    const submitJoin = () => {
+    const submitJoin = async () => {
         if (joinData.id && joinData.name && joinData.password && joinData.confirmPassword) {
             if (joinData.password!== joinData.confirmPassword) {
                 setFailedMsg("비밀번호가 일치하지 않습니다.");
             } else {
-                setFailedMsg("회원가입이 완료되었습니다.");
+                try {
+                    const response = await axios.post("/api/sign-up", {
+                        id: joinData.id,
+                        name: joinData.name,
+                        password: joinData.password
+                    });
+
+                    const data: JoinDto = await response.data;
+                    console.log(data);
+
+                    setFailedMsg("회원가입이 완료되었습니다.");
+                } catch (error) {
+                    console.error(error);
+                    setJoinData(() => {
+                        return {
+                            id: "",
+                            name: "",
+                            password: "",
+                            confirmPassword: "",
+                        }
+                    })
+                }
             }
         } else {
             setFailedMsg("모든 항목을 입력해주세요.");

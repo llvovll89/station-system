@@ -4,6 +4,8 @@ import { Button } from "../../components/Button";
 import { LoginWrap } from "./LoginStyle";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineLock, AiOutlineUser } from "react-icons/ai";
+import { LoginDto } from "../../dto/LoginDto";
+import axios from "axios";
 
 interface LoginData {
     email: string;
@@ -18,14 +20,25 @@ export const Login = () => {
     const [failedMsg, setFailedMsg] = useState<string>("");
     const navigate = useNavigate();
 
-    const onClick = () => {
+    const onClick = async () => {
         if (loginData.email && loginData.password) {
-            setFailedMsg("로그인 실패, 아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+            try {
+                const response = await axios.post("/api/login", {
+                    id: loginData.email,
+                    password: loginData.password,
+                });
 
-            setTimeout(() => {
-                setFailedMsg("");
-                navigate("#");
-            }, 1500);
+                const data: LoginDto = await response.data;
+                console.log(data);
+            } catch (error) {
+                console.error(error);
+                setLoginData(() => {
+                    return {
+                        email: "",
+                        password: "",
+                    }
+                })
+            }
         } else {
             setFailedMsg("로그인 실패, 아이디 또는 비밀번호를 잘못 입력하셨습니다.");
 

@@ -29,6 +29,7 @@ export const LoginWrap = styled.section`
                 font-weight: 700;
                 letter-spacing: -0.055rem;
                 color: ${theme.color.primary};
+                font-family: 'GangwonEduPowerExtraBoldA', 'Pretendard', sans-serif;
             }
         }
     

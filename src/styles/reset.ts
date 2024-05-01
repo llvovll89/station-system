@@ -12,6 +12,13 @@ export const GlobalStyles = createGlobalStyle`
         src: url(${PretendardRegular}) format('woff2');
     }
 
+    @font-face {
+        font-family: 'GangwonEduPowerExtraBoldA';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
     * {
         margin: 0px;
         padding: 0px;
