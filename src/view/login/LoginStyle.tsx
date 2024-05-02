@@ -54,6 +54,10 @@ export const LoginWrap = styled.section`
                     flex-direction: column;
                     gap: 12px;
                     position: relative;
+
+                    & .id {
+                        border: 1px solid rgba(0, 0, 0, 0.1);
+                    }
                 
                     & input {
                         background-color: rgba(255,255,255,0.13);

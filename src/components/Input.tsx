@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import theme from "../styles/theme";
+import { Ref } from "react";
 
 interface InputType {
     name?: string;
@@ -7,9 +8,12 @@ interface InputType {
     id: string;
     type: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    ref?: Ref<HTMLInputElement>;
 }
 
-const LoginInput = styled.input`
+const LoginInput = styled.input.attrs<InputType>((props) => ({
+    ref: props.ref
+}))<InputType>`
     width: 100%;
     height: 42px;
     border-radius: 4px;
@@ -21,6 +25,6 @@ const LoginInput = styled.input`
 
 export const Input = (input: InputType) => {
     return (
-        <LoginInput type={input.type} name={input.name} value={input.value} id={input.id} onChange={input.onChange} autoComplete="off"/>
+        <LoginInput type={input.type} name={input.name} value={input.value} id={input.id} onChange={input.onChange} ref={input.ref} autoComplete="off"/>
     )
 }

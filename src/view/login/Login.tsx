@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { LoginWrap } from "./LoginStyle";
@@ -8,26 +8,27 @@ import { LoginDto } from "../../dto/LoginDto";
 import axios from "axios";
 
 interface LoginData {
-    email: string;
+    id: string;
     password: string;
 }
 
 export const Login = () => {
     const [loginData, setLoginData] = useState<LoginData>({
-        email: "",
+        id: "",
         password: "",
     });
     const [failedMsg, setFailedMsg] = useState<string>("");
     const [localUserData, setLocalUserData] = useState<string>("");
     const navigate = useNavigate();
+    const loginIdRef = useRef<HTMLInputElement>(null);
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        if (loginData.email && loginData.password) {
+        if (loginData.id && loginData.password) {
             e.preventDefault();
             
             try {
                 const response = await axios.post("/api/login", {
-                    id: loginData.email,
+                    id: loginData.id,
                     password: loginData.password,
                 });
 
@@ -35,15 +36,20 @@ export const Login = () => {
 
                 if (response.status === 200) {
                     localStorage.setItem('user', data.id);
+                    navigate("/mission");
                 }
             } catch (error) {
                 console.error(error);
                 setFailedMsg("로그인 실패, id / password를 잘못 입력 하셨습니다.");
 
                 setLoginData(() => ({
-                    email: "",
+                    id: "",
                     password: "",
                 }));
+                
+                if (loginIdRef) {
+                    loginIdRef.current.focus();
+                }
 
                 setTimeout(() => {
                     setFailedMsg("");
@@ -61,11 +67,12 @@ export const Login = () => {
     useEffect(() => {
         if(localStorage.getItem("user")) {
             setLocalUserData(JSON.stringify(localStorage.getItem("user")));
-            navigate("/34242");
+            navigate("/mission");
         } else {
             setLocalUserData("");
         }
     }, [localUserData, navigate]);
+
 
     return (
         <LoginWrap>
@@ -78,16 +85,14 @@ export const Login = () => {
                     <form onSubmit={onSubmit}>
                         <div>
                             <label htmlFor="id">아이디</label>
-                            <Input
-                                id="id"
-                                type="email"
-                                value={loginData.email}
-                                onChange={(e) => {
-                                    setLoginData({
-                                        ...loginData,
-                                        email: e.target.value,
-                                    });
-                                }}
+                            <input type="text" ref={loginIdRef} name="login_id" id="id" className="id" onChange={(e) => {
+                                setLoginData({
+                                    ...loginData,
+                                    id: e.target.value,
+                                })
+                                
+                            }}
+                            value={loginData.id}
                             />
 
                             <AiOutlineUser />

@@ -1,8 +1,9 @@
-import { Route, Routes } from "react-router-dom";
 import styled from "styled-components";
+import { Route, Routes } from "react-router-dom";
 import { Login } from "./login/Login";
 import { Join } from "./join/Join";
 import { NotFoundPage } from "./404/404";
+import { Mission } from "./mission/Mission";
 
 const HomeSection = styled.section`
     width: 100vw;
@@ -17,7 +18,7 @@ export const Home = () => {
                 <Route path="/" element={<Login />} />
                 <Route path="*" element={<NotFoundPage />} />
                 <Route path="/join" element={<Join />} />
-                {/* <Route path="/main" element={<Main />} /> */}
+                <Route path="/mission" element={<Mission />} />
             </Routes>
         </HomeSection>
     )
