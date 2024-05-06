@@ -15,10 +15,12 @@ export const Home = () => {
     return (
         <HomeSection>
             <Routes>
-                <Route path="/" element={<Login />} />
+            <Route path="/" element={<Mission />} />
+
+                {/* <Route path="/" element={<Login />} />
                 <Route path="*" element={<NotFoundPage />} />
                 <Route path="/join" element={<Join />} />
-                <Route path="/mission" element={<Mission />} />
+                <Route path="/mission" element={<Mission />} /> */}
             </Routes>
         </HomeSection>
     )
