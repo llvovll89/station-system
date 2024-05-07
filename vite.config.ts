@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+
 // proxy server 설정 
+// target: "http://3.39.235.166:8080",
+// target: "http:/13.124.113.180",
 
 export default defineConfig({
   plugins: [react()],

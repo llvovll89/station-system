@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import theme from "../styles/theme";
+import theme from "../../styles/theme";
 import { Link } from "react-router-dom";
 
 interface ButtonProps {
     text: string;
     onClick?: React.MouseEventHandler<HTMLButtonElement>
-    to?: string; 
-    type:  "button" | "submit";
+    to?: string;
+    type: "button" | "submit";
     className?: string;
 }
 
@@ -39,7 +39,7 @@ export const Button = (btn: ButtonProps) => {
                 {btn.text}
             </Link>
         </ButtonComponent>
-        
+
     ) : (
         <ButtonComponent onClick={btn.onClick} type={btn.type} className={btn.className}>
             <span>{btn.text}</span>

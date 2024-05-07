@@ -4,9 +4,9 @@ import { AiOutlineLeft, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
 import { Input } from "../../components/Input";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/Button";
-import axios from "axios";
+import { Button } from "../../components/button/Button";
 import { JoinDto } from "../../dto/JoinDto";
+import axios from "axios";
 
 interface JoinData {
     id: string;
@@ -16,45 +16,51 @@ interface JoinData {
 }
 
 export const Join = () => {
+    const [failedMsg, setFailedMsg] = useState<string>("");
     const [joinData, setJoinData] = useState<JoinData>({
         id: "",
         name: "",
         password: "",
         confirmPassword: "",
     });
-    const [failedMsg, setFailedMsg] = useState<string>("");
 
     const navigate = useNavigate();
-    const prevSite = () => {
-        navigate(-1);
-    }
 
     const submitJoin = async () => {
+        const userId = !/^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(joinData.id);
+        const passwordVerification = joinData.password.length >= 8;
+
         if (joinData.id && joinData.name && joinData.password && joinData.confirmPassword) {
-            if (joinData.password!== joinData.confirmPassword) {
-                setFailedMsg("비밀번호가 일치하지 않습니다.");
+            if (userId) {
+                setFailedMsg("아이디는 이메일 형식이어야 합니다.");
+            } else if (passwordVerification) {
+                setFailedMsg("비밀번호는 8자 이상이어야 합니다.");
             } else {
-                try {
-                    const response = await axios.post("/api/sign-up", {
-                        id: joinData.id,
-                        name: joinData.name,
-                        password: joinData.password
-                    });
+                if (joinData.password !== joinData.confirmPassword) {
+                    setFailedMsg("비밀번호가 일치하지 않습니다.");
+                } else {
+                    try {
+                        const response = await axios.post("/api/sign-up", {
+                            id: joinData.id,
+                            name: joinData.name,
+                            password: joinData.password
+                        });
 
-                    const data: JoinDto = await response.data;
-                    console.log(data);
+                        const data: JoinDto = await response.data;
+                        console.log(data);
 
-                    setFailedMsg("회원가입이 완료되었습니다.");
-                } catch (error) {
-                    console.error(error);
-                    setJoinData(() => {
-                        return {
-                            id: "",
-                            name: "",
-                            password: "",
-                            confirmPassword: "",
-                        }
-                    })
+                        setFailedMsg("회원가입이 완료되었습니다.");
+                    } catch (error) {
+                        console.error(error);
+                        setJoinData(() => {
+                            return {
+                                id: "",
+                                name: "",
+                                password: "",
+                                confirmPassword: "",
+                            }
+                        })
+                    }
                 }
             }
         } else {
@@ -66,72 +72,71 @@ export const Join = () => {
         <JoinWrap>
             <article className="content">
                 <header>
-                    <AiOutlineLeft onClick={prevSite}/>
+                    <AiOutlineLeft onClick={() => navigate(-1)} />
                     <h1>회원가입</h1>
                 </header>
-                
 
                 <section>
                     <form>
                         <div>
                             <label htmlFor="id">아이디(e-mail)</label>
-                                <Input
-                                    id="id"
-                                    type="email"
-                                    value={joinData.id}
-                                    onChange={(e) => {
-                                        setJoinData({
-                                            ...joinData,
-                                            id: e.target.value,
-                                        });
-                                    }}
-                                />
-                                <AiOutlineMail />
+                            <Input
+                                id="id"
+                                type="email"
+                                value={joinData.id}
+                                onChange={(e) => {
+                                    setJoinData({
+                                        ...joinData,
+                                        id: e.target.value,
+                                    });
+                                }}
+                            />
+                            <AiOutlineMail />
                         </div>
                         <div>
                             <label htmlFor="name">이름</label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    value={joinData.name}
-                                    onChange={(e) => {
-                                        setJoinData({
-                                            ...joinData,
-                                            name: e.target.value,
-                                        });
-                                    }}
-                                />
-                                <AiOutlineUser />
+                            <Input
+                                id="name"
+                                type="text"
+                                value={joinData.name}
+                                onChange={(e) => {
+                                    setJoinData({
+                                        ...joinData,
+                                        name: e.target.value,
+                                    });
+                                }}
+                            />
+                            <AiOutlineUser />
                         </div>
                         <div>
                             <label htmlFor="password">비밀번호</label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    value={joinData.password}
-                                    onChange={(e) => {
-                                        setJoinData({
-                                            ...joinData,
-                                            password: e.target.value,
-                                        });
-                                    }}
-                                />
-                                <RiLockPasswordFill />
+                            <Input
+                                id="password"
+                                type="password"
+                                value={joinData.password}
+                                onChange={(e) => {
+                                    setJoinData({
+                                        ...joinData,
+                                        password: e.target.value,
+                                    });
+                                }}
+                            />
+                            <RiLockPasswordFill />
                         </div>
                         <div>
                             <label htmlFor="confirmPassword">비밀번호 확인</label>
-                                <Input
-                                    id="confirmPassword"
-                                    type="password"
-                                    value={joinData.confirmPassword}
-                                    onChange={(e) => {
-                                        setJoinData({
-                                            ...joinData,
-                                            confirmPassword: e.target.value,
-                                        });
-                                    }}
-                                />
-                                <RiLockPasswordFill />
+                            <Input
+                                id="confirmPassword"
+                                type="password"
+                                value={joinData.confirmPassword}
+                                onChange={(e) => {
+                                    setJoinData({
+                                        ...joinData,
+                                        confirmPassword: e.target.value,
+                                    });
+                                }}
+                            />
+                            <RiLockPasswordFill />
                         </div>
                     </form>
 

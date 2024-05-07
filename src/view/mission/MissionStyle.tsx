@@ -1,9 +1,6 @@
 import styled from "styled-components";
 
 export const MissionWrap = styled.section`
-    width: 100vw;
-    height: 100vh;
-
     & header {
         position: absolute;
         top: 0;

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Input } from "../../components/Input";
-import { Button } from "../../components/Button";
+import { Button } from "../../components/button/Button";
 import { LoginWrap } from "./LoginStyle";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineLock, AiOutlineUser } from "react-icons/ai";
@@ -19,13 +19,14 @@ export const Login = () => {
     });
     const [failedMsg, setFailedMsg] = useState<string>("");
     const [localUserData, setLocalUserData] = useState<string>("");
-    const navigate = useNavigate();
+
     const loginIdRef = useRef<HTMLInputElement>(null);
+    const navigate = useNavigate();
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         if (loginData.id && loginData.password) {
             e.preventDefault();
-            
+
             try {
                 const response = await axios.post("/api/login", {
                     id: loginData.id,
@@ -46,7 +47,7 @@ export const Login = () => {
                     id: "",
                     password: "",
                 }));
-                
+
                 if (loginIdRef) {
                     loginIdRef.current.focus();
                 }
@@ -65,7 +66,7 @@ export const Login = () => {
     }
 
     useEffect(() => {
-        if(localStorage.getItem("user")) {
+        if (localStorage.getItem("user")) {
             setLocalUserData(JSON.stringify(localStorage.getItem("user")));
             navigate("/mission");
         } else {
@@ -90,9 +91,8 @@ export const Login = () => {
                                     ...loginData,
                                     id: e.target.value,
                                 })
-                                
                             }}
-                            value={loginData.id}
+                                value={loginData.id}
                             />
 
                             <AiOutlineUser />
@@ -120,7 +120,7 @@ export const Login = () => {
                             <label htmlFor="login_check">로그인 상태 유지</label>
                         </div>
 
-                    {failedMsg && <span className="fail">{failedMsg}</span>}
+                        {failedMsg && <span className="fail">{failedMsg}</span>}
 
                         <div className="btn-box">
                             <Button text="로그인" type="submit"></Button>

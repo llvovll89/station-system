@@ -1,33 +1,39 @@
 import { MutableRefObject, useEffect, useRef } from "react";
-import styled from "styled-components";
-
-declare global {
-    interface Window {
-        kakao: any;
-    }
-}
 
 const mapStyle = {
     width: '100vw',
     height: '100vh'
 };
 
-export const KaKaoMap = () => {
+interface MapProps {
+    latitude: number;
+    longitude: number;
+}
+
+const loadScript = (src: string, callback: () => void) => {
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = src;
+    script.onload = () => callback();
+    document.head.appendChild(script);
+}
+
+export const NaverMap = ({ latitude, longitude }: MapProps) => {
     const mapRef = useRef<HTMLElement | null>(null);
 
     const initMap = () => {
-        const container = document.getElementById("map");
-        const options = {
-            center: new window.kakao.maps.LatLng(37.483034, 126.902435),
-            level: 2,
-        };
-
-        const map = new window.kakao.maps.Map(container as HTMLElement, options);
-        (mapRef as MutableRefObject<any>).current = map;
-    };
+        const mapOptions = {
+            zoomControl: true,
+            zoomControlOptions: {
+                style: naver.maps.ZoomControlStyle.SMALL,
+                position: naver.maps.Position.TOP_RIGHT,
+            },
+            center: new naver.maps.LatLng(latitude, longitude),
+            zoom: 16,
+        }
+    }
 
     useEffect(() => {
-        window.kakao.maps.load(() => initMap());
     }, [mapRef]);
 
     return <div id="map" style={mapStyle}></div>
