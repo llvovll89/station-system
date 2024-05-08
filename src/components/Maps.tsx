@@ -1,25 +1,22 @@
-import { MutableRefObject, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const mapStyle = {
-    width: '100vw',
-    height: '100vh'
-};
+declare global {
+    interface Window {
+        naver: any;
+    }
+}
 
 interface MapProps {
     latitude: number;
     longitude: number;
+    width: string;
+    height: string;
 }
 
-const loadScript = (src: string, callback: () => void) => {
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = src;
-    script.onload = () => callback();
-    document.head.appendChild(script);
-}
-
-export const NaverMap = ({ latitude, longitude }: MapProps) => {
-    const mapRef = useRef<HTMLElement | null>(null);
+export const NaverMap = ({ latitude, longitude, width, height }: MapProps) => {
+    const mapRef = useRef<null>(null);
+    const [map, setMap] = useState<null>(null);
+    const { naver } = window;
 
     const initMap = () => {
         const mapOptions = {
@@ -31,10 +28,13 @@ export const NaverMap = ({ latitude, longitude }: MapProps) => {
             center: new naver.maps.LatLng(latitude, longitude),
             zoom: 16,
         }
+
+        setMap(new naver.maps.Map('map', mapOptions))
     }
 
     useEffect(() => {
+        initMap();
     }, [mapRef]);
 
-    return <div id="map" style={mapStyle}></div>
+    return <div id="map" ref={mapRef} style={{ width: `${width}`, height: `${height}` }}></div>
 }

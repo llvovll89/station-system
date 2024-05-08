@@ -3,18 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MissionWrap } from "./MissionStyle";
 import { Button } from "../../components/button/Button";
 import { MissionDto } from "../../dto/MissionDto";
-
-declare global {
-    interface Window {
-        kakao: any;
-    }
-}
-
-const mapStyle = {
-    width: '100vw',
-    height: '100vh'
-};
-
+import { NaverMap } from "../../components/Maps";
 
 interface pointState {
     title: string;
@@ -32,12 +21,6 @@ export const Mission = () => {
         updatedAt: ""
     });
     const [userLocalData, setUserLocalData] = useState<string>("");
-    const [points, setPoints] = useState<pointState[]>([]);
-    const [markers, setMarkers] = useState<kakao.maps.Marker[]>([]);
-    const [maps, setMaps] = useState<null>(null);
-
-    const mapRef = useRef<HTMLElement | null>(null);
-
 
 
     useEffect(() => {
@@ -51,6 +34,7 @@ export const Mission = () => {
     return (
         <MissionWrap>
             <h1>미션 페이지</h1>
+            <NaverMap latitude={35.87772056157816} longitude={128.6110784825801} width="100%" height="500px" />
 
             <div>
                 {/* <Button onClick={getMission} type="button" className="import_mission" text="랜덤미션"></Button>
