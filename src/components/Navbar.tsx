@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import * as routes from "../constant/Routes"
 import styled from "styled-components"
+import theme from "../styles/theme"
 
 interface NavBarProps {
 
@@ -12,16 +13,19 @@ const NavbarStyled = styled.nav`
     & ul {
         display: flex;
         align-items: center;
-        justify-content: space-around;
+        flex-direction: column;
         list-style: none;
         padding: 0;
         margin: 0;
         width: 100%;
         height: 100%;
-        gap: 1rem;
+        gap: 1.5rem;
+        justify-content: center;
 
         & li {
-            width: 100px;
+            & a {
+                color: ${theme.color.white};
+            }
         }
     }
 `
@@ -32,12 +36,12 @@ export const NavBar = () => {
             <ul>
                 <li>
                     <Link to={routes.MISSION}>
-                        MISSION
+                        M
                     </Link>
                 </li>
                 <li>
                     <Link to={routes.STATION}>
-                        STATION
+                        S
                     </Link>
                 </li>
                 <li>...</li>

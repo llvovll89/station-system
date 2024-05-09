@@ -1,7 +1,6 @@
-import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MissionWrap } from "./MissionStyle";
-import { Button } from "../../components/button/Button";
 import { MissionDto } from "../../dto/MissionDto";
 import { NaverMap } from "../../components/Maps";
 
@@ -33,15 +32,7 @@ export const Mission = () => {
 
     return (
         <MissionWrap>
-            <h1>미션 페이지</h1>
-            <NaverMap latitude={35.87772056157816} longitude={128.6110784825801} width="100%" height="500px" />
-
-            <div>
-                {/* <Button onClick={getMission} type="button" className="import_mission" text="랜덤미션"></Button>
-                    <Button onClick={getPolygon} type="button" className="import_mission" text="다각형그리기"></Button>
-                    <Button onClick={startPaintMarkers} type="button" className="import_mission" text="마커생성"></Button> */}
-            </div>
-
+            <NaverMap latitude={35.87772056157816} longitude={128.6110784825801} width="calc(100% - 50px)" height="100vh" margin="0 0 0 50px" />
         </MissionWrap>
     )
 };

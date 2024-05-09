@@ -36,7 +36,7 @@ interface BoxShadow {
 
 const calRem = (size: number) => `${size / 16}rem`;
 
-const theme:Theme = {
+const theme: Theme = {
     fonsize: {
         xs: calRem(12),
         sm: calRem(14),

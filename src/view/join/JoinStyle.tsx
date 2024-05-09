@@ -24,6 +24,12 @@ export const JoinWrap = styled.section`
         box-shadow: ${theme.boxShadow?.sm};
 
         & header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+           & div {
             display: flex;
             gap: 6px;
             align-items: center;
@@ -39,6 +45,15 @@ export const JoinWrap = styled.section`
                 height: 1.5rem;
                 cursor: pointer;
             }
+           }
+
+           & p {
+            width: 100%;
+            text-align: right;
+            color: ${theme.color.red};
+            font-size: ${theme.fonsize.sm};
+            font-weight: bold;
+           }
         }
 
         & section {

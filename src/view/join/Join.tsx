@@ -29,18 +29,19 @@ export const Join = () => {
     const submitJoin = async () => {
         const userId = !/^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(joinData.id);
         const passwordVerification = joinData.password.length >= 8;
+        console.log(joinData.password.length);
 
         if (joinData.id && joinData.name && joinData.password && joinData.confirmPassword) {
             if (userId) {
                 setFailedMsg("아이디는 이메일 형식이어야 합니다.");
-            } else if (passwordVerification) {
+            } else if (!passwordVerification) {
                 setFailedMsg("비밀번호는 8자 이상이어야 합니다.");
             } else {
                 if (joinData.password !== joinData.confirmPassword) {
                     setFailedMsg("비밀번호가 일치하지 않습니다.");
                 } else {
                     try {
-                        const response = await axios.post("/api/sign-up", {
+                        const response = await axios.post("http://13.124.113.180:8080/sign-up", {
                             id: joinData.id,
                             name: joinData.name,
                             password: joinData.password
@@ -64,7 +65,11 @@ export const Join = () => {
                 }
             }
         } else {
-            setFailedMsg("모든 항목을 입력해주세요.");
+            setFailedMsg("모든 항목을 입력해주세요.")
+
+            setTimeout(() => {
+                setFailedMsg("");
+            }, 2000);
         }
     }
 
@@ -72,8 +77,11 @@ export const Join = () => {
         <JoinWrap>
             <article className="content">
                 <header>
-                    <AiOutlineLeft onClick={() => navigate(-1)} />
-                    <h1>회원가입</h1>
+                    <div>
+                        <AiOutlineLeft onClick={() => navigate(-1)} />
+                        <h1>회원가입</h1>
+                    </div>
+                    <p>{failedMsg}</p>
                 </header>
 
                 <section>
