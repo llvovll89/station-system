@@ -51,7 +51,7 @@ export const JoinWrap = styled.section`
             width: 100%;
             text-align: right;
             color: ${theme.color.red};
-            font-size: ${theme.fonsize.sm};
+            font-size: ${theme.fontSize.sm};
             font-weight: bold;
            }
         }
@@ -69,7 +69,7 @@ export const JoinWrap = styled.section`
                 display: flex;
                 flex-direction: column;
                 gap: 24px;
-                font-size: ${theme.fonsize.sm};
+                font-size: ${theme.fontSize.sm};
             
                 & div {
                     display: flex;

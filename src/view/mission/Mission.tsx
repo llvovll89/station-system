@@ -1,38 +1,38 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MissionWrap } from "./MissionStyle";
-import { MissionDto } from "../../dto/MissionDto";
 import { NaverMap } from "../../components/Maps";
-
-interface pointState {
-    title: string;
-    latlng: kakao.maps.LatLng;
-}
+import { CreateMission } from "./createmission/CreateMission";
+import { Button } from "../../components/button/Button";
 
 export const Mission = () => {
-    const navigate = useNavigate();
-    const [missions, setMissions] = useState<MissionDto>({
-        seq: 0,
-        name: "",
-        type: 0,
-        mainPoint: null,
-        createdAt: "",
-        updatedAt: ""
-    });
-    const [userLocalData, setUserLocalData] = useState<string>("");
+    const [isCreateMission, setIsCreateMission] = useState(false);
+    const [selectMission, setSelectMission] = useState("");
+    const [isCrateWaypoint, setIsCreateWayPoint] = useState(false);
+    const [wayPoints, setWayPoints] = useState([]);
+    const [distance, setDistance] = useState("");
 
+    const navigate = useNavigate();
+    const toggleCreateMission = () => {
+        setIsCreateMission((prev) => !prev);
+    }
+
+    const submitCreateMission = () => {
+        toggleCreateMission();
+        setIsCreateWayPoint(true);
+    }
 
     useEffect(() => {
-        if (localStorage.getItem("id")) {
-            setUserLocalData(JSON.stringify(localStorage.getItem("id")));
-        } else {
-            navigate('/');
-        }
-    }, [navigate, userLocalData]);
+        !localStorage.getItem("user") && navigate("/");
+    }, []);
 
     return (
         <MissionWrap>
-            <NaverMap latitude={35.87772056157816} longitude={128.6110784825801} width="calc(100% - 50px)" height="100vh" margin="0 0 0 50px" />
+            <NaverMap latitude={35.87772056157816} longitude={128.6110784825801} isCreateWaypoint={isCrateWaypoint} />
+            {isCreateMission && <CreateMission closeCreateMission={toggleCreateMission} submitCreateMission={submitCreateMission} selectMission={selectMission} setSelectMission={setSelectMission}/>}
+            {selectMission && <span className="mission_type">타입: {selectMission}</span>}
+
+            <Button text="생성" onClick={toggleCreateMission} type="button" className="create_mission" />
         </MissionWrap>
     )
 };

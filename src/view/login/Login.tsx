@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { Input } from "../../components/Input";
 import { Button } from "../../components/button/Button";
 import { LoginWrap } from "./LoginStyle";
@@ -6,10 +6,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineLock, AiOutlineUser } from "react-icons/ai";
 import { LoginDto } from "../../dto/LoginDto";
 import axios from "axios";
+import { timeOut } from "../../util/timeOut";
 
 interface LoginData {
-    id: string;
-    password: string;
+    id?: string;
+    password?: string;
 }
 
 export const Login = () => {
@@ -17,10 +18,11 @@ export const Login = () => {
         id: "",
         password: "",
     });
-    const [failedMsg, setFailedMsg] = useState<string>("");
-    const [localUserData, setLocalUserData] = useState<string>("");
+    const [message, setMessage] = useState<{ failed: string; success: string }>({
+        failed: "",
+        success: ""
+      });
 
-    const loginIdRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,42 +39,92 @@ export const Login = () => {
 
                 if (response.status === 200) {
                     localStorage.setItem('user', data.id);
-                    navigate("/mission");
+                    setMessage((prev) => ({
+                        ...prev,
+                        success: "로그인 성공! mission page로 이동합니다."
+                    }));
+                    
+                    timeOut(2000, () => {
+                        setMessage((prev) => ({
+                            ...prev,
+                            failed: "",
+                            success: ""
+                        }));
+                        navigate("/mission");
+                    })
+                    
                 }
-            } catch (error) {
-                console.error(error);
-                setFailedMsg("로그인 실패, id / password를 잘못 입력 하셨습니다.");
-
+            } catch (err) {
+                if(err.response.status === 401) {
+                    setMessage((prev) => ({
+                        ...prev,
+                        failed: "로그인 실패, 비밀번호가 틀렸습니다. 다시 확인해 주세요."
+                    }));
+                    timeOut(2000, () => {
+                        setMessage((prev) => ({
+                            ...prev,
+                            failed: ""
+                        }));
+                        setLoginData(() => ({
+                            password: "",
+                        }));
+                    });
+                } else if (err.response.status === 404) {
+                    setMessage((prev) => ({
+                        ...prev,
+                        failed: "로그인 실패, 없는 아이디 입니다. 다시 확인해 주세요."
+                    }));
+                    timeOut(2000, () => {
+                        setMessage((prev) => ({
+                            ...prev,
+                            failed: "",
+                            success: "",
+                        }));
+                        setLoginData(() => ({
+                            id: "",
+                            password: "",
+                        }));
+                    });
+                } else {
+                    setMessage((prev) => ({
+                        ...prev,
+                        failed: "로그인 실패, 아이디 / 비밀번호를 잘못 입력하셨습니다."
+                    }));
+                    timeOut(2000, () => {
+                        setMessage((prev) => ({
+                            ...prev,
+                            failed: "",
+                            success: "",
+                        }));
+                        setLoginData(() => ({
+                            id: "",
+                            password: "",
+                        }));
+                    });
+                }
+            }
+        } else {
+            setMessage((prev) => ({
+                ...prev,
+                failed: "로그인 실패, 빈칸없이 입력해주세요."
+            }));
+            timeOut(2000, () => {
+                setFailedMsgsetMessage((prev) => ({
+                    ...prev,
+                    failed: "",
+                    success: "",
+                }));
                 setLoginData(() => ({
                     id: "",
                     password: "",
                 }));
-
-                if (loginIdRef) {
-                    loginIdRef.current.focus();
-                }
-
-                setTimeout(() => {
-                    setFailedMsg("");
-                }, 2000);
-            }
-        } else {
-            setFailedMsg("로그인 실패, id / password를 둘 다 입력해 주시기 바랍니다.");
-
-            setTimeout(() => {
-                setFailedMsg("");
-            }, 2000);
+            });
         }
     }
 
     useEffect(() => {
-        if (localStorage.getItem("user")) {
-            setLocalUserData(JSON.stringify(localStorage.getItem("user")));
-            navigate("/mission");
-        } else {
-            setLocalUserData("");
-        }
-    }, [localUserData, navigate]);
+        !localStorage.getItem("user") && navigate("/");
+    }, []);
 
 
     return (
@@ -86,7 +138,7 @@ export const Login = () => {
                     <form onSubmit={onSubmit}>
                         <div>
                             <label htmlFor="id">아이디</label>
-                            <input type="text" ref={loginIdRef} name="login_id" id="id" className="id" onChange={(e) => {
+                            <input type="text" name="login_id" id="id" className="id" onChange={(e) => {
                                 setLoginData({
                                     ...loginData,
                                     id: e.target.value,
@@ -120,7 +172,7 @@ export const Login = () => {
                             <label htmlFor="login_check">로그인 상태 유지</label>
                         </div>
 
-                        {failedMsg && <span className="fail">{failedMsg}</span>}
+                        {message.failed || message.success && <span className={message.failed ? "fail" : "suc"}>{message.failed || message.success}</span>}
 
                         <div className="btn-box">
                             <Button text="로그인" type="submit"></Button>

@@ -47,7 +47,7 @@ export const LoginWrap = styled.section`
                 display: flex;
                 flex-direction: column;
                 gap: 24px;
-                font-size: ${theme.fonsize.sm};
+                font-size: ${theme.fontSize.sm};
             
                 & div {
                     display: flex;
@@ -99,16 +99,23 @@ export const LoginWrap = styled.section`
                     }
                 
                     & label {
-                        font-size: ${theme.fonsize.xs};
+                        font-size: ${theme.fontSize.xs};
                         cursor: pointer;
                     }
             }
 
                 & .fail {
                     color: ${theme.color.red};
-                    font-size: ${theme.fonsize.sm};
+                    font-size: ${theme.fontSize.xs};
                     padding: 2px 3px;
                     background-color: ${theme.color.subWhite};
+                }
+
+                & .suc {
+                    color: ${theme.color.white};
+                    font-size: ${theme.fontSize.xs};
+                    padding: 2px 3px;
+                    background-color: ${theme.color.primary};
                 }
             
                 

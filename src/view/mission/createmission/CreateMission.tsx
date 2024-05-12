@@ -1,0 +1,40 @@
+import { CreateMissionWrap } from "./CreateMissionStyle";
+import { Button } from "../../../components/button/Button";
+
+interface CreateMissionProps {
+    setSelectMission: React.Dispatch<React.SetStateAction<string>>;
+    closeCreateMission: () => void;
+    submitCreateMission: () => void;
+    selectMission: string; 
+}
+
+export const CreateMission = ({ closeCreateMission, submitCreateMission , setSelectMission, selectMission}: CreateMissionProps) => {
+    const selectMissionType = (type: string) => {
+        setSelectMission(type);
+    }
+
+    return (    
+        <CreateMissionWrap>
+            <article className="container">
+                <header>
+                    <h1>미션생성</h1>
+                    <Button type="button" text='X' onClick={closeCreateMission} />
+                </header>
+
+                <article className="grid">
+                    <p>미션 타입</p>
+
+                    <div className="grid">
+                        <Button onClick={() => selectMissionType("waypoint")} type="button" text="웨이포인트" />
+                        <Button onClick={() => selectMissionType("grid")} type="button" text="그리드" />
+                    </div>
+                </article>
+
+                <footer>
+                    <Button text="닫기" type="button" onClick={closeCreateMission} />
+                    <Button text="생성" type="button" onClick={submitCreateMission} />
+                </footer>
+            </article>
+        </CreateMissionWrap>
+    )
+};

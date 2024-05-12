@@ -25,6 +25,6 @@ const LoginInput = styled.input.attrs<InputType>((props) => ({
 
 export const Input = (input: InputType) => {
     return (
-        <LoginInput type={input.type} name={input.name} value={input.value} id={input.id} onChange={input.onChange} ref={input.ref} autoComplete="off"/>
+        <LoginInput type={input.type} name={input.name} value={input.value} id={input.id} onChange={input.onChange} autoComplete="off"/>
     )
 }

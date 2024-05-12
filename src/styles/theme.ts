@@ -1,5 +1,5 @@
 interface Theme {
-    fonsize: FontSize;
+    fontSize: FontSize;
     color: Color;
     boxShadow?: BoxShadow;
 }
@@ -37,7 +37,7 @@ interface BoxShadow {
 const calRem = (size: number) => `${size / 16}rem`;
 
 const theme: Theme = {
-    fonsize: {
+    fontSize: {
         xs: calRem(12),
         sm: calRem(14),
         md: calRem(16),

@@ -8,6 +8,7 @@ interface ButtonProps {
     to?: string;
     type: "button" | "submit";
     className?: string;
+    bgColor?: string;
 }
 
 const ButtonComponent = styled.button`
