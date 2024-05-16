@@ -9,7 +9,7 @@ declare global {
 }
 
 const MapWrap = styled.section`
-    & span {
+    & .distance {
         display: inline-block;
         position: absolute;
         bottom: 0;
@@ -20,6 +20,18 @@ const MapWrap = styled.section`
         color: ${theme.color.black};
         background-color: ${theme.color.white};
         z-index: 20;
+    }
+
+    & .marker {
+        background-color: ${theme.color.black};
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        color: ${theme.color.white};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #09f;
     }
 
 `
@@ -61,21 +73,37 @@ export const NaverMap = ({ latitude, longitude, isCreateWaypoint }: MapProps) =>
             strokeWeight: 5,
             strokeOpacity: 0.8,
         })
+        let markers = [];
 
         if(isCreateWaypoint) {
+            let index = 0;
+
             const createWaypoint = (e: React.MouseEvent) => {
+                index += 1;
+
                 let marker = new naver.maps.Marker({
                     map: map,
                     position: e.coord,
+                    icon: {
+                        content: `<div class='marker'>${index}</div>`,
+                        anchor: new naver.maps.Point(12, 12),
+                    }
                 })
+
+                markers.push(marker);
 
                 let path = waypoint.getPath();
                 path.push(e.coord);
+
                 setWayPoints(() => ({
                     ...wayPoints,
                     waypoint
                 }))
+
                 setDistance(parseFloat(waypoint.getDistance()).toFixed(2));
+                naver.maps.Event.addListener(markers[markers.length - 1], "click", (e) => {
+                    naver.maps.Event.removeListener(waypointEvent);
+                })
             } 
 
             let waypointEvent = naver.maps.Event.addListener(map, "click", createWaypoint);
@@ -90,7 +118,7 @@ export const NaverMap = ({ latitude, longitude, isCreateWaypoint }: MapProps) =>
 
     return (
         <MapWrap>
-            {isCreateWaypoint && <span>거리: {distance}m</span>}
+            {isCreateWaypoint && <div className="distance">거리: {distance}m</div>}
             <div id="map" ref={mapElement} style={mapStyle}></div>
         </MapWrap>
     )

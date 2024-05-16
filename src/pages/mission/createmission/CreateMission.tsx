@@ -25,8 +25,8 @@ export const CreateMission = ({ closeCreateMission, submitCreateMission , setSel
                     <p>미션 타입</p>
 
                     <div className="grid">
-                        <Button onClick={() => selectMissionType("waypoint")} type="button" text="웨이포인트" />
-                        <Button onClick={() => selectMissionType("grid")} type="button" text="그리드" />
+                        <Button className={selectMission === 'waypoint' && 'waypoint'} onClick={() => selectMissionType("waypoint")} type="button" text="웨이포인트" />
+                        <Button className={selectMission === 'grid' && 'grid'} onClick={() => selectMissionType("grid")} type="button" text="그리드" />
                     </div>
                 </article>
 
