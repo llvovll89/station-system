@@ -42,6 +42,7 @@ export const MissionWrap = styled.section`
 
     & .mission_type {
         display: inline-block;
+        text-align: center;
         font-size: ${theme.fontSize.lg};
         background: ${theme.color.black};
         border-radius: 3px;

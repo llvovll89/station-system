@@ -7,6 +7,7 @@ import { AiOutlineLock, AiOutlineUser } from "react-icons/ai";
 import { LoginDto } from "../../dto/LoginDto";
 import axios from "axios";
 import { timeOut } from "../../util/timeOut";
+import { LOGIN } from "../../constant/http";
 
 interface LoginData {
     id?: string;
@@ -21,7 +22,7 @@ export const Login = () => {
     const [message, setMessage] = useState<{ failed: string; success: string }>({
         failed: "",
         success: ""
-      });
+    });
 
     const navigate = useNavigate();
 
@@ -30,7 +31,7 @@ export const Login = () => {
             e.preventDefault();
 
             try {
-                const response = await axios.post("http://13.124.113.180:8080/login", {
+                const response = await axios.post(LOGIN, {
                     id: loginData.id,
                     password: loginData.password,
                 });
@@ -43,7 +44,7 @@ export const Login = () => {
                         ...prev,
                         success: "로그인 성공! mission page로 이동합니다."
                     }));
-                    
+
                     timeOut(2000, () => {
                         setMessage((prev) => ({
                             ...prev,
@@ -52,10 +53,10 @@ export const Login = () => {
                         }));
                         navigate("/mission");
                     })
-                    
+
                 }
             } catch (err) {
-                if(err.response.status === 401) {
+                if (err.response.status === 401) {
                     setMessage((prev) => ({
                         ...prev,
                         failed: "로그인 실패, 비밀번호가 틀렸습니다. 다시 확인해 주세요."
@@ -109,7 +110,7 @@ export const Login = () => {
                 failed: "로그인 실패, 빈칸없이 입력해주세요."
             }));
             timeOut(2000, () => {
-                setFailedMsgsetMessage((prev) => ({
+                setMessage((prev) => ({
                     ...prev,
                     failed: "",
                     success: "",
@@ -123,7 +124,11 @@ export const Login = () => {
     }
 
     useEffect(() => {
-        !localStorage.getItem("user") && navigate("/");
+        if (!localStorage.getItem("user")) {
+            navigate("/");
+        } else {
+            navigate("/mission");
+        }
     }, []);
 
 

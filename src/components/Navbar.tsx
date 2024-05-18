@@ -3,10 +3,6 @@ import * as routes from "../constant/Routes"
 import styled from "styled-components"
 import theme from "../styles/theme"
 
-interface NavBarProps {
-
-}
-
 const NavbarStyled = styled.nav`
     height: 100%;
 
@@ -44,8 +40,6 @@ export const NavBar = () => {
                         S
                     </Link>
                 </li>
-                <li>...</li>
-                <li>...</li>
             </ul>
         </NavbarStyled>
     )

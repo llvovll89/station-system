@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/button/Button";
 import { JoinDto } from "../../dto/JoinDto";
 import axios from "axios";
+import { JOIN } from "../../constant/http";
 
 interface JoinData {
     id: string;
@@ -41,7 +42,7 @@ export const Join = () => {
                     setFailedMsg("비밀번호가 일치하지 않습니다.");
                 } else {
                     try {
-                        const response = await axios.post("http://13.124.113.180:8080/sign-up", {
+                        const response = await axios.post(JOIN, {
                             id: joinData.id,
                             name: joinData.name,
                             password: joinData.password

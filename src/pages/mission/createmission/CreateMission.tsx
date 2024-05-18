@@ -5,15 +5,15 @@ interface CreateMissionProps {
     setSelectMission: React.Dispatch<React.SetStateAction<string>>;
     closeCreateMission: () => void;
     submitCreateMission: () => void;
-    selectMission: string; 
+    selectMission: string;
 }
 
-export const CreateMission = ({ closeCreateMission, submitCreateMission , setSelectMission, selectMission}: CreateMissionProps) => {
+export const CreateMission = ({ closeCreateMission, submitCreateMission, setSelectMission, selectMission }: CreateMissionProps) => {
     const selectMissionType = (type: string) => {
         setSelectMission(type);
     }
 
-    return (    
+    return (
         <CreateMissionWrap>
             <article className="container">
                 <header>
@@ -25,8 +25,8 @@ export const CreateMission = ({ closeCreateMission, submitCreateMission , setSel
                     <p>미션 타입</p>
 
                     <div className="grid">
-                        <Button className={selectMission === 'waypoint' && 'waypoint'} onClick={() => selectMissionType("waypoint")} type="button" text="웨이포인트" />
-                        <Button className={selectMission === 'grid' && 'grid'} onClick={() => selectMissionType("grid")} type="button" text="그리드" />
+                        <Button className={selectMission === 'wayline' && 'wayline'} onClick={() => selectMissionType("wayline")} type="button" text="웨이라인" />
+                        <Button className={selectMission === 'region' && 'region'} onClick={() => selectMissionType("region")} type="button" text="지역" />
                     </div>
                 </article>
 

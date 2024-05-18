@@ -58,11 +58,11 @@ export const CreateMissionWrap = styled.section`
                 align-items: center;
                 gap: 0.25rem;
 
-                & .waypoint {
+                & .wayline {
                     background: #09f;
                 }
 
-                & .grid {
+                & .region {
                     background: #09f;
                 }
             }
