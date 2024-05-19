@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MissionWrap } from "./MissionStyle";
 import { NaverMap } from "../../components/navermap/Map";
 import { Button } from "../../components/button/Button";
-import axios from "axios";
 import { CreateMissionWrap } from "./createmission/CreateMissionStyle";
-import { MISSION } from "../../constant/http";
 
 export const Mission = () => {
     const [isCreateMission, setIsCreateMission] = useState(false);
@@ -27,11 +25,11 @@ export const Mission = () => {
         setIsCreateStart(true);
     }
 
-    const getMission = async () => {
-        const response = await axios.get(MISSION);
-        const data = response.data();
-        console.log(data);
-    }
+    // const getMission = async () => {
+    //     const response = await axios.get(MISSION);
+    //     const data = response.data();
+    //     console.log(data);
+    // }
 
     useEffect(() => {
         !localStorage.getItem("user") && navigate("/");
@@ -52,8 +50,8 @@ export const Mission = () => {
                             <p>미션 타입</p>
 
                             <div className="grid">
-                                <Button className={selectMission === 'wayline' && 'wayline'} onClick={() => selectMissionType("wayline")} type="button" text="웨이라인" />
-                                <Button className={selectMission === 'region' && 'region'} onClick={() => selectMissionType("region")} type="button" text="지역" />
+                                <Button className={selectMission === 'wayline' ? 'wayline' : ''} onClick={() => selectMissionType("wayline")} type="button" text="웨이라인" />
+                                <Button className={selectMission === 'region' ? 'region' : ''} onClick={() => selectMissionType("region")} type="button" text="지역" />
                             </div>
                         </article>
 

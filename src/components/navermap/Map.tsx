@@ -57,6 +57,7 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
         setDistance(null);
         setMarkers([]);
         setPolylines([]);
+        console.log(polylines, paths);
     };
 
     useEffect(() => {
@@ -75,7 +76,7 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
     useEffect(() => {
         if (!map || !isCreateStart) return;
 
-        const waypoint = new naver.maps.Polyline({
+        new naver.maps.Polyline({
             map: map,
             path: [],
             strokeColor: '#f00',
@@ -99,7 +100,7 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
     };
 
     const createOverLayEvent = (type: string) => {
-        const markerItems = [];
+        const markerItems: naver.maps.Marker[] = [];
 
         if (type === 'wayline') {
             const polyline = new naver.maps.Polyline({
@@ -111,7 +112,7 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
 
             setPolylines(prevPolylines => [...prevPolylines, polyline])
 
-            const setPolyline = naver.maps.Event.addListener(map, 'click', (e: React.MouseEvent) => {
+            const setPolyline = naver.maps.Event.addListener(map, 'click', (e: { coord: naver.maps.LatLng; }) => {
                 const path = polyline.getPath();
                 path.push(e.coord);
                 setPaths(prevPaths => [...prevPaths, e.coord]);
@@ -128,7 +129,7 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
                 setMarkers(prevMarkers => [...prevMarkers, marker]);
                 markerItems.push(marker)
 
-                const lastPointMarker = naver.maps.Event.addListener(markerItems.at(-1), 'click', (e) => {
+                naver.maps.Event.addListener(markerItems[markerItems.length - 1], 'click', () => {
                     if (path.length > 1) {
                         naver.maps.Event.removeListener(setPolyline);
                         setDistance(parseFloat(polyline.getDistance()).toFixed(2));
@@ -139,9 +140,9 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
                 })
             })
         } else {
-            const setPolygon = naver.maps.Event.addListener(map, 'click', (e: React.MouseEvent) => {
-                console.log(e);
-            })
+            // const setPolygon = naver.maps.Event.addListener(map, 'click', (e: React.MouseEvent) => {
+            //     console.log(e);
+            // })
         }
     };
 

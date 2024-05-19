@@ -5,9 +5,10 @@ import { LoginWrap } from "./LoginStyle";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineLock, AiOutlineUser } from "react-icons/ai";
 import { LoginDto } from "../../dto/LoginDto";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { timeOut } from "../../util/timeOut";
 import { LOGIN } from "../../constant/http";
+import * as routes from "../../constant/Routes"
 
 interface LoginData {
     id?: string;
@@ -31,7 +32,7 @@ export const Login = () => {
             e.preventDefault();
 
             try {
-                const response = await axios.post(LOGIN, {
+                const response: AxiosResponse = await axios.post(LOGIN, {
                     id: loginData.id,
                     password: loginData.password,
                 });
@@ -51,12 +52,14 @@ export const Login = () => {
                             failed: "",
                             success: ""
                         }));
-                        navigate("/mission");
+                        navigate(routes.MAIN);
                     })
 
                 }
-            } catch (err) {
-                if (err.response.status === 401) {
+            } catch (error) {
+                const err = error as AxiosError;
+
+                if (err?.response?.status === 401) {
                     setMessage((prev) => ({
                         ...prev,
                         failed: "로그인 실패, 비밀번호가 틀렸습니다. 다시 확인해 주세요."
@@ -70,7 +73,7 @@ export const Login = () => {
                             password: "",
                         }));
                     });
-                } else if (err.response.status === 404) {
+                } else if (err?.response?.status === 404) {
                     setMessage((prev) => ({
                         ...prev,
                         failed: "로그인 실패, 없는 아이디 입니다. 다시 확인해 주세요."

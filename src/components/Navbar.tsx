@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom"
-import * as routes from "../constant/Routes"
 import styled from "styled-components"
 import theme from "../styles/theme"
+import missionIcon from "../assets/image/navbar/ico_mission.png"
+import stationIcon from "../assets/image/navbar/ico_station.png"
 
 const NavbarStyled = styled.nav`
     height: 100%;
@@ -31,14 +31,14 @@ export const NavBar = () => {
         <NavbarStyled>
             <ul>
                 <li>
-                    <Link to={routes.MISSION}>
-                        M
-                    </Link>
+                    {/* <Link to={routes.MISSION}> */}
+                    <img src={missionIcon} alt="mission" />
+                    {/* </Link> */}
                 </li>
                 <li>
-                    <Link to={routes.STATION}>
-                        S
-                    </Link>
+                    {/* <Link to={routes.STATION}> */}
+                    <img src={stationIcon} alt="station" />
+                    {/* </Link> */}
                 </li>
             </ul>
         </NavbarStyled>
