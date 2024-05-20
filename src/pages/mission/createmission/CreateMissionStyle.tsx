@@ -48,6 +48,19 @@ export const CreateMissionWrap = styled.section`
             }
         }
 
+        & .mission_name {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            & input {
+                height: 36px;
+                color: ${theme.color.white};
+                padding: 0 0 0 12px;
+                border: 1px solid rgba(255,255,255,0.22);
+            }
+        }
+
         & article {
             & p {
                 padding-bottom: 1rem;
@@ -73,10 +86,8 @@ export const CreateMissionWrap = styled.section`
             align-items: center;
             gap: 0.25rem;
 
-            & button {
-                &:last-child{
-                    background-color: ${theme.color.primary};
-                }
+            button.isSubmit {
+                background-color: ${theme.color.primary};
             }
         }
     }

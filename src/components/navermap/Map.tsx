@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { AiOutlineReload } from "react-icons/ai";
 import { MapWrap } from "./MapStyles";
+import axios from "axios";
+import { MISSION } from "../../constant/http";
+import { MissionDto } from "../../dto/MissionDto";
+import { MissionType } from "../../constant/type";
 
 declare global {
     interface Window {
@@ -12,13 +16,14 @@ interface MapProps {
     latitude: number;
     longitude: number;
     isCreateStart?: boolean;
-    selectMission?: string;
+    selectMission?: string | MissionType;
     setIsCreateMission: (value: boolean) => void;
     setIsCreateStart: (value: boolean) => void;
     setSelectMission: (value: string) => void;
+    missionData: MissionDto;
 }
 
-export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, setIsCreateMission, setIsCreateStart, setSelectMission }: MapProps) => {
+export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, setIsCreateMission, setIsCreateStart, setSelectMission, missionData}: MapProps) => {
     const [map, setMap] = useState(null);
     const [distance, setDistance] = useState<null | string>(null);
     const [markers, setMarkers] = useState<naver.maps.Marker[]>([]);
@@ -32,15 +37,33 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
         setIsCreateMission(false);
         setIsCreateStart(false);
         setSelectMission("");
-        // wayline , marker 초기화
     };
 
-    const submitPaths = () => {
-        // 미션 생성 호출
-        resetOverlay();
+    const submitPaths = async () => {
+        try {
+            const newPathArray = paths.map(({ x, y }) => ({
+                latitude: y,
+                longitude: x
+            }));
+            const params = {
+                name: missionData.name,
+                points: newPathArray,
+                mainPoint: newPathArray[0],
+                angle: missionData.angle
+            };
+            const response = await axios.post(MISSION, params);
+            const data = await response.data;
+            console.log(data);
+            // 성공 / 실패 로직
+            
+            resetOverlay();
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const resetOverlay = () => {
+        console.log(polylines);
         setMarkers((m) => {
             return m.map((marker) => {
                 marker.setMap(null);
@@ -57,7 +80,6 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
         setDistance(null);
         setMarkers([]);
         setPolylines([]);
-        console.log(polylines, paths);
     };
 
     useEffect(() => {
@@ -67,7 +89,7 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
         const mapOptions = {
             center: location,
             zoom: 17,
-            zoomControl: true,
+            zoomControl: false,
         };
 
         setMap(new naver.maps.Map(mapElement.current, mapOptions));

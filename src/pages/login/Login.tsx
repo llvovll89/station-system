@@ -130,7 +130,7 @@ export const Login = () => {
         if (!localStorage.getItem("user")) {
             navigate("/");
         } else {
-            navigate("/mission");
+            navigate(routes.MAIN);
         }
     }, []);
 
