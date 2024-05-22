@@ -3,12 +3,13 @@ import theme from "../../styles/theme";
 import { Link } from "react-router-dom";
 
 interface ButtonProps {
-    text: string;
+    text?: string;
     onClick?: React.MouseEventHandler<HTMLButtonElement>
     to?: string;
     type: "button" | "submit";
     className?: string;
     bgColor?: string;
+    children?: React.ReactNode;
 }
 
 const ButtonComponent = styled.button`
@@ -43,7 +44,7 @@ export const Button = (btn: ButtonProps) => {
 
     ) : (
         <ButtonComponent onClick={btn.onClick} type={btn.type} className={btn.className}>
-            <span>{btn.text}</span>
+            {btn.children || <span>{btn.text}</span>}
         </ButtonComponent>
     );
 }

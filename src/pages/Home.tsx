@@ -4,9 +4,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { Login } from "./login/Login";
 import { Join } from "./join/Join";
 import { NotFoundPage } from "./404/404";
-import { Mission } from "./mission/Mission";
 import { Header } from "../components/Header";
-import { Station } from "./station/Station";
 import { Main } from "./main/Main";
 
 const HomeSection = styled.section`
@@ -25,18 +23,16 @@ export const Home = () => {
         route.MAIN,
     ];
 
-    const shouldShowHeader = showHeaderRoutes.includes(pathname);
+    // const shouldShowHeader = showHeaderRoutes.includes(pathname);
 
     return (
         <HomeSection>
-            {shouldShowHeader && <Header />}
+            {/* {shouldShowHeader && <Header />} */}
 
             <Routes>
                 <Route path={route.LOGIN} element={<Login />} />
                 <Route path={route.JOIN} element={<Join />} />
                 <Route path={route.MAIN} element={<Main />} />
-                <Route path={route.MISSION} element={<Mission />} />
-                <Route path={route.STATION} element={<Station />} />
                 <Route path={route.NOTFOUND} element={<NotFoundPage />} />
             </Routes>
         </HomeSection>

@@ -1,34 +1,26 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { MissionWrap } from "./MissionStyle";
-import { NaverMap } from "../../components/navermap/Map";
 import { Button } from "../../components/button/Button";
 import { CreateMissionWrap } from "./createmission/CreateMissionStyle";
 import { MissionDto } from "../../dto/MissionDto";
 import { MissionType } from "../../constant/type";
+import { VscGitPullRequestCreate } from "react-icons/vsc";
+import { AiOutlineReload } from "react-icons/ai";
 
-export const Mission = () => {
-    const [isCreateMission, setIsCreateMission] = useState(false);
-    const [selectMission, setSelectMission] = useState<string | MissionType>("");
-    const [isCreateStart, setIsCreateStart] = useState(false);
-    const [missionData, setMissionData] = useState<MissionDto>({
-        seq: 0,
-        name: "",
-        type: 0,
-        mainPoint: {latitude: 0, longitude: 0},
-        transverseRedundancy: 0,
-        longitudinalRedundancy: 0,
-        points: [],
-        angle: 70,
-        createdAt: "",
-        updatedAt: ""
-    });
+interface MissionProps {
+    isCreateMission: boolean;
+    setIsCreateMission: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsCreateStart: (value: boolean) => void;
+    setSelectMission: React.Dispatch<React.SetStateAction<string | MissionType>>;
+    setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>;
+    missionData: MissionDto;
+    selectMission: string | MissionType;
+    initCreateMission: () => void;
+}
 
-    const navigate = useNavigate();
-
+export const Mission = ({ isCreateMission, setSelectMission, setMissionData, setIsCreateMission, setIsCreateStart, missionData, selectMission, initCreateMission }: MissionProps) => {
     const toggleCreateMission = () => {
         setSelectMission("");
-        setMissionData((prev) => ({
+        setMissionData((prev: MissionDto) => ({
             ...prev,
             name: "",
             type: 0,
@@ -41,30 +33,16 @@ export const Mission = () => {
     }
 
     const submitCreateMission = () => {
-        if(!missionData.name || !selectMission) {
+        if (!missionData.name || !selectMission) {
             alert("빈 값 없이 선택해 주시기 바랍니다.")
         } else {
-            setIsCreateStart(true);   
+            setIsCreateStart(true);
             setIsCreateMission((prev) => !prev);
         }
     }
 
-    useEffect(() => {
-        !localStorage.getItem("user") && navigate("/");
-    }, []);
-
     return (
         <MissionWrap>
-            <NaverMap 
-                latitude={35.87772056157816} 
-                longitude={128.6110784825801} 
-                missionData={missionData} 
-                isCreateStart={isCreateStart} 
-                selectMission={selectMission} 
-                setIsCreateMission={setIsCreateMission} 
-                setIsCreateStart={setIsCreateStart} 
-                setSelectMission={setSelectMission} />
-            
             {isCreateMission && (
                 <CreateMissionWrap>
                     <article className="container">
@@ -75,7 +53,7 @@ export const Mission = () => {
 
                         <div className="mission_name">
                             <label>미션 이름</label>
-                            <input type="text" onChange={(e) => setMissionData({ ...missionData, name: e.target.value })} placeholder="mission name..."/>
+                            <input type="text" onChange={(e) => setMissionData({ ...missionData, name: e.target.value })} placeholder="mission name..." />
                         </div>
 
                         <article className="grid">
@@ -95,8 +73,12 @@ export const Mission = () => {
                 </CreateMissionWrap>
             )}
 
-            {missionData.name && <span className="mission_type">{missionData.name}</span>}
-            <Button text="생성" onClick={toggleCreateMission} type="button" className="create_mission" />
+            <Button onClick={toggleCreateMission} type="button" className="create_mission">
+                <VscGitPullRequestCreate />
+            </Button>
+            <Button onClick={initCreateMission} className="init_mission" type="button">
+                <AiOutlineReload />
+            </Button>
         </MissionWrap>
     )
 };

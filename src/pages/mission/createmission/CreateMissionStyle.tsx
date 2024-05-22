@@ -87,7 +87,9 @@ export const CreateMissionWrap = styled.section`
             gap: 0.25rem;
 
             button.isSubmit {
-                background-color: ${theme.color.primary};
+                &:hover {
+                    background-color: ${theme.color.primary};
+                }
             }
         }
     }

@@ -3,9 +3,8 @@ import theme from "../../styles/theme";
 
 export const MapWrap = styled.section`
     & #map {
-        width: calc(100vw-66px);
+        width: 100%;
         height: 100vh;
-        margin: 0 0 0 66px;
     }
 
     & .overlay_container {
@@ -13,13 +12,37 @@ export const MapWrap = styled.section`
         flex-direction: column;
         gap: 6px;
         position: absolute;
-        bottom: 0;
         left: 50%;
+        top: 12px;
         transform: translate(-50%);
         z-index: 20;
         color: ${theme.color.black};
         background-color: ${theme.color.white};
         padding: 1rem;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.33);
+        border-radius: 5px;
+
+        &. mission_type {
+            color: ${theme.color.black};
+        }
+
+        & .content {
+            display: flex;
+            gap: 0.5rem;
+
+            & .distance, & .markers {
+                & span {
+                    &:first-child {
+                        font-size: ${theme.fontSize.sm};
+                        padding-right: 0.5rem;
+                    }
+
+                    &:last-child {
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
 
         & .btn_container {
             display: flex;
@@ -30,8 +53,9 @@ export const MapWrap = styled.section`
             & button {
                 width: 100%;
                 height: 36px;
-                border: 1px solid ${theme.color.black};
                 cursor: pointer;
+                color: ${theme.color.white};
+                background-color: ${theme.color.black};
             }
         }
     }

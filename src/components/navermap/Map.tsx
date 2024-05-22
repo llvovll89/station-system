@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { AiOutlineReload } from "react-icons/ai";
 import { MapWrap } from "./MapStyles";
 import axios from "axios";
 import { MISSION } from "../../constant/http";
@@ -21,9 +20,10 @@ interface MapProps {
     setIsCreateStart: (value: boolean) => void;
     setSelectMission: (value: string) => void;
     missionData: MissionDto;
+    initCreateMission: () => void;
 }
 
-export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, setIsCreateMission, setIsCreateStart, setSelectMission, missionData}: MapProps) => {
+export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, initCreateMission, missionData }: MapProps) => {
     const [map, setMap] = useState(null);
     const [distance, setDistance] = useState<null | string>(null);
     const [markers, setMarkers] = useState<naver.maps.Marker[]>([]);
@@ -32,12 +32,6 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
 
     const { naver } = window;
     const mapElement = useRef(null);
-
-    const initCreateMission = () => {
-        setIsCreateMission(false);
-        setIsCreateStart(false);
-        setSelectMission("");
-    };
 
     const submitPaths = async () => {
         try {
@@ -51,12 +45,12 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
                 mainPoint: newPathArray[0],
                 angle: missionData.angle
             };
+
             const response = await axios.post(MISSION, params);
             const data = await response.data;
+
             console.log(data);
-            // 성공 / 실패 로직
-            
-            resetOverlay();
+            resetOverlay(); // 성공시에만 적용됨
         } catch (err) {
             console.log(err);
         }
@@ -82,35 +76,6 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
         setPolylines([]);
     };
 
-    useEffect(() => {
-        if (!mapElement.current || !naver) return;
-
-        const location = new naver.maps.LatLng(latitude, longitude);
-        const mapOptions = {
-            center: location,
-            zoom: 17,
-            zoomControl: false,
-        };
-
-        setMap(new naver.maps.Map(mapElement.current, mapOptions));
-    }, []);
-
-    useEffect(() => {
-        if (!map || !isCreateStart) return;
-
-        new naver.maps.Polyline({
-            map: map,
-            path: [],
-            strokeColor: '#f00',
-            strokeWeight: 5,
-            strokeOpacity: 0.8,
-        });
-    }, []);
-
-    useEffect(() => {
-        createMission();
-    }, [isCreateStart, selectMission]);
-
     const createMission = () => {
         if (isCreateStart) {
             if (selectMission === 'wayline') {
@@ -133,7 +98,6 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
             })
 
             setPolylines(prevPolylines => [...prevPolylines, polyline])
-
             const setPolyline = naver.maps.Event.addListener(map, 'click', (e: { coord: naver.maps.LatLng; }) => {
                 const path = polyline.getPath();
                 path.push(e.coord);
@@ -149,7 +113,7 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
                 });
 
                 setMarkers(prevMarkers => [...prevMarkers, marker]);
-                markerItems.push(marker)
+                markerItems.push(marker);
 
                 naver.maps.Event.addListener(markerItems[markerItems.length - 1], 'click', () => {
                     if (path.length > 1) {
@@ -162,29 +126,72 @@ export const NaverMap = ({ latitude, longitude, isCreateStart, selectMission, se
                 })
             })
         } else {
-            // const setPolygon = naver.maps.Event.addListener(map, 'click', (e: React.MouseEvent) => {
-            //     console.log(e);
-            // })
+            // grid (area) 미션 진행 해야합니다.
+            console.log('region');
         }
     };
+
+    useEffect(() => {
+        if (!mapElement.current || !naver) return;
+
+        const location = new naver.maps.LatLng(latitude, longitude);
+        const mapOptions = {
+            center: location,
+            zoom: 17,
+            zoomControl: false,
+            mapDataControl: false,
+            scaleControl: false,
+        };
+
+        setMap(new naver.maps.Map(mapElement.current, mapOptions));
+    }, []);
+
+    useEffect(() => {
+        if (!map || !isCreateStart) return;
+
+        new naver.maps.Polyline({
+            map: map,
+            path: [],
+            strokeColor: '#f00',
+            strokeWeight: 5,
+            strokeOpacity: 0.8,
+        });
+    }, []);
+
+    useEffect(() => {
+        createMission();
+    }, [isCreateStart, selectMission]);
 
     return (
         <MapWrap>
             {distance && (
                 <div className="overlay_container">
-                    <div className="distance">총거리: {distance}m</div>
-                    <div className="markers">마커 갯수: {markers.length}</div>
+                    {missionData.name && <div className="mission_type">이름: {missionData.name}</div>}
+                    <div className="content">
+                        <div className="distance">
+                            <span>
+                                총 거리:
+                            </span>
+                            <span>
+                                {distance}m
+                            </span>
+                        </div>
+                        <div className="markers">
+                            <span>
+                                웨이포인트:
+                            </span>
+                            <span>
+                                {markers.length}
+                            </span>
+                        </div>
+                    </div>
                     <div className="btn_container">
                         <button onClick={submitPaths}>저장</button>
-                        {/* <button onClick={resetOverlay}>초기화</button> */}
                     </div>
                 </div>
             )}
 
             <div id="map" className="map" ref={mapElement}></div>
-            <div onClick={initCreateMission} className="init_mission">
-                <AiOutlineReload />
-            </div>
         </MapWrap>
     )
 }
