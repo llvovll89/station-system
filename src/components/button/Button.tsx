@@ -1,15 +1,16 @@
-import styled from "styled-components";
-import theme from "../../styles/theme";
-import { Link } from "react-router-dom";
+import styled from 'styled-components'
+import theme from '../../styles/theme'
+import { Link } from 'react-router-dom'
 
 interface ButtonProps {
-    text?: string;
+    text?: string
     onClick?: React.MouseEventHandler<HTMLButtonElement>
-    to?: string;
-    type: "button" | "submit";
-    className?: string;
-    bgColor?: string;
-    children?: React.ReactNode;
+    to?: string
+    type: 'button' | 'submit'
+    className?: string
+    bgColor?: string
+    children?: React.ReactNode
+    disabled?: boolean
 }
 
 const ButtonComponent = styled.button`
@@ -37,14 +38,16 @@ const ButtonComponent = styled.button`
 export const Button = (btn: ButtonProps) => {
     return btn.to ? (
         <ButtonComponent type="button">
-            <Link to={btn.to}>
-                {btn.text}
-            </Link>
+            <Link to={btn.to}>{btn.text}</Link>
         </ButtonComponent>
-
     ) : (
-        <ButtonComponent onClick={btn.onClick} type={btn.type} className={btn.className}>
+        <ButtonComponent
+            onClick={btn.onClick}
+            type={btn.type}
+            className={btn.className}
+            disabled={btn.disabled}
+        >
             {btn.children || <span>{btn.text}</span>}
         </ButtonComponent>
-    );
+    )
 }

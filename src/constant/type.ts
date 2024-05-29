@@ -8,3 +8,13 @@ export enum ActiveType {
     mission = 1,
     station = 2,
 }
+
+export interface AreaOptions {
+    altitude: number
+    speed: number
+    angle: number
+    fov: number
+    droneAngle: number
+    overlapX: number
+    overlapY: number
+}

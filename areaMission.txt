@@ -1,0 +1,243 @@
+const map = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(37.5665, 126.978), // 초기 중심 좌표
+                zoom: 16,
+            });
+
+            let rectangle,
+                currentBounds = [],
+                drawingManage = null,
+                takeoffMarker = null,
+                takeOffPolyline = null,
+                startPoint = null,
+                bounds,
+                sw,
+                ne;
+
+            // 드론 기본 설정 값
+            let droneAngle = 70, // 드론 앵글
+                droneAltitude = 100, // 드론 고도
+                overlapX = 0.6, // 종 중복도
+                overlapY = 0.6, // 횡 중복도
+                fov = 70, // 화각
+                camera_angle = 45, // 카메라 앵글
+                polyline, // 기본 폴리라인
+                markers = []; // 마커 저장용 (map 지우기)
+
+            function createRectAngle() {
+                const pointEvent = naver.maps.Event.addListener(
+                    map,
+                    'click',
+                    (e) => {
+                        currentBounds.push(e.coord);
+
+                        takeoffMarker = new naver.maps.Marker({
+                            position: currentBounds[0],
+                            map: map,
+                            icon: {
+                                content: `<div class='marker'>T</div>`,
+                                anchor: new naver.maps.Point(12, 12),
+                            },
+                        });
+
+                        if (currentBounds.length === 3) {
+                            rectangle = new naver.maps.Rectangle({
+                                map: map,
+                                bounds: new naver.maps.LatLngBounds(
+                                    currentBounds[1],
+                                    currentBounds[2]
+                                ),
+                                strokeColor: '#5347AA',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: '#CFE7FF',
+                                fillOpacity: 0.5,
+                            });
+
+                            bounds = rectangle.getBounds();
+                            sw = naver.maps.TransCoord.fromLatLngToTM128(
+                                bounds.getSW()
+                            );
+                            ne = naver.maps.TransCoord.fromLatLngToTM128(
+                                bounds.getNE()
+                            );
+
+                            startPoint = new naver.maps.Marker({
+                                position: new naver.maps.LatLng(
+                                    bounds.getSW().lat(),
+                                    bounds.getSW().lng()
+                                ),
+                                map: map,
+                                zIndex: 99,
+                                icon: {
+                                    content: `<div class='marker_s'>S</div>`,
+                                    anchor: new naver.maps.Point(12, 12),
+                                },
+                            });
+
+                            takeOffPolyline = new naver.maps.Polyline({
+                                map: map,
+                                path: [
+                                    currentBounds[0],
+                                    new naver.maps.LatLng(
+                                        bounds.getSW().lat(),
+                                        bounds.getSW().lng()
+                                    ),
+                                ],
+                                strokeColor: '#1e1e1e',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: '#CFE7FF',
+                                fillOpacity: 0.5,
+                            });
+
+                            let flightPath = calculateGridMission(
+                                sw,
+                                ne,
+                                droneAltitude,
+                                overlapX,
+                                overlapY,
+                                fov,
+                                camera_angle
+                            );
+
+                            drawPath(flightPath);
+                        }
+                    }
+                );
+            }
+
+            function calculateGridMission(
+                sw,
+                ne,
+                altitude,
+                overlapX,
+                overlapY,
+                fov,
+                camera_angle
+            ) {
+                const width = Math.abs(ne.x - sw.x);
+                const height = Math.abs(ne.y - sw.y);
+
+                const flightPath = [];
+
+                const xStep =
+                    (1 - overlapX) *
+                    (2 * altitude * Math.tan(((fov / 2) * Math.PI) / 180));
+                const yStep =
+                    (1 - overlapY) *
+                    (2 * altitude * Math.tan(((fov / 2) * Math.PI) / 180));
+
+                let yDirection = 1;
+
+                for (let x = sw.x; x <= ne.x; x += xStep) {
+                    if (yDirection === 1) {
+                        for (let y = sw.y; y <= ne.y; y += yStep) {
+                            flightPath.push(new naver.maps.Point(x, y));
+                        }
+                    } else {
+                        for (let y = ne.y; y >= sw.y; y -= yStep) {
+                            flightPath.push(new naver.maps.Point(x, y));
+                        }
+                    }
+                    yDirection *= -1; // 방향 전환
+                }
+
+                const center = new naver.maps.Point(
+                    (sw.x + ne.x) / 2,
+                    (sw.y + ne.y) / 2
+                );
+
+                let rotatedPath = rotatePath(flightPath, center, camera_angle);
+                rotatedPath = rotatedPath.filter(
+                    (point) =>
+                        point.x >= sw.x &&
+                        point.x <= ne.x &&
+                        point.y >= sw.y &&
+                        point.y <= ne.y
+                );
+
+                return rotatedPath;
+            }
+
+            function drawPath(flightPath) {
+                const path = flightPath.map((point) =>
+                    naver.maps.TransCoord.fromTM128ToLatLng(point)
+                );
+
+                // 기존 폴리라인 제거
+                if (polyline) {
+                    polyline.setMap(null);
+                }
+
+                if (markers.length > 0) {
+                    markers.forEach((marker) => {
+                        marker.setMap(null);
+                    });
+                    markers = [];
+                }
+
+                // 폴리라인 생성
+                polyline = new naver.maps.Polyline({
+                    map: map,
+                    path: path,
+                    strokeColor: '#FF0000',
+                    strokeWeight: 2,
+                });
+
+                // 경로에 마커 추가
+                path.forEach((latLng, index) => {
+                    const marker = new naver.maps.Marker({
+                        position: latLng,
+                        map: map,
+                        icon: {
+                            content: `<div class='marker'>${index + 1}</div>`,
+                            anchor: new naver.maps.Point(12, 12),
+                        },
+                    });
+
+                    markers.push(marker);
+                });
+            }
+
+            function rotatePath(path, center, angle) {
+                const radian = (angle * Math.PI) / 180;
+                const cos = Math.cos(radian);
+                const sin = Math.sin(radian);
+
+                return path.map((point) => {
+                    const x = point.x - center.x;
+                    const y = point.y - center.y;
+                    const rotatedX = x * cos - y * sin + center.x;
+                    const rotatedY = x * sin + y * cos + center.y;
+                    return new naver.maps.Point(rotatedX, rotatedY);
+                });
+            }
+
+            function updateMission() {
+                const altitude = parseFloat(
+                        document.getElementById('altitude').value
+                    ),
+                    overlapX = parseFloat(
+                        document.getElementById('overlapX').value
+                    ),
+                    overlapY = parseFloat(
+                        document.getElementById('overlapY').value
+                    ),
+                    fov = parseFloat(document.getElementById('fov').value);
+                camera_angle = parseFloat(
+                    document.getElementById('camera_angle').value
+                );
+
+                flightPath = calculateGridMission(
+                    sw,
+                    ne,
+                    altitude,
+                    overlapX,
+                    overlapY,
+                    fov,
+                    camera_angle
+                );
+
+                // 새 경로 그리기
+                drawPath(flightPath);
+            }

@@ -1,16 +1,16 @@
-import styled from "styled-components"
-import theme from "../../../styles/theme"
-import { Button } from "../../../components/button/Button"
-import { IoClose } from "react-icons/io5"
-import { useEffect } from "react"
-import axios from "axios"
-import { MISSION } from "../../../constant/http"
+import styled from 'styled-components'
+import theme from '../../../styles/theme'
+import { Button } from '../../../components/button/Button'
+import { IoClose } from 'react-icons/io5'
+import { useEffect } from 'react'
+import axios from 'axios'
+import { MISSION } from '../../../constant/http'
 
 const MissionListWrap = styled.section`
     width: 300px;
     height: 100vh;
     position: absolute;
-    left: 65px;
+    left: 64px;
     top: 0;
     background-color: ${theme.color.black};
 
@@ -32,32 +32,31 @@ const MissionListWrap = styled.section`
 `
 
 interface MissionListProps {
-    toggleMission: () => void;
+    toggleMission: () => void
 }
 
 export const MissionList = ({ toggleMission }: MissionListProps) => {
     const getMission = async () => {
-
         try {
-            const response = await axios.get(MISSION);
-            const data = await response.data;
+            const response = await axios.get(MISSION)
+            const data = await response.data
 
-            console.log(data);
+            console.log(data)
         } catch (err) {
-            console.log(err);
+            console.log(err)
         }
     }
 
     useEffect(() => {
-        getMission();
-    }, []);
+        getMission()
+    }, [])
 
     return (
         <MissionListWrap>
             <header>
-                <h1>미션 리스트</h1>
+                <h1>미션</h1>
 
-                <Button type={"button"} onClick={toggleMission}>
+                <Button type={'button'} onClick={toggleMission}>
                     <IoClose />
                 </Button>
             </header>

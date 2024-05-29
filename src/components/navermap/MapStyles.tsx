@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import theme from "../../styles/theme";
+import styled from 'styled-components'
+import theme from '../../styles/theme'
 
 export const MapWrap = styled.section`
     & #map {
@@ -21,6 +21,7 @@ export const MapWrap = styled.section`
         padding: 1rem;
         box-shadow: 0 2px 2px rgba(0, 0, 0, 0.33);
         border-radius: 5px;
+        min-width: 320px;
 
         &. mission_type {
             color: ${theme.color.black};
@@ -29,8 +30,10 @@ export const MapWrap = styled.section`
         & .content {
             display: flex;
             gap: 0.5rem;
+            justify-content: space-between;
 
-            & .distance, & .markers {
+            & .distance,
+            & .markers {
                 & span {
                     &:first-child {
                         font-size: ${theme.fontSize.sm};
@@ -70,5 +73,22 @@ export const MapWrap = styled.section`
         align-items: center;
         justify-content: center;
         border: 1px solid #09f;
+    }
+
+    & .init_mission {
+        position: absolute;
+        cursor: pointer;
+        top: 128px;
+        right: 16px;
+        width: 42px;
+        height: 42px;
+        border-radius: 4px;
+        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.22);
+        background-color: ${theme.color.white};
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: ${theme.color.black};
+        font-weight: bold;
     }
 `

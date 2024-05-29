@@ -1,9 +1,16 @@
-import { createGlobalStyle } from "styled-components";
-import PretendardRegular from "../assets/fonts/Pretendard-Regular.woff2";
-import reset from "styled-reset";
+import { createGlobalStyle } from 'styled-components'
+import PretendardRegular from '../assets/fonts/Pretendard-Regular.woff2'
+import reset from 'styled-reset'
 
 export const GlobalStyles = createGlobalStyle`
     ${reset}
+
+    @font-face {
+        font-family: 'MangoDdobak-B';
+        src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2405-3@1.1/MangoDdobak-B.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+    }
 
     @font-face {
         font-family: "Pretendard";
@@ -26,7 +33,7 @@ export const GlobalStyles = createGlobalStyle`
     }
 
     html, body, div, h1, h2, h3, h4, h5, h6, span, ul, li, button, input {
-        font-family: 'Pretendard', sans-serif;
+        font-family: 'MangoDdobak-B', 'Pretendard', sans-serif;
         font-size: 16px;
         line-height: 1.5;
     }

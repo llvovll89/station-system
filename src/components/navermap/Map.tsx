@@ -3,7 +3,9 @@ import { MapWrap } from './MapStyles'
 import axios from 'axios'
 import { MISSION } from '../../constant/http'
 import { MissionDto } from '../../dto/MissionDto'
-import { MissionType } from '../../constant/type'
+import { AreaOptions, MissionType } from '../../constant/type'
+import { AiOutlineReload } from 'react-icons/ai'
+import { Button } from '../button/Button'
 
 declare global {
     interface Window {
@@ -16,11 +18,10 @@ interface MapProps {
     longitude: number
     isCreateStart?: boolean
     selectMission?: string | MissionType
-    setIsCreateMission: (value: boolean) => void
-    setIsCreateStart: (value: boolean) => void
+    setIsCreateStart: React.Dispatch<React.SetStateAction<boolean>>
     setSelectMission: (value: string) => void
     missionData: MissionDto
-    initCreateMission: () => void
+    isCreateMission: boolean
 }
 
 export const NaverMap = ({
@@ -28,18 +29,32 @@ export const NaverMap = ({
     longitude,
     isCreateStart,
     selectMission,
-    initCreateMission,
     missionData,
+    setIsCreateStart,
 }: MapProps) => {
     const [map, setMap] = useState(null)
     const [distance, setDistance] = useState<null | string>(null)
     const [markers, setMarkers] = useState<naver.maps.Marker[]>([])
     const [polylines, setPolylines] = useState<naver.maps.Polyline[]>([])
     const [paths, setPaths] = useState<naver.maps.LatLng[]>([])
+    const [areaOptions, setAreaOptions] = useState<AreaOptions>({
+        altitude: 100,
+        speed: 5,
+        angle: 45,
+        fov: 70,
+        droneAngle: 45,
+        overlapX: 70,
+        overlapY: 70,
+    })
 
     const { naver } = window
     const mapElement = useRef(null)
     let mouseoverEvent: naver.maps.DOMEvent, guideline: naver.maps.Polyline
+
+    const initMission = () => {
+        resetOverlay()
+        setIsCreateStart((prev) => !prev)
+    }
 
     const submitPaths = async () => {
         try {
@@ -165,7 +180,6 @@ export const NaverMap = ({
                                         2
                                     )
                                 )
-                                initCreateMission()
                             } else {
                                 alert('경로가 2개 이상일 때만 가능합니다!')
                             }
@@ -175,8 +189,6 @@ export const NaverMap = ({
             )
         }
     }
-
-    const createGuideLine = () => {}
 
     useEffect(() => {
         if (!mapElement.current || !naver) return
@@ -191,18 +203,6 @@ export const NaverMap = ({
         }
 
         setMap(new naver.maps.Map(mapElement.current, mapOptions))
-    }, [])
-
-    useEffect(() => {
-        if (!map || !isCreateStart) return
-
-        new naver.maps.Polyline({
-            map: map,
-            path: [],
-            strokeColor: '#f00',
-            strokeWeight: 5,
-            strokeOpacity: 0.8,
-        })
     }, [])
 
     useEffect(() => {
@@ -235,6 +235,16 @@ export const NaverMap = ({
             )}
 
             <div id="map" className="map" ref={mapElement}></div>
+
+            {isCreateStart && (
+                <Button
+                    onClick={initMission}
+                    className="init_mission"
+                    type="button"
+                >
+                    <AiOutlineReload />
+                </Button>
+            )}
         </MapWrap>
     )
 }

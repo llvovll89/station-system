@@ -1,8 +1,8 @@
-import styled from "styled-components";
-import theme from "../../styles/theme";
+import styled from 'styled-components'
+import theme from '../../styles/theme'
 
 export const MissionWrap = styled.section`
-    & .create_mission {
+    .create_mission {
         position: absolute;
         cursor: pointer;
         top: 76px;
@@ -10,7 +10,7 @@ export const MissionWrap = styled.section`
         width: 42px;
         height: 42px;
         border-radius: 4px;
-        box-shadow: 0 2px 2px 2px rgba(0,0,0,0.22);
+        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.22);
         background-color: ${theme.color.white};
         display: flex;
         justify-content: center;
@@ -19,7 +19,11 @@ export const MissionWrap = styled.section`
         font-weight: bold;
     }
 
-    & .init_mission {
+    .isActive {
+        background-color: ${theme.color.primary};
+    }
+
+    .init_mission {
         position: absolute;
         cursor: pointer;
         top: 128px;
@@ -27,7 +31,7 @@ export const MissionWrap = styled.section`
         width: 42px;
         height: 42px;
         border-radius: 4px;
-        box-shadow: 0 2px 2px 2px rgba(0,0,0,0.22);
+        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.22);
         background-color: ${theme.color.white};
         display: flex;
         justify-content: center;

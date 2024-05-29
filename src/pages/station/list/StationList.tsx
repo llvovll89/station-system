@@ -1,13 +1,13 @@
-import { IoClose } from "react-icons/io5";
-import { Button } from "../../../components/button/Button";
-import { styled } from "styled-components";
-import theme from "../../../styles/theme";
+import { IoClose } from 'react-icons/io5'
+import { Button } from '../../../components/button/Button'
+import { styled } from 'styled-components'
+import theme from '../../../styles/theme'
 
 const MissionListWrap = styled.section`
     width: 300px;
     height: 100vh;
     position: absolute;
-    left: 65px;
+    left: 64px;
     top: 0;
     background-color: ${theme.color.black};
 
@@ -28,19 +28,17 @@ const MissionListWrap = styled.section`
     }
 `
 
-
 interface StationListProps {
-    toggleStation: () => void;
+    toggleStation: () => void
 }
 
 export const StationList = ({ toggleStation }: StationListProps) => {
-
     return (
         <MissionListWrap>
             <header>
-                <h1>스테이션 리스트</h1>
+                <h1>스테이션</h1>
 
-                <Button type={"button"} onClick={toggleStation}>
+                <Button type={'button'} onClick={toggleStation}>
                     <IoClose />
                 </Button>
             </header>
