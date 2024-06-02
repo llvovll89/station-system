@@ -47,6 +47,17 @@ export const Main = () => {
         [missionData, isCreateStart, selectMission]
     )
 
+    const missionProps = () => ({
+        isCreateMission,
+        setIsCreateMission,
+        setIsCreateStart,
+        setSelectMission,
+        setMissionData,
+        missionData,
+        isCreateStart,
+        selectMission,
+    })
+
     useEffect(() => {
         !localStorage.getItem('user') && navigate('/')
     }, [])
@@ -59,17 +70,7 @@ export const Main = () => {
             />
 
             <NaverMap {...naverMapProps} />
-
-            <Mission
-                isCreateMission={isCreateMission}
-                setIsCreateMission={setIsCreateMission}
-                setIsCreateStart={setIsCreateStart}
-                setSelectMission={setSelectMission}
-                setMissionData={setMissionData}
-                missionData={missionData}
-                isCreateStart={isCreateStart}
-                selectMission={selectMission}
-            />
+            <Mission {...missionProps()} />
 
             {activeType === ActiveType.mission && (
                 <MissionList

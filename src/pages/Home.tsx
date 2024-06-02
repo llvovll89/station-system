@@ -1,11 +1,10 @@
-import * as route from "../constant/Routes"
-import styled from "styled-components";
-import { Route, Routes, useLocation } from "react-router-dom";
-import { Login } from "./login/Login";
-import { Join } from "./join/Join";
-import { NotFoundPage } from "./404/404";
-import { Header } from "../components/Header";
-import { Main } from "./main/Main";
+import * as route from '../constant/Routes'
+import styled from 'styled-components'
+import { Route, Routes } from 'react-router-dom'
+import { Login } from './login/Login'
+import { Join } from './join/Join'
+import { NotFoundPage } from './404/404'
+import { Main } from './main/Main'
 
 const HomeSection = styled.section`
     width: 100vw;
@@ -14,14 +13,11 @@ const HomeSection = styled.section`
 `
 
 export const Home = () => {
-    const location = useLocation();
-    const { pathname } = location;
-
-    const showHeaderRoutes = [
-        // route.MISSION,
-        // route.STATION,
-        route.MAIN,
-    ];
+    // const showHeaderRoutes = [
+    //     // route.MISSION,
+    //     // route.STATION,
+    //     route.MAIN,
+    // ];
 
     // const shouldShowHeader = showHeaderRoutes.includes(pathname);
 

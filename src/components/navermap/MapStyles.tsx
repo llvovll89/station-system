@@ -63,6 +63,29 @@ export const MapWrap = styled.section`
         }
     }
 
+    & .take_off {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: ${theme.color.primary};
+        color: ${theme.color.white};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    & .polygon_marker {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: ${theme.color.white};
+        color: ${theme.color.black};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #09f;
+    }
+
     & .wayline_marker {
         background-color: ${theme.color.black};
         width: 24px;
@@ -73,6 +96,11 @@ export const MapWrap = styled.section`
         align-items: center;
         justify-content: center;
         border: 1px solid #09f;
+
+        &.last {
+            background-color: #2eb573;
+            border: 2px solid ${theme.color.primary};
+        }
     }
 
     & .init_mission {

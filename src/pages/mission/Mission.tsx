@@ -4,6 +4,8 @@ import { CreateMissionWrap } from './createmission/CreateMissionStyle'
 import { MissionDto } from '../../dto/MissionDto'
 import { MissionType } from '../../constant/type'
 import { VscGitPullRequestCreate } from 'react-icons/vsc'
+import wayPointImage from '../../assets/image/mission/waypoint.png'
+import regionImage from '../../assets/image/mission/polygon.png'
 
 interface MissionProps {
     isCreateMission: boolean
@@ -59,7 +61,7 @@ export const Mission = ({
                 <CreateMissionWrap>
                     <article className="container">
                         <header>
-                            <h1>미션생성</h1>
+                            <h1>New Mission</h1>
                             <Button
                                 type="button"
                                 text="X"
@@ -77,7 +79,6 @@ export const Mission = ({
                                         name: e.target.value,
                                     })
                                 }
-                                placeholder="mission name..."
                             />
                         </div>
 
@@ -85,26 +86,37 @@ export const Mission = ({
                             <p>미션 타입</p>
 
                             <div className="grid">
-                                <Button
-                                    className={
-                                        selectMission === 'wayline'
-                                            ? 'wayline'
-                                            : ''
-                                    }
-                                    onClick={() => selectMissionType('wayline')}
-                                    type="button"
-                                    text="웨이라인"
-                                />
-                                <Button
-                                    className={
-                                        selectMission === 'region'
-                                            ? 'region'
-                                            : ''
-                                    }
-                                    onClick={() => selectMissionType('region')}
-                                    type="button"
-                                    text="지역"
-                                />
+                                <div className="items">
+                                    <img src={wayPointImage} alt="waypoint" />
+
+                                    <Button
+                                        className={
+                                            selectMission === 'wayline'
+                                                ? 'wayline'
+                                                : ''
+                                        }
+                                        onClick={() =>
+                                            selectMissionType('wayline')
+                                        }
+                                        type="button"
+                                        text="웨이포인트"
+                                    />
+                                </div>
+                                <div className="items">
+                                    <img src={regionImage} alt="region" />
+                                    <Button
+                                        className={
+                                            selectMission === 'region'
+                                                ? 'region'
+                                                : ''
+                                        }
+                                        onClick={() =>
+                                            selectMissionType('region')
+                                        }
+                                        type="button"
+                                        text="지역"
+                                    />
+                                </div>
                             </div>
                         </article>
 

@@ -10,11 +10,24 @@ export enum ActiveType {
 }
 
 export interface AreaOptions {
-    altitude: number
+    droneAltitude: number
     speed: number
     angle: number
     fov: number
     droneAngle: number
-    overlapX: number
-    overlapY: number
+    horizontalRedundancy: number
+    verticalRedundancy: number
+    photoWidthRatio: number
+    photoHeightRatio: number
+}
+
+export enum StationStatus {
+    idle = '대기중',
+    active = '실행중',
+    error = '에러발생',
+}
+
+export interface Point {
+    latitude: number
+    longitude: number
 }

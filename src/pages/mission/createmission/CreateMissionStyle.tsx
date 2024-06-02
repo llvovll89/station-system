@@ -1,12 +1,12 @@
-import styled from "styled-components";
-import theme from "../../../styles/theme";
+import styled from 'styled-components'
+import theme from '../../../styles/theme'
 
 export const CreateMissionWrap = styled.section`
     width: 100vw;
     height: 100vh;
     position: absolute;
     inset: 0;
-    background-color: rgba(0,0,0,0.22);
+    background-color: rgba(0, 0, 0, 0.28);
     z-index: 100;
 
     & .container {
@@ -19,7 +19,7 @@ export const CreateMissionWrap = styled.section`
         gap: 1.5rem;
         padding: 2rem 1.8rem;
         border-radius: 4px;
-        background-color: ${theme.color.black};
+        background-color: #000914;
         color: ${theme.color.white};
         transform: translate(-50%, -50%);
         z-index: 110;
@@ -57,7 +57,7 @@ export const CreateMissionWrap = styled.section`
                 height: 36px;
                 color: ${theme.color.white};
                 padding: 0 0 0 12px;
-                border: 1px solid rgba(255,255,255,0.22);
+                border: 1px solid rgba(255, 255, 255, 0.22);
             }
         }
 
@@ -67,9 +67,21 @@ export const CreateMissionWrap = styled.section`
             }
 
             & .grid {
-                display: flex;
-                align-items: center;
-                gap: 0.25rem;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+
+                & .items {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0.25rem;
+
+                    & img {
+                        width: 46px;
+                        height: 46px;
+                    }
+                }
 
                 & .wayline {
                     background: #09f;
