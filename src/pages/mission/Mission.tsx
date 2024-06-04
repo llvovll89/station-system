@@ -4,8 +4,6 @@ import { CreateMissionWrap } from './createmission/CreateMissionStyle'
 import { MissionDto } from '../../dto/MissionDto'
 import { MissionType } from '../../constant/type'
 import { VscGitPullRequestCreate } from 'react-icons/vsc'
-import wayPointImage from '../../assets/image/mission/waypoint.png'
-import regionImage from '../../assets/image/mission/polygon.png'
 
 interface MissionProps {
     isCreateMission: boolean
@@ -87,8 +85,6 @@ export const Mission = ({
 
                             <div className="grid">
                                 <div className="items">
-                                    <img src={wayPointImage} alt="waypoint" />
-
                                     <Button
                                         className={
                                             selectMission === 'wayline'
@@ -103,7 +99,6 @@ export const Mission = ({
                                     />
                                 </div>
                                 <div className="items">
-                                    <img src={regionImage} alt="region" />
                                     <Button
                                         className={
                                             selectMission === 'region'

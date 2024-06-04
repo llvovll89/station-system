@@ -3,7 +3,7 @@ import { MapWrap } from './MapStyles'
 import axios from 'axios'
 import { MISSION } from '../../constant/http'
 import { MissionDto } from '../../dto/MissionDto'
-import { AreaOptions, MissionType } from '../../constant/type'
+import { AreaOptions, MissionType, OverlayType } from '../../constant/type'
 import { AiOutlineReload } from 'react-icons/ai'
 import { Button } from '../button/Button'
 import React from 'react'
@@ -41,6 +41,7 @@ export const NaverMap = React.memo(
         setIsCreateStart,
     }: MapProps) => {
         const [map, setMap] = useState(null)
+        const [isResult, setIsResut] = useState(false)
         const [distance, setDistance] = useState<null | string>(null)
         const [markers, setMarkers] = useState<naver.maps.Marker[]>([])
         const [polylines, setPolylines] = useState<naver.maps.Polyline[]>([])
@@ -50,15 +51,22 @@ export const NaverMap = React.memo(
             droneAltitude: 100,
             speed: 5,
             angle: 45,
-            fov: 70,
             droneAngle: 45,
             horizontalRedundancy: 70,
             verticalRedundancy: 70,
             photoWidthRatio: 4,
             photoHeightRatio: 3,
         })
-        const [wayLines, setWayLines] = useState<naver.maps.Polyline[]>([])
         const [wayLine, setWayLine] = useState<naver.maps.Polyline | null>(null)
+        const [naverMapEvent, setNaverMapEvent] = useState({
+            waypoint: null,
+            region: null,
+        })
+        const [addOverlay, setAddverlay] = useState<OverlayType>({
+            startMarker: null,
+            endMarker: null,
+            takeoffPolyLine: null,
+        })
 
         const { naver } = window
         const mapElement = useRef(null)
@@ -67,6 +75,9 @@ export const NaverMap = React.memo(
         const initMission = () => {
             resetOverlay()
             setIsCreateStart((prev) => !prev)
+            setIsResut((prev) => !prev)
+            naver.maps.Event.removeListener(naverMapEvent.region)
+            naver.maps.Event.removeListener(naverMapEvent.waypoint)
         }
 
         const submitPaths = async () => {
@@ -82,7 +93,9 @@ export const NaverMap = React.memo(
                     angle: missionData.angle,
                 }
 
-                const response = await axios.post(MISSION, params)
+                const response = await axios.post(MISSION, params, {
+                    withCredentials: true,
+                })
                 const data = await response.data
 
                 console.log(data)
@@ -109,8 +122,25 @@ export const NaverMap = React.memo(
 
             polygon &&
                 setPolygon((prevPolygon) => {
-                    return prevPolygon.setMap(null)
+                    if (prevPolygon) {
+                        prevPolygon.setMap(null)
+                    }
+                    return null
                 })
+
+            wayLine &&
+                setWayLine((wayline) => {
+                    if (wayline) {
+                        wayline.setMap(null)
+                    }
+                    return null
+                })
+
+            if (addOverlay.endMarker) addOverlay.endMarker.setMap(null)
+            if (addOverlay.startMarker) addOverlay.startMarker.setMap(null)
+            if (addOverlay.takeoffPolyLine)
+                addOverlay.takeoffPolyLine.setMap(null)
+            if (wayLine) wayLine.setMap(null)
 
             setPaths([])
             setDistance(null)
@@ -125,10 +155,11 @@ export const NaverMap = React.memo(
                 droneAltitude: 100,
                 speed: 5,
                 angle: 45,
-                fov: 70,
                 droneAngle: 45,
-                overlapX: 70,
-                overlapY: 70,
+                horizontalRedundancy: 70,
+                verticalRedundancy: 70,
+                photoWidthRatio: 4,
+                photoHeightRatio: 3,
             })
 
             console.log(polylines, areaOptions)
@@ -183,6 +214,12 @@ export const NaverMap = React.memo(
                         })
 
                         setMarkers((prevMarkers) => [...prevMarkers, marker])
+
+                        setNaverMapEvent((prev) => ({
+                            ...prev,
+                            waypoint: setPolyline,
+                        }))
+
                         markerItems.push(marker)
                         if (mouseoverEvent) {
                             naver.maps.Event.removeListener(mouseoverEvent)
@@ -243,19 +280,15 @@ export const NaverMap = React.memo(
         }
 
         const createRegionMission = () => {
-            let polygon,
-                guideline,
-                createGuideline,
-                createPolygon,
-                wayLineItems = []
+            let polygon: naver.maps.Polygon,
+                guideline: naver.maps.Polyline,
+                createGuideline: naver.maps.DOMEvent,
+                createPolygon: naver.maps.DOMEvent
+
             const markerItems: naver.maps.Marker[] = [],
                 path: naver.maps.LatLng[] = []
 
             if (map) {
-                map.setCursor(
-                    `url(../../assets/image/cursor/ico_plus_blue.cur), default`
-                )
-
                 polygon = new naver.maps.Polygon({
                     map,
                     strokeColor: '#0080DE',
@@ -305,9 +338,11 @@ export const NaverMap = React.memo(
                                 },
                                 clickable: true,
                             })
+
                             markerItems.push(marker)
                             setMarkers((prevMarker) => [...prevMarker, marker])
-                            polygon.setPaths(path.slice(1))
+                            console.log(polygon)
+                            polygon.setPath(path.slice(1))
                             setPolygon(polygon)
 
                             createGuideline = naver.maps.Event.addListener(
@@ -315,14 +350,16 @@ export const NaverMap = React.memo(
                                 'mousemove',
                                 (e: { coord: naver.maps.LatLng }) => {
                                     const lastLatLng =
-                                        markerItems.length > 0 &&
-                                        markerItems.at(-1).getPosition()
-                                    guideline.setPath([lastLatLng, e.coord])
+                                        markerItems[
+                                            markerItems.length - 1
+                                        ].getPosition()
+                                    markerItems.length > 0 &&
+                                        guideline.setPath([lastLatLng, e.coord])
                                 }
                             )
 
                             naver.maps.Event.addListener(
-                                markerItems.at(-1),
+                                markerItems[markerItems.length - 1],
                                 'click',
                                 () => {
                                     naver.maps.Event.removeListener(
@@ -334,224 +371,9 @@ export const NaverMap = React.memo(
                                     )
 
                                     guideline.setMap(null)
-                                    map.setCursor('auto')
 
-                                    const path = polygon.getPath().getArray()
-                                    const points = path.map((point) => ({
-                                        latitude: point.lat(),
-                                        longitude: point.lng(),
-                                    }))
-
-                                    const minMaxPoints =
-                                        findMinMaxCoordinates(points)
-                                    const boundCenterPoint =
-                                        new naver.maps.LatLng(
-                                            (minMaxPoints[0].latitude +
-                                                minMaxPoints[1].latitude) /
-                                                2,
-                                            (minMaxPoints[0].longitude +
-                                                minMaxPoints[1].longitude) /
-                                                2
-                                        )
-
-                                    const boundWidth = haversineDistance(
-                                        minMaxPoints[0].latitude,
-                                        minMaxPoints[0].longitude,
-                                        minMaxPoints[0].latitude,
-                                        minMaxPoints[1].longitude
-                                    )
-                                    const boundHeight = haversineDistance(
-                                        minMaxPoints[0].latitude,
-                                        minMaxPoints[0].longitude,
-                                        minMaxPoints[1].latitude,
-                                        minMaxPoints[0].longitude
-                                    )
-                                    const maxBoundWidth =
-                                        Math.max(boundWidth, boundHeight) * 2
-
-                                    // 북 동 남 서
-                                    const topLeftPoint = boundCenterPoint
-                                        .destinationPoint(
-                                            Number(areaOptions.angle),
-                                            maxBoundWidth / 2
-                                        )
-                                        .destinationPoint(
-                                            270 + Number(areaOptions.angle),
-                                            maxBoundWidth / 2
-                                        )
-                                    const topRightPoint =
-                                        topLeftPoint.destinationPoint(
-                                            90 + Number(areaOptions.angle),
-                                            maxBoundWidth
-                                        )
-                                    const bottomRightPoint =
-                                        topRightPoint.destinationPoint(
-                                            180 + Number(areaOptions.angle),
-                                            maxBoundWidth
-                                        )
-                                    const bottomLeftPoint =
-                                        bottomRightPoint.destinationPoint(
-                                            270 + Number(areaOptions.angle),
-                                            maxBoundWidth
-                                        )
-
-                                    const newBound =
-                                        new naver.maps.LatLngBounds()
-                                    newBound.extend(topLeftPoint)
-                                    newBound.extend(topRightPoint)
-                                    newBound.extend(bottomRightPoint)
-                                    newBound.extend(bottomLeftPoint)
-
-                                    const photoWidth =
-                                        getDronePhotoWidth(areaOptions)
-                                    const photoHeight = Math.floor(
-                                        (photoWidth /
-                                            areaOptions.photoWidthRatio) *
-                                            areaOptions.photoHeightRatio
-                                    )
-
-                                    let widthPoint =
-                                        topLeftPoint.destinationPoint(
-                                            270 + Number(areaOptions.angle),
-                                            photoWidth -
-                                                (photoWidth *
-                                                    areaOptions.horizontalRedundancy) /
-                                                    100
-                                        )
-                                    const tempPoints = []
-                                    let isReverse = false
-
-                                    // eslint-disable-next-line no-constant-condition
-                                    while (true) {
-                                        const nextPoint =
-                                            widthPoint.destinationPoint(
-                                                90 + Number(areaOptions.angle),
-                                                photoWidth -
-                                                    (photoWidth *
-                                                        areaOptions.horizontalRedundancy) /
-                                                        100
-                                            )
-                                        const distanceToStartPoint =
-                                            haversineDistance(
-                                                topLeftPoint.lat(),
-                                                topLeftPoint.lng(),
-                                                nextPoint.lat(),
-                                                nextPoint.lng()
-                                            )
-
-                                        if (
-                                            distanceToStartPoint > maxBoundWidth
-                                        ) {
-                                            break
-                                        }
-
-                                        let underPoint = nextPoint
-                                        const underPoints = []
-
-                                        // eslint-disable-next-line no-constant-condition
-                                        while (true) {
-                                            const nextUnderPoint =
-                                                underPoint.destinationPoint(
-                                                    180 +
-                                                        Number(
-                                                            areaOptions.angle
-                                                        ),
-                                                    photoHeight -
-                                                        (photoHeight *
-                                                            areaOptions.verticalRedundancy) /
-                                                            100
-                                                )
-                                            const distanceToWidthPoint =
-                                                haversineDistance(
-                                                    nextPoint.lat(),
-                                                    nextPoint.lng(),
-                                                    nextUnderPoint.lat(),
-                                                    nextUnderPoint.lng()
-                                                )
-
-                                            if (
-                                                distanceToWidthPoint >
-                                                maxBoundWidth
-                                            ) {
-                                                break
-                                            }
-
-                                            if (isReverse) {
-                                                underPoints.splice(
-                                                    0,
-                                                    0,
-                                                    underPoint
-                                                )
-                                            } else {
-                                                underPoints.push(underPoint)
-                                            }
-
-                                            underPoint = nextUnderPoint
-                                        }
-
-                                        if (isReverse) {
-                                            tempPoints.push(
-                                                ...underPoints,
-                                                nextPoint
-                                            )
-                                        } else {
-                                            tempPoints.push(
-                                                nextPoint,
-                                                ...underPoints
-                                            )
-                                        }
-
-                                        widthPoint = nextPoint
-                                        isReverse = !isReverse
-                                    }
-
-                                    for (
-                                        let i = 0;
-                                        i < tempPoints.length;
-                                        i++
-                                    ) {
-                                        const point = {
-                                            latitude: tempPoints[i].lat(),
-                                            longitude: tempPoints[i].lng(),
-                                        }
-
-                                        if (
-                                            isPointInOverlayUtils(point, points)
-                                        ) {
-                                            wayLineItems.push(tempPoints[i])
-                                            // setWayLines((prevWayline) => [
-                                            //     ...prevWayline,
-                                            //     wayLineItems
-                                            // ])
-                                        }
-                                    }
-
-                                    console.log(wayLine, wayLineItems)
-
-                                    const startMarker: naver.maps.Marker =
-                                        new naver.maps.Marker({
-                                            map,
-                                            position: wayLineItems[0],
-                                            icon: {
-                                                content: `<img src="/src/assets/image/img/start_point.png" alt="start_point" class="w-[24px] h-[24px]">`,
-                                                anchor: new naver.maps.Point(
-                                                    12,
-                                                    12
-                                                ),
-                                            },
-                                        })
-
-                                    setWayLine(
-                                        new naver.maps.Polyline({
-                                            map,
-                                            path: wayLineItems,
-                                            strokeColor: '#0CF395',
-                                            strokeOpacity: 1,
-                                            strokeWeight: 5,
-                                        })
-                                    )
-
-                                    // this.createMissionData.distance = `${this.createMissionData.grid.wayLine.getDistance().toFixed(2)}m`
+                                    createWays(polygon)
+                                    setIsResut(true)
                                 }
                             )
                         }
@@ -560,9 +382,213 @@ export const NaverMap = React.memo(
             }
         }
 
-        // const createWays = (points: Point[]) => {
+        const createWays = (polygon: naver.maps.Polygon) => {
+            const wayLineItems = []
+            const path = (
+                polygon.getPath() as naver.maps.KVOArrayOfCoords
+            ).getArray()
+            const points = path.map((point: any) => ({
+                latitude: point.lat(),
+                longitude: point.lng(),
+            }))
 
-        // }
+            const minMaxPoints = findMinMaxCoordinates(points)
+            const boundCenterPoint = new naver.maps.LatLng(
+                (minMaxPoints[0].latitude + minMaxPoints[1].latitude) / 2,
+                (minMaxPoints[0].longitude + minMaxPoints[1].longitude) / 2
+            )
+
+            const boundWidth = haversineDistance(
+                minMaxPoints[0].latitude,
+                minMaxPoints[0].longitude,
+                minMaxPoints[0].latitude,
+                minMaxPoints[1].longitude
+            )
+            const boundHeight = haversineDistance(
+                minMaxPoints[0].latitude,
+                minMaxPoints[0].longitude,
+                minMaxPoints[1].latitude,
+                minMaxPoints[0].longitude
+            )
+            const maxBoundWidth = Math.max(boundWidth, boundHeight) * 2
+
+            // 북 동 남 서
+            const topLeftPoint = boundCenterPoint
+                .destinationPoint(Number(areaOptions.angle), maxBoundWidth / 2)
+                .destinationPoint(
+                    270 + Number(areaOptions.angle),
+                    maxBoundWidth / 2
+                )
+            const topRightPoint = topLeftPoint.destinationPoint(
+                90 + Number(areaOptions.angle),
+                maxBoundWidth
+            )
+            const bottomRightPoint = topRightPoint.destinationPoint(
+                180 + Number(areaOptions.angle),
+                maxBoundWidth
+            )
+            const bottomLeftPoint = bottomRightPoint.destinationPoint(
+                270 + Number(areaOptions.angle),
+                maxBoundWidth
+            )
+
+            const newBound = new naver.maps.LatLngBounds()
+            newBound.extend(topLeftPoint)
+            newBound.extend(topRightPoint)
+            newBound.extend(bottomRightPoint)
+            newBound.extend(bottomLeftPoint)
+
+            const photoWidth = getDronePhotoWidth(areaOptions)
+            const photoHeight = Math.floor(
+                (photoWidth / areaOptions.photoWidthRatio) *
+                    areaOptions.photoHeightRatio
+            )
+
+            let widthPoint = topLeftPoint.destinationPoint(
+                270 + Number(areaOptions.angle),
+                photoWidth -
+                    (photoWidth * areaOptions.horizontalRedundancy) / 100
+            )
+            const tempPoints = []
+            let isReverse = false
+
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                const nextPoint = widthPoint.destinationPoint(
+                    90 + Number(areaOptions.angle),
+                    photoWidth -
+                        (photoWidth * areaOptions.horizontalRedundancy) / 100
+                )
+                const distanceToStartPoint = haversineDistance(
+                    topLeftPoint.lat(),
+                    topLeftPoint.lng(),
+                    nextPoint.lat(),
+                    nextPoint.lng()
+                )
+
+                if (distanceToStartPoint > maxBoundWidth) {
+                    break
+                }
+
+                let underPoint = nextPoint
+                const underPoints = []
+
+                // eslint-disable-next-line no-constant-condition
+                while (true) {
+                    const nextUnderPoint = underPoint.destinationPoint(
+                        180 + Number(areaOptions.angle),
+                        photoHeight -
+                            (photoHeight * areaOptions.verticalRedundancy) / 100
+                    )
+                    const distanceToWidthPoint = haversineDistance(
+                        nextPoint.lat(),
+                        nextPoint.lng(),
+                        nextUnderPoint.lat(),
+                        nextUnderPoint.lng()
+                    )
+
+                    if (distanceToWidthPoint > maxBoundWidth) {
+                        break
+                    }
+
+                    if (isReverse) {
+                        underPoints.splice(0, 0, underPoint)
+                    } else {
+                        underPoints.push(underPoint)
+                    }
+
+                    underPoint = nextUnderPoint
+                }
+
+                if (isReverse) {
+                    tempPoints.push(...underPoints, nextPoint)
+                } else {
+                    tempPoints.push(nextPoint, ...underPoints)
+                }
+
+                widthPoint = nextPoint
+                isReverse = !isReverse
+            }
+
+            for (let i = 0; i < tempPoints.length; i++) {
+                const point = {
+                    latitude: tempPoints[i].lat(),
+                    longitude: tempPoints[i].lng(),
+                }
+
+                if (isPointInOverlayUtils(point, points)) {
+                    wayLineItems.push(tempPoints[i])
+                }
+            }
+
+            if (
+                addOverlay.endMarker &&
+                wayLine &&
+                addOverlay.startMarker &&
+                addOverlay.takeoffPolyLine
+            ) {
+                addOverlay.endMarker.setMap(null)
+                addOverlay.startMarker.setMap(null)
+                addOverlay.takeoffPolyLine.setMap(null)
+                wayLine.setMap(null)
+
+                setAddverlay((prev) => ({
+                    ...prev,
+                    endMarker: null,
+                    startMarker: null,
+                    takeoffPolyLine: null,
+                }))
+            }
+
+            setOverlay(markers, wayLineItems)
+        }
+
+        const setOverlay = (
+            markers: naver.maps.Marker[],
+            wayLineItems: naver.maps.Polyline[]
+        ) => {
+            const newStartMarker = new naver.maps.Marker({
+                map,
+                position: wayLineItems[0],
+                icon: {
+                    content: `<div class='start_marker'>S</div>`,
+                    anchor: new naver.maps.Point(14, 14),
+                },
+            })
+
+            const newTakeoffPolyLine = new naver.maps.Polyline({
+                map,
+                path: [markers[0].getPosition(), wayLineItems[0]],
+                strokeColor: '#0CF395',
+                strokeOpacity: 1,
+                strokeWeight: 5,
+            })
+
+            const newWayLine = new naver.maps.Polyline({
+                map,
+                path: wayLineItems,
+                strokeColor: '#0CF395',
+                strokeOpacity: 1,
+                strokeWeight: 5,
+            })
+
+            const newEndMarker = new naver.maps.Marker({
+                map,
+                position: wayLineItems[wayLineItems.length - 1],
+                icon: {
+                    content: `<div class='end_marker'>E</div>`,
+                    anchor: new naver.maps.Point(14, 14),
+                },
+            })
+
+            setAddverlay({
+                startMarker: newStartMarker,
+                endMarker: newEndMarker,
+                takeoffPolyLine: newTakeoffPolyLine,
+            })
+
+            setWayLine(newWayLine)
+        }
 
         useEffect(() => {
             if (!mapElement.current || !naver) return
@@ -610,6 +636,14 @@ export const NaverMap = React.memo(
 
                 <div id="map" className="map" ref={mapElement}></div>
 
+                {isResult && (
+                    <div className="overlay_container">
+                        <p>
+                            비행거리: {wayLine?.getDistance().toFixed(2) + 'm'}
+                        </p>
+                    </div>
+                )}
+
                 {isCreateStart && (
                     <Button
                         onClick={initMission}
@@ -618,6 +652,138 @@ export const NaverMap = React.memo(
                     >
                         <AiOutlineReload />
                     </Button>
+                )}
+
+                {selectMission === 'region' && isCreateStart && (
+                    <aside className="mission_options">
+                        <p>그리드 미션</p>
+
+                        <ul className="region_list">
+                            <li className="items">
+                                <div className="items_div">
+                                    <label>speed</label>
+                                    <span>{areaOptions.speed}</span>
+                                </div>
+
+                                <input
+                                    value={areaOptions.speed}
+                                    onChange={(e) => {
+                                        setAreaOptions({
+                                            ...areaOptions,
+                                            speed: Number(e.target.value),
+                                        })
+                                    }}
+                                    type="range"
+                                    max={'15'}
+                                    min={'1'}
+                                />
+                            </li>
+                            <li className="items">
+                                <div className="items_div">
+                                    <label>horizontalRedundancy</label>
+                                    <span>
+                                        {areaOptions.horizontalRedundancy}
+                                    </span>
+                                </div>
+
+                                {polygon && (
+                                    <input
+                                        value={areaOptions.horizontalRedundancy}
+                                        onChange={(e) => {
+                                            setAreaOptions({
+                                                ...areaOptions,
+                                                horizontalRedundancy: Number(
+                                                    e.target.value
+                                                ),
+                                            })
+                                        }}
+                                        onMouseUp={() => {
+                                            createWays(polygon)
+                                        }}
+                                        type="range"
+                                        max={'100'}
+                                        min={'0'}
+                                    />
+                                )}
+                            </li>
+                            <li className="items">
+                                <div className="items_div">
+                                    <label>verticalRedundancy</label>
+                                    <span>
+                                        {areaOptions.verticalRedundancy}
+                                    </span>
+                                </div>
+
+                                {polygon && (
+                                    <input
+                                        value={areaOptions.verticalRedundancy}
+                                        onChange={(e) => {
+                                            setAreaOptions({
+                                                ...areaOptions,
+                                                verticalRedundancy: Number(
+                                                    e.target.value
+                                                ),
+                                            })
+                                        }}
+                                        onMouseUp={() => {
+                                            createWays(polygon)
+                                        }}
+                                        type="range"
+                                        max={'100'}
+                                        min={'0'}
+                                    />
+                                )}
+                            </li>
+                            <li className="items">
+                                <div className="items_div">
+                                    <label>camera Angle</label>
+                                    <span>{areaOptions.angle}</span>
+                                </div>
+
+                                {polygon && (
+                                    <input
+                                        onChange={(e) => {
+                                            setAreaOptions({
+                                                ...areaOptions,
+                                                angle: Number(e.target.value),
+                                            })
+                                        }}
+                                        onMouseUp={() => {
+                                            createWays(polygon)
+                                        }}
+                                        value={areaOptions.angle}
+                                        type="range"
+                                        min={'0'}
+                                        max={'360'}
+                                    />
+                                )}
+                            </li>
+                            <li className="items">
+                                <div className="items_div">
+                                    <label>altitude</label>
+                                    <span>{areaOptions.droneAltitude}</span>
+                                </div>
+                                {polygon && (
+                                    <input
+                                        onChange={(e) => {
+                                            setAreaOptions({
+                                                ...areaOptions,
+                                                droneAltitude: Number(
+                                                    e.target.value
+                                                ),
+                                            })
+                                        }}
+                                        onMouseUp={() => {
+                                            createWays(polygon)
+                                        }}
+                                        value={areaOptions.droneAltitude}
+                                        type="range"
+                                        max={'500'}
+                                    />
+                                )}
+                            </li>
+                        </ul>
+                    </aside>
                 )}
             </MapWrap>
         )

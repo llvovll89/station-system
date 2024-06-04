@@ -9,13 +9,13 @@ import { MdOutlineDelete } from 'react-icons/md'
 import { Station } from '../../../dto/Station'
 import { StationControl } from '../StationContol'
 
-const MissionListWrap = styled.section`
+const StationWrap = styled.section`
     width: 300px;
     height: 100vh;
     position: absolute;
     left: 64px;
     top: 0;
-    background-color: ${theme.color.black};
+    background-color: ${theme.color.subBlack};
 
     & header {
         display: flex;
@@ -111,7 +111,6 @@ interface StationListProps {
 export const StationList = ({ toggleStation }: StationListProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [selectedStation, setSelectedStation] = useState<Station | null>(null)
-    const [stationList, setStationList] = useState<Station[]>([])
 
     const selectStation = (station: Station) => {
         setSelectedStation(station)
@@ -154,7 +153,7 @@ export const StationList = ({ toggleStation }: StationListProps) => {
     return (
         <>
             {isOpen && <StationControl {...stationControlProps()} />}
-            <MissionListWrap>
+            <StationWrap>
                 <header>
                     <h1>스테이션</h1>
 
@@ -201,7 +200,7 @@ export const StationList = ({ toggleStation }: StationListProps) => {
                         </section>
                     ))}
                 </article>
-            </MissionListWrap>
+            </StationWrap>
         </>
     )
 }

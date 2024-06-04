@@ -22,6 +22,8 @@ interface Color {
     red: string
     subPrimary: string
     green: string
+    deepKoamaru: string
+    subBlack: string
 }
 
 interface BoxShadow {
@@ -56,6 +58,8 @@ const theme: Theme = {
         subPrimary: '#F5F7F8',
         subWhite: '#F5F7F8',
         green: '#2E8B57',
+        deepKoamaru: '#30336b',
+        subBlack: '#181818',
     },
 
     boxShadow: {

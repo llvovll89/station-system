@@ -74,6 +74,30 @@ export const MapWrap = styled.section`
         justify-content: center;
     }
 
+    & .start_marker {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid ${theme.color.black};
+        background-color: ${theme.color.primary};
+        color: ${theme.color.white};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    & .end_marker {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid ${theme.color.white};
+        background-color: ${theme.color.black};
+        color: ${theme.color.white};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     & .polygon_marker {
         width: 24px;
         height: 24px;
@@ -118,5 +142,46 @@ export const MapWrap = styled.section`
         align-items: center;
         color: ${theme.color.black};
         font-weight: bold;
+    }
+
+    & .mission_options {
+        position: absolute;
+        padding: 0.75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        left: 64.5px;
+        height: 100vh;
+        top: 0;
+        width: 325px;
+        background-color: ${theme.color.black};
+        color: ${theme.color.white};
+        z-index: 10;
+
+        & .region_list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        & .items {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.5rem;
+
+            & .items_div {
+                display: flex;
+                justify-content: space-between;
+
+                span {
+                    border: 1px solid ${theme.color.white};
+                    width: 60px;
+                    border-radius: 4px;
+                    text-align: center;
+                    padding: 0.15rem 0;
+                }
+            }
+        }
     }
 `

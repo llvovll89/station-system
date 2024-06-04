@@ -13,12 +13,17 @@ export interface AreaOptions {
     droneAltitude: number
     speed: number
     angle: number
-    fov: number
     droneAngle: number
     horizontalRedundancy: number
     verticalRedundancy: number
     photoWidthRatio: number
     photoHeightRatio: number
+}
+
+export interface OverlayType {
+    startMarker: naver.maps.Marker | null
+    endMarker: naver.maps.Marker | null
+    takeoffPolyLine: naver.maps.Polyline | null
 }
 
 export enum StationStatus {

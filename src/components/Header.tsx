@@ -1,14 +1,14 @@
-import styled from "styled-components";
-import theme from "../styles/theme";
-import * as routes from "../constant/Routes";
-import { Link, useNavigate } from "react-router-dom";
-import accountIcon from "../assets/image/icon/user(w).png"
-import { useEffect, useState } from "react";
-import { timeOut } from "../util/timeOut";
-import { IoHomeOutline } from "react-icons/io5";
-import missionIcon from "../assets/image/navbar/ico_mission.png"
-import stationIcon from "../assets/image/navbar/ico_station.png"
-import { Button } from "./button/Button";
+import styled from 'styled-components'
+import theme from '../styles/theme'
+import * as routes from '../constant/Routes'
+import { Link, useNavigate } from 'react-router-dom'
+import accountIcon from '../assets/image/icon/user(w).png'
+import { useEffect, useState } from 'react'
+import { timeOut } from '../util/timeOut'
+import { IoHomeOutline } from 'react-icons/io5'
+import missionIcon from '../assets/image/navbar/ico_mission.png'
+import stationIcon from '../assets/image/navbar/ico_station.png'
+import { Button } from './button/Button'
 
 const HeaderStyled = styled.header`
     width: 50px;
@@ -20,9 +20,9 @@ const HeaderStyled = styled.header`
     align-items: center;
     position: fixed;
     z-index: 10;
-    background-color: ${theme.color.black};
+    background-color: ${theme.color.subBlack};
     color: ${theme.color.white};
-    border-right: 1px solid rgba(255,255,255,0.3);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
 
     & ul {
         display: flex;
@@ -63,28 +63,31 @@ const HeaderStyled = styled.header`
 `
 
 interface HeaderProps {
-    toggleMission: () => void;
-    toggleStation: () => void;
+    toggleMission: () => void
+    toggleStation: () => void
 }
 
 export const Header = ({ toggleMission, toggleStation }: HeaderProps) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(!localStorage.getItem("user"));
-    const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(!localStorage.getItem('user'))
+    const navigate = useNavigate()
 
     const logOut = () => {
-        const ask = confirm('정말 로그아웃 하시겠나요~?');
+        const ask = confirm('정말 로그아웃 하시겠나요~?')
 
         if (ask) {
-            localStorage.removeItem("user");
-            setIsLoggedIn(true);
+            localStorage.removeItem('user')
+            setIsLoggedIn(true)
         }
     }
 
     useEffect(() => {
         if (isLoggedIn) {
-            !localStorage.getItem("user") && timeOut(1500, () => { navigate("/") });
+            !localStorage.getItem('user') &&
+                timeOut(1500, () => {
+                    navigate('/')
+                })
         }
-    }, [isLoggedIn]);
+    }, [isLoggedIn])
 
     return (
         <HeaderStyled>
@@ -112,4 +115,4 @@ export const Header = ({ toggleMission, toggleStation }: HeaderProps) => {
             </button>
         </HeaderStyled>
     )
-};
+}

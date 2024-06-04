@@ -1,4 +1,5 @@
 import { StationStatus } from '../../constant/type'
+import { MissionDto } from '../../dto/MissionDto'
 import { Station } from '../../dto/Station'
 
 export const mockStation: Station[] = [
@@ -37,5 +38,38 @@ export const mockStation: Station[] = [
         droneSn: 887944,
         description: 'KGH의 station 입니다.',
         status: StationStatus.error,
+    },
+]
+
+export const mockMission: MissionDto[] = [
+    {
+        seq: 1,
+        name: '첫번째 미션 입니다.',
+        type: 0, // waypoint mission
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        transverseRedundancy: 0,
+        longitudinalRedundancy: 0,
+        points: [],
+        angle: 70,
+        mainPoint: {
+            latitude: 0,
+            longitude: 0,
+        },
+    },
+    {
+        seq: 2,
+        name: '두번째 미션 입니다.',
+        type: 1, // region mission
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        transverseRedundancy: 0,
+        longitudinalRedundancy: 0,
+        points: [],
+        angle: 70,
+        mainPoint: {
+            latitude: 0,
+            longitude: 0,
+        },
     },
 ]
