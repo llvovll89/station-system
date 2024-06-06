@@ -43,10 +43,8 @@ export const NaverMap = React.memo(
         const [map, setMap] = useState(null)
         const [isResult, setIsResut] = useState(false)
         const [distance, setDistance] = useState<null | string>(null)
-        const [markers, setMarkers] = useState<naver.maps.Marker[]>([])
         const [polylines, setPolylines] = useState<naver.maps.Polyline[]>([])
         const [paths, setPaths] = useState<naver.maps.LatLng[]>([])
-        const [polygon, setPolygon] = useState<naver.maps.Polygon | null>(null)
         const [areaOptions, setAreaOptions] = useState<AreaOptions>({
             droneAltitude: 100,
             speed: 5,
@@ -62,14 +60,31 @@ export const NaverMap = React.memo(
             waypoint: null,
             region: null,
         })
-        const [addOverlay, setAddverlay] = useState<OverlayType>({
-            startMarker: null,
-            endMarker: null,
-            takeoffPolyLine: null,
-        })
 
         const { naver } = window
         const mapElement = useRef(null)
+        const overLayMarkers: naver.maps.Marker[] = []
+        const adedOverlay: OverlayType = {
+            startMarker: null,
+            endMarker: null,
+            takeoffPolyLine: null,
+            wayLine: new naver.maps.Polyline({
+                map,
+                path: [],
+            }),
+        }
+
+        const polygon: naver.maps.Polygon = new naver.maps.Polygon({
+            map,
+            strokeColor: '#0080DE',
+            strokeOpacity: 1,
+            strokeWeight: 4,
+            fillColor: '#fefefe',
+            fillOpacity: 0.6,
+            paths: [],
+            clickable: true,
+            strokeStyle: 'solid',
+        })
         let mouseoverEvent: naver.maps.DOMEvent, guideline: naver.maps.Polyline
 
         const initMission = () => {
@@ -106,12 +121,6 @@ export const NaverMap = React.memo(
         }
 
         const resetOverlay = () => {
-            setMarkers((m) => {
-                return m.map((marker) => {
-                    marker.setMap(null)
-                    return marker
-                })
-            })
             polylines &&
                 setPolylines((p) => {
                     return p.map((polyline) => {
@@ -120,32 +129,11 @@ export const NaverMap = React.memo(
                     })
                 })
 
-            polygon &&
-                setPolygon((prevPolygon) => {
-                    if (prevPolygon) {
-                        prevPolygon.setMap(null)
-                    }
-                    return null
-                })
+            adedOverlay.wayLine && adedOverlay.wayLine.setMap(null)
 
-            wayLine &&
-                setWayLine((wayline) => {
-                    if (wayline) {
-                        wayline.setMap(null)
-                    }
-                    return null
-                })
-
-            if (addOverlay.endMarker) addOverlay.endMarker.setMap(null)
-            if (addOverlay.startMarker) addOverlay.startMarker.setMap(null)
-            if (addOverlay.takeoffPolyLine)
-                addOverlay.takeoffPolyLine.setMap(null)
-            if (wayLine) wayLine.setMap(null)
-
+            polygon && polygon.setMap(null)
             setPaths([])
             setDistance(null)
-            setPolygon(null)
-            setMarkers([])
             setPolylines([])
             initAreaOptions()
         }
@@ -213,8 +201,6 @@ export const NaverMap = React.memo(
                             },
                         })
 
-                        setMarkers((prevMarkers) => [...prevMarkers, marker])
-
                         setNaverMapEvent((prev) => ({
                             ...prev,
                             waypoint: setPolyline,
@@ -280,26 +266,14 @@ export const NaverMap = React.memo(
         }
 
         const createRegionMission = () => {
-            let polygon: naver.maps.Polygon,
-                guideline: naver.maps.Polyline,
+            let guideline: naver.maps.Polyline,
                 createGuideline: naver.maps.DOMEvent,
                 createPolygon: naver.maps.DOMEvent
 
             const markerItems: naver.maps.Marker[] = [],
-                path: naver.maps.LatLng[] = []
+                mainPoints: naver.maps.LatLng[] = []
 
             if (map) {
-                polygon = new naver.maps.Polygon({
-                    map,
-                    strokeColor: '#0080DE',
-                    strokeOpacity: 1,
-                    strokeWeight: 4,
-                    fillColor: '#fefefe',
-                    fillOpacity: 0.6,
-                    paths: [],
-                    clickable: true,
-                })
-
                 guideline = new naver.maps.Polyline({
                     map,
                     path: [],
@@ -313,22 +287,22 @@ export const NaverMap = React.memo(
                     map,
                     'click',
                     (e: { coord: naver.maps.LatLng }) => {
-                        path.push(e.coord)
+                        mainPoints.push(e.coord)
+                        setPaths((prevPaths) => [...prevPaths, e.coord])
 
-                        if (path.length === 1) {
-                            markers.push(
-                                new naver.maps.Marker({
-                                    map,
-                                    position: e.coord,
-                                    icon: {
-                                        content: `<div class='take_off'>T</div>`,
-                                        anchor: new naver.maps.Point(16, 16),
-                                    },
-                                })
-                            )
+                        if (mainPoints.length === 1) {
+                            const marker = new naver.maps.Marker({
+                                map,
+                                position: e.coord,
+                                icon: {
+                                    content: `<div class='take_off'>T</div>`,
+                                    anchor: new naver.maps.Point(16, 16),
+                                },
+                            })
+                            overLayMarkers.push(marker)
                         }
 
-                        if (path.length > 1) {
+                        if (mainPoints.length > 1) {
                             const marker = new naver.maps.Marker({
                                 position: e.coord,
                                 map,
@@ -337,13 +311,12 @@ export const NaverMap = React.memo(
                                     anchor: new naver.maps.Point(12, 12),
                                 },
                                 clickable: true,
+                                draggable: true,
                             })
 
                             markerItems.push(marker)
-                            setMarkers((prevMarker) => [...prevMarker, marker])
-                            console.log(polygon)
-                            polygon.setPath(path.slice(1))
-                            setPolygon(polygon)
+                            polygon.setPath(mainPoints.slice(1))
+                            overLayMarkers.push(marker)
 
                             createGuideline = naver.maps.Event.addListener(
                                 map,
@@ -374,6 +347,7 @@ export const NaverMap = React.memo(
 
                                     createWays(polygon)
                                     setIsResut(true)
+                                    editingRegionMission(mainPoints)
                                 }
                             )
                         }
@@ -521,32 +495,16 @@ export const NaverMap = React.memo(
                 }
             }
 
-            if (
-                addOverlay.endMarker &&
-                wayLine &&
-                addOverlay.startMarker &&
-                addOverlay.takeoffPolyLine
-            ) {
-                addOverlay.endMarker.setMap(null)
-                addOverlay.startMarker.setMap(null)
-                addOverlay.takeoffPolyLine.setMap(null)
-                wayLine.setMap(null)
-
-                setAddverlay((prev) => ({
-                    ...prev,
-                    endMarker: null,
-                    startMarker: null,
-                    takeoffPolyLine: null,
-                }))
-            }
-
-            setOverlay(markers, wayLineItems)
+            setOverlay(wayLineItems)
         }
 
-        const setOverlay = (
-            markers: naver.maps.Marker[],
-            wayLineItems: naver.maps.Polyline[]
-        ) => {
+        const setOverlay = (wayLineItems: naver.maps.Polyline[]) => {
+            adedOverlay.startMarker && adedOverlay.startMarker.setMap(null)
+            adedOverlay.endMarker && adedOverlay.endMarker.setMap(null)
+            adedOverlay.takeoffPolyLine &&
+                adedOverlay.takeoffPolyLine.setMap(null)
+            adedOverlay.wayLine && adedOverlay.wayLine.setMap(null)
+
             const newStartMarker = new naver.maps.Marker({
                 map,
                 position: wayLineItems[0],
@@ -558,7 +516,7 @@ export const NaverMap = React.memo(
 
             const newTakeoffPolyLine = new naver.maps.Polyline({
                 map,
-                path: [markers[0].getPosition(), wayLineItems[0]],
+                path: [overLayMarkers[0].getPosition(), wayLineItems[0]],
                 strokeColor: '#0CF395',
                 strokeOpacity: 1,
                 strokeWeight: 5,
@@ -581,13 +539,53 @@ export const NaverMap = React.memo(
                 },
             })
 
-            setAddverlay({
-                startMarker: newStartMarker,
-                endMarker: newEndMarker,
-                takeoffPolyLine: newTakeoffPolyLine,
-            })
+            adedOverlay.startMarker = newStartMarker
+            adedOverlay.endMarker = newEndMarker
+            adedOverlay.takeoffPolyLine = newTakeoffPolyLine
+            adedOverlay.wayLine = newWayLine
 
             setWayLine(newWayLine)
+        }
+
+        const editingRegionMission = (mainPoints: naver.maps.LatLng[]) => {
+            mainPoints.forEach((_, index) => {
+                naver.maps.Event.addListener(
+                    overLayMarkers[index],
+                    'drag',
+                    (e: { coord: naver.maps.LatLng }) => {
+                        mainPoints[index] = e.coord
+                        adedOverlay.wayLine && adedOverlay.wayLine.setMap(null)
+                        adedOverlay.startMarker &&
+                            adedOverlay.startMarker.setMap(null)
+                        adedOverlay.takeoffPolyLine &&
+                            adedOverlay.takeoffPolyLine.setMap(null)
+
+                        polygon.setOptions({
+                            strokeColor: '#0080DE',
+                            strokeWeight: 4,
+                            strokeStyle: [4, 4] as any,
+                            paths: mainPoints.slice(1) as any,
+                        })
+                    }
+                )
+
+                naver.maps.Event.addListener(
+                    overLayMarkers[index],
+                    'dragend',
+                    () => {
+                        polygon.setOptions({
+                            strokeColor: '#0080DE',
+                            strokeOpacity: 1,
+                            strokeWeight: 4,
+                            fillColor: '#fefefe',
+                            fillOpacity: 0.6,
+                            strokeStyle: 'solid',
+                        } as naver.maps.PolygonOptions)
+
+                        createWays(polygon)
+                    }
+                )
+            })
         }
 
         useEffect(() => {
@@ -625,7 +623,7 @@ export const NaverMap = React.memo(
                             </div>
                             <div className="markers">
                                 <span>웨이포인트:</span>
-                                <span>{markers.length}</span>
+                                <span>{overLayMarkers.length}</span>
                             </div>
                         </div>
                         <div className="btn_container">

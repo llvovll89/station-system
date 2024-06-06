@@ -24,6 +24,7 @@ export interface OverlayType {
     startMarker: naver.maps.Marker | null
     endMarker: naver.maps.Marker | null
     takeoffPolyLine: naver.maps.Polyline | null
+    wayLine: naver.maps.Polyline | null
 }
 
 export enum StationStatus {
