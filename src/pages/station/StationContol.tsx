@@ -3,6 +3,7 @@ import theme from '../../styles/theme'
 import { Station } from '../../dto/Station'
 import { Button } from '../../components/button/Button'
 import { IoClose } from 'react-icons/io5'
+import { useEffect } from 'react'
 
 interface StationControlProps {
     toggleIsOpen: () => void
@@ -11,11 +12,13 @@ interface StationControlProps {
 
 const StationControlWrap = styled.section`
     position: absolute;
-    top: 20px;
+    top: 36px;
     right: 80px;
-    min-width: 360px;
-    background-color: ${theme.color.black};
+    min-width: 420px;
+    background-color: rgba(0, 0, 0, 0.8);
     color: ${theme.color.white};
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.22);
 
     & article {
         display: flex;
@@ -45,6 +48,10 @@ export const StationControl = ({
     toggleIsOpen,
     selectedStation,
 }: StationControlProps) => {
+    useEffect(() => {
+        console.log(selectedStation)
+    }, [selectedStation])
+
     return (
         <StationControlWrap>
             <article className="container">

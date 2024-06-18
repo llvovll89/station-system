@@ -26,6 +26,7 @@ interface MapProps {
     isCreateStart?: boolean
     selectMission?: string | MissionType
     setIsCreateStart: React.Dispatch<React.SetStateAction<boolean>>
+    setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
     setSelectMission: (value: string) => void
     missionData: MissionDto
     isCreateMission: boolean
@@ -38,12 +39,14 @@ export const NaverMap = React.memo(
         isCreateStart,
         selectMission,
         missionData,
+        setMissionData,
         setIsCreateStart,
     }: MapProps) => {
         const [map, setMap] = useState(null)
-        const [isResult, setIsResut] = useState(false)
+        const [isResult, setIsResult] = useState(false)
         const [distance, setDistance] = useState<null | string>(null)
         const [polylines, setPolylines] = useState<naver.maps.Polyline[]>([])
+        const [markers, setMarkers] = useState<naver.maps.Marker[]>([])
         const [paths, setPaths] = useState<naver.maps.LatLng[]>([])
         const [areaOptions, setAreaOptions] = useState<AreaOptions>({
             droneAltitude: 100,
@@ -63,7 +66,13 @@ export const NaverMap = React.memo(
 
         const { naver } = window
         const mapElement = useRef(null)
-        const overLayMarkers: naver.maps.Marker[] = []
+        const wayPointPolyline: naver.maps.Polyline = new naver.maps.Polyline({
+            map,
+            path: [],
+            strokeWeight: 4,
+            strokeColor: '#09f',
+        })
+        let overLayMarkers: naver.maps.Marker[] = []
         const adedOverlay: OverlayType = {
             startMarker: null,
             endMarker: null,
@@ -73,6 +82,7 @@ export const NaverMap = React.memo(
                 path: [],
             }),
         }
+        const polygonPath: naver.maps.LatLng[][] = []
 
         const polygon: naver.maps.Polygon = new naver.maps.Polygon({
             map,
@@ -85,39 +95,43 @@ export const NaverMap = React.memo(
             clickable: true,
             strokeStyle: 'solid',
         })
+
         let mouseoverEvent: naver.maps.DOMEvent, guideline: naver.maps.Polyline
+
+        const submitMission = async (type: string) => {
+            if (type === 'waypoint') {
+                // waypoint mission
+                try {
+                    const params = {
+                        name: '',
+                        type: 0,
+                        mainPont: [],
+                        points: [],
+                        wayas: [],
+                        transverseRedundancy: 0,
+                        longitudinalRedundancy: 0,
+                        angle: 0,
+                    }
+
+                    const response = await axios.post(MISSION, params, {
+                        withCredentials: true,
+                    })
+                    const data = await response.data
+                    console.log(data)
+                } catch (error) {
+                    console.log(error)
+                }
+            } else {
+                console.log(type)
+            }
+        }
 
         const initMission = () => {
             resetOverlay()
             setIsCreateStart((prev) => !prev)
-            setIsResut((prev) => !prev)
+            setIsResult((prev) => !prev)
             naver.maps.Event.removeListener(naverMapEvent.region)
             naver.maps.Event.removeListener(naverMapEvent.waypoint)
-        }
-
-        const submitPaths = async () => {
-            try {
-                const newPathArray = paths.map(({ x, y }) => ({
-                    latitude: y,
-                    longitude: x,
-                }))
-                const params = {
-                    name: missionData.name,
-                    points: newPathArray,
-                    mainPoint: newPathArray[0],
-                    angle: missionData.angle,
-                }
-
-                const response = await axios.post(MISSION, params, {
-                    withCredentials: true,
-                })
-                const data = await response.data
-
-                console.log(data)
-                resetOverlay() // 성공시에만 적용됨
-            } catch (err) {
-                console.log(err)
-            }
         }
 
         const resetOverlay = () => {
@@ -129,13 +143,24 @@ export const NaverMap = React.memo(
                     })
                 })
 
+            markers.length > 0 &&
+                setMarkers((m) => {
+                    return m.map((marker) => {
+                        marker.setMap(null)
+                        return marker
+                    })
+                })
+            overLayMarkers.length > 0 &&
+                overLayMarkers.forEach((m) => m.setMap(null))
             adedOverlay.wayLine && adedOverlay.wayLine.setMap(null)
 
             polygon && polygon.setMap(null)
+            overLayMarkers = []
             setPaths([])
             setDistance(null)
             setPolylines([])
             initAreaOptions()
+            setIsResult((prev) => !prev)
         }
 
         const initAreaOptions = () => {
@@ -149,8 +174,6 @@ export const NaverMap = React.memo(
                 photoWidthRatio: 4,
                 photoHeightRatio: 3,
             })
-
-            console.log(polylines, areaOptions)
         }
 
         const createMission = () => {
@@ -164,16 +187,9 @@ export const NaverMap = React.memo(
         }
 
         const createOverLayEvent = (type: string) => {
-            const markerItems: naver.maps.Marker[] = []
+            const paths: naver.maps.LatLng[] = []
 
             if (type === 'wayline') {
-                const polyline = new naver.maps.Polyline({
-                    map,
-                    path: [],
-                    strokeWeight: 4,
-                    strokeColor: '#09f',
-                })
-
                 guideline = new naver.maps.Polyline({
                     map,
                     path: [],
@@ -183,20 +199,27 @@ export const NaverMap = React.memo(
                     strokeOpacity: 0.7,
                 })
 
-                setPolylines((prevPolylines) => [...prevPolylines, polyline])
+                setPolylines((prevPolylines) => [
+                    ...prevPolylines,
+                    wayPointPolyline,
+                ])
+
                 const setPolyline = naver.maps.Event.addListener(
                     map,
                     'click',
                     (e: { coord: naver.maps.LatLng }) => {
-                        const path = polyline.getPath()
+                        const path =
+                            wayPointPolyline.getPath() as naver.maps.ArrayOfCoords
                         path.push(e.coord)
+                        paths.push(e.coord)
                         setPaths((prevPaths) => [...prevPaths, e.coord])
 
                         const marker = new naver.maps.Marker({
                             map,
                             position: e.coord,
+                            draggable: true,
                             icon: {
-                                content: `<div class='wayline_marker'>${markerItems.length + 1}</div>`,
+                                content: `<div class='wayline_marker'>${overLayMarkers.length + 1}</div>`,
                                 anchor: new naver.maps.Point(12, 12),
                             },
                         })
@@ -206,7 +229,9 @@ export const NaverMap = React.memo(
                             waypoint: setPolyline,
                         }))
 
-                        markerItems.push(marker)
+                        overLayMarkers.push(marker)
+                        setMarkers((prev) => [...prev, marker])
+
                         if (mouseoverEvent) {
                             naver.maps.Event.removeListener(mouseoverEvent)
                         }
@@ -215,10 +240,10 @@ export const NaverMap = React.memo(
                             map,
                             'mousemove',
                             (e: { coord: naver.maps.LatLng }) => {
-                                if (markerItems.length > 0) {
+                                if (overLayMarkers.length > 0) {
                                     const lastMarkerPosition =
-                                        markerItems[
-                                            markerItems.length - 1
+                                        overLayMarkers[
+                                            overLayMarkers.length - 1
                                         ].getPosition()
                                     guideline.setPath([
                                         lastMarkerPosition,
@@ -228,31 +253,30 @@ export const NaverMap = React.memo(
                             }
                         )
 
+                        resizeWaypoints(
+                            overLayMarkers,
+                            marker,
+                            paths,
+                            wayPointPolyline
+                        )
+
                         naver.maps.Event.addListener(
-                            markerItems[markerItems.length - 1],
+                            overLayMarkers[overLayMarkers.length - 1],
                             'click',
                             () => {
                                 if (path.length > 1) {
-                                    markerItems[markerItems.length - 1].setIcon(
-                                        {
-                                            content: `<div class='wayline_marker last'>${markerItems.length + 1}</div>`,
-                                            anchor: new naver.maps.Point(
-                                                12,
-                                                12
-                                            ),
-                                        }
-                                    )
+                                    overLayMarkers[
+                                        overLayMarkers.length - 1
+                                    ].setIcon({
+                                        content: `<div class='wayline_marker last'>${overLayMarkers.length}</div>`,
+                                        anchor: new naver.maps.Point(12, 12),
+                                    })
                                     naver.maps.Event.removeListener(
                                         mouseoverEvent
                                     )
                                     naver.maps.Event.removeListener(setPolyline)
                                     guideline.setMap(null)
-
-                                    setDistance(
-                                        parseFloat(
-                                            polyline.getDistance()
-                                        ).toFixed(2)
-                                    )
+                                    getDistance()
                                 } else {
                                     alert('경로가 2개 이상일 때만 가능합니다!')
                                 }
@@ -265,13 +289,43 @@ export const NaverMap = React.memo(
             }
         }
 
+        const resizeWaypoints = (
+            overLayMarkers: naver.maps.Marker[],
+            marker: naver.maps.Marker,
+            paths: naver.maps.LatLng[],
+            wayPointPolyline: naver.maps.Polyline
+        ) => {
+            const resizeEvent = naver.maps.Event.addListener(
+                marker,
+                'drag',
+                (e: { coord: naver.maps.LatLng }) => {
+                    const index = overLayMarkers.indexOf(marker)
+                    if (index !== -1) {
+                        paths[index] = e.coord
+                        wayPointPolyline.setPath(paths)
+                        getDistance()
+                    }
+                }
+            )
+
+            console.log(resizeEvent)
+        }
+
+        const getDistance = () => {
+            const distance = wayPointPolyline.getDistance()
+            if (Math.floor(distance) >= 1000) {
+                setDistance((distance / 1000).toFixed(1) + ' km')
+            } else {
+                setDistance(distance.toFixed(1) + ' m')
+            }
+        }
+
         const createRegionMission = () => {
             let guideline: naver.maps.Polyline,
                 createGuideline: naver.maps.DOMEvent,
                 createPolygon: naver.maps.DOMEvent
 
-            const markerItems: naver.maps.Marker[] = [],
-                mainPoints: naver.maps.LatLng[] = []
+            const mainPoints: naver.maps.LatLng[] = []
 
             if (map) {
                 guideline = new naver.maps.Polyline({
@@ -300,6 +354,7 @@ export const NaverMap = React.memo(
                                 },
                             })
                             overLayMarkers.push(marker)
+                            setMarkers((prev) => [...prev, marker])
                         }
 
                         if (mainPoints.length > 1) {
@@ -307,32 +362,33 @@ export const NaverMap = React.memo(
                                 position: e.coord,
                                 map,
                                 icon: {
-                                    content: `<div class='polygon_marker'>${markerItems.length + 1}</div>`,
+                                    content: `<div class='polygon_marker'>${overLayMarkers.length + 1}</div>`,
                                     anchor: new naver.maps.Point(12, 12),
                                 },
                                 clickable: true,
                                 draggable: true,
                             })
 
-                            markerItems.push(marker)
-                            polygon.setPath(mainPoints.slice(1))
                             overLayMarkers.push(marker)
+                            setMarkers((prev) => [...prev, marker])
+                            polygon.setPath(mainPoints.slice(1))
+                            polygonPath.push(mainPoints.slice(1))
 
                             createGuideline = naver.maps.Event.addListener(
                                 map,
                                 'mousemove',
                                 (e: { coord: naver.maps.LatLng }) => {
                                     const lastLatLng =
-                                        markerItems[
-                                            markerItems.length - 1
+                                        overLayMarkers[
+                                            overLayMarkers.length - 1
                                         ].getPosition()
-                                    markerItems.length > 0 &&
+                                    overLayMarkers.length > 0 &&
                                         guideline.setPath([lastLatLng, e.coord])
                                 }
                             )
 
                             naver.maps.Event.addListener(
-                                markerItems[markerItems.length - 1],
+                                overLayMarkers[overLayMarkers.length - 1],
                                 'click',
                                 () => {
                                     naver.maps.Event.removeListener(
@@ -346,7 +402,7 @@ export const NaverMap = React.memo(
                                     guideline.setMap(null)
 
                                     createWays(polygon)
-                                    setIsResut(true)
+                                    setIsResult(true)
                                     editingRegionMission(mainPoints)
                                 }
                             )
@@ -358,10 +414,16 @@ export const NaverMap = React.memo(
 
         const createWays = (polygon: naver.maps.Polygon) => {
             const wayLineItems = []
-            const path = (
-                polygon.getPath() as naver.maps.KVOArrayOfCoords
-            ).getArray()
-            const points = path.map((point: any) => ({
+            let path
+            let points
+            if (polygon.getPath()) {
+                path = polygon.getPath()?.getArray()
+            } else {
+                path = polygon.getPath()
+                // path.push(polygonPath)
+            }
+
+            points = path.map((point: any) => ({
                 latitude: point.lat(),
                 longitude: point.lng(),
             }))
@@ -609,29 +671,6 @@ export const NaverMap = React.memo(
 
         return (
             <MapWrap>
-                {distance && (
-                    <div className="overlay_container">
-                        {missionData.name && (
-                            <div className="mission_type">
-                                이름: {missionData.name}
-                            </div>
-                        )}
-                        <div className="content">
-                            <div className="distance">
-                                <span>총 거리:</span>
-                                <span>{distance}m</span>
-                            </div>
-                            <div className="markers">
-                                <span>웨이포인트:</span>
-                                <span>{overLayMarkers.length}</span>
-                            </div>
-                        </div>
-                        <div className="btn_container">
-                            <button onClick={submitPaths}>저장</button>
-                        </div>
-                    </div>
-                )}
-
                 <div id="map" className="map" ref={mapElement}></div>
 
                 {isResult && (

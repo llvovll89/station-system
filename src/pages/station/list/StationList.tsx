@@ -2,15 +2,17 @@ import { IoClose } from 'react-icons/io5'
 import { Button } from '../../../components/button/Button'
 import { styled } from 'styled-components'
 import { useEffect, useState } from 'react'
-import { mockStation } from '../Mock'
+import { mockStation as initialMockStation } from '../Mock'
 import theme from '../../../styles/theme'
 import { CiEdit } from 'react-icons/ci'
 import { MdOutlineDelete } from 'react-icons/md'
 import { Station } from '../../../dto/Station'
 import { StationControl } from '../StationContol'
+import axios from 'axios'
+import { STATION } from '../../../constant/http'
 
 const StationWrap = styled.section`
-    width: 300px;
+    width: 350px;
     height: 100vh;
     position: absolute;
     left: 64px;
@@ -109,16 +111,18 @@ interface StationListProps {
 }
 
 export const StationList = ({ toggleStation }: StationListProps) => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [stations, setStations] = useState<Station[]>([])
     const [selectedStation, setSelectedStation] = useState<Station | null>(null)
 
     const selectStation = (station: Station) => {
         setSelectedStation(station)
-        setIsOpen(true)
+        // setIsOpen(true)
+
+        getDockMarker(station)
     }
 
     const toggleIsOpen = () => {
-        setIsOpen(false)
+        // setIsOpen((prev) => !prev)
         setSelectedStation(null)
     }
 
@@ -131,19 +135,41 @@ export const StationList = ({ toggleStation }: StationListProps) => {
         console.log(station)
     }
 
-    const getStation = async () => {
-        console.log('getStation')
-        // try {
-        //     // const response = await axios.get()
-        //     // const data = await response.data
+    const deleteStation = (station: Station, index: number) => {
+        if (window.confirm('정말 삭제 하시겠습니까?')) {
+            const updatedStations = stations.filter((_, i) => i !== index)
+            setStations(updatedStations)
 
-        //     // if(response.status === 200) {
-        //     //     setStationList(data)
-        //     //     console.log(data)
-        //     // }
-        // } catch (error) {
-        //     console.log(error)
-        // }
+            if (selectedStation && selectedStation.seq === station.seq) {
+                // setIsOpen(false)
+                setSelectedStation(null)
+                console.log(selectedStation)
+            }
+        }
+    }
+
+    const getDockMarker = (station: Station) => {
+        const { latitude, longitude } = station
+        new naver.maps.Marker({
+            map: (document.getElementById('map') as any) || naver.maps.Map,
+            position: new naver.maps.LatLng(latitude, longitude),
+        })
+    }
+
+    const getStation = async () => {
+        setStations(initialMockStation)
+
+        try {
+            const response = await axios.get(STATION)
+            const data = await response.data
+
+            if (response.status === 200) {
+                setStations(data)
+                console.log(data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
@@ -152,7 +178,8 @@ export const StationList = ({ toggleStation }: StationListProps) => {
 
     return (
         <>
-            {isOpen && <StationControl {...stationControlProps()} />}
+            {selectedStation && <StationControl {...stationControlProps()} />}
+
             <StationWrap>
                 <header>
                     <h1>스테이션</h1>
@@ -163,7 +190,7 @@ export const StationList = ({ toggleStation }: StationListProps) => {
                 </header>
 
                 <article className="container">
-                    {mockStation.map((station) => (
+                    {stations.map((station, index) => (
                         <section
                             className={`content ${selectedStation === station ? 'selected' : ''}`}
                             key={station.seq}
@@ -177,13 +204,17 @@ export const StationList = ({ toggleStation }: StationListProps) => {
                                     >
                                         <CiEdit />
                                     </button>
-                                    <button>
+                                    <button
+                                        onClick={() =>
+                                            deleteStation(station, index)
+                                        }
+                                    >
                                         <MdOutlineDelete />
                                     </button>
                                 </div>
                             </div>
                             <div className="content_body">
-                                <div className="content_desc">
+                                {/* <div className="content_desc">
                                     <p>{station.description}</p>
                                 </div>
                                 <div className="content_sn">
@@ -195,7 +226,7 @@ export const StationList = ({ toggleStation }: StationListProps) => {
                                         <span>droneSN:</span>
                                         <span>{station.droneSn}</span>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </section>
                     ))}

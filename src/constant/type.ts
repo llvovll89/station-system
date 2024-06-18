@@ -21,10 +21,12 @@ export interface AreaOptions {
 }
 
 export interface OverlayType {
-    startMarker: naver.maps.Marker | null
-    endMarker: naver.maps.Marker | null
-    takeoffPolyLine: naver.maps.Polyline | null
-    wayLine: naver.maps.Polyline | null
+    startMarker?: naver.maps.Marker | null
+    endMarker?: naver.maps.Marker | null
+    takeoffPolyLine?: naver.maps.Polyline | null
+    wayLine?: naver.maps.Polyline
+    polygon?: naver.maps.Polygon | null
+    guideLine?: naver.maps.Polyline | null
 }
 
 export enum StationStatus {
@@ -36,4 +38,10 @@ export enum StationStatus {
 export interface Point {
     latitude: number
     longitude: number
+}
+
+export interface MissionStateItem {
+    mainPoints: naver.maps.LatLng[]
+    distance: number
+    areaSize: number
 }

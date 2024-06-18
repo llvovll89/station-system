@@ -89,6 +89,49 @@ export const MissionList = ({ toggleMission }: MissionListProps) => {
         }
     }
 
+    // const updeateMission = async (mission) => {
+    //     try {
+    //         const { seq } = mission
+    //         const params = {
+    //             // 업데이트 할 것
+    //         }
+    //         // const response = await axios.put(MISSION + `${seq}`, { withCredentials: true })
+    //         // const data = await response.data
+
+    //         console.log(data)
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+    // }
+
+    // const getInfoMission = async (mission) => {
+    //     try {
+    //         const { seq } = mission
+    //         const response = await axios.get(MISSION + `${seq}`, {
+    //             withCredentials: true,
+    //         })
+    //         const data = await response.data
+
+    //         console.log(data)
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+    // }
+
+    // const deleteMission = async (mission) => {
+    //     try {
+    //         const { seq } = mission
+    //         const response = await axios.delete(MISSION + `${seq}`, {
+    //             withCredentials: true,
+    //         })
+    //         const data = await response.data
+
+    //         console.log(data)
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+    // }
+
     useEffect(() => {
         // mission 요청 에러가 나서 막아둠
         getMission()
