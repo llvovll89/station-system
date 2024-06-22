@@ -1,157 +1,115 @@
 import { MissionWrap } from './MissionStyle'
 import { Button } from '../../components/button/Button'
-import { CreateMissionWrap } from './createmission/CreateMissionStyle'
-import { MissionDto } from '../../dto/MissionDto'
-import { MissionType } from '../../constant/type'
+import { AreaOptions, MissionStateItem } from '../../constant/type'
 import { VscGitPullRequestCreate } from 'react-icons/vsc'
+import { GrPowerReset } from 'react-icons/gr'
+import { WaypPointMission } from './weapoint/WayPointMission'
+import { GridMission } from './grid/GridMission'
+import { MissionList } from './list/MissionList'
+import { useState } from 'react'
 
 interface MissionProps {
-    isCreateMission: boolean
-    isCreateStart: boolean
-    setIsCreateMission: React.Dispatch<React.SetStateAction<boolean>>
-    setIsCreateStart: (value: boolean) => void
-    setSelectMission: React.Dispatch<React.SetStateAction<string | MissionType>>
-    setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
-    missionData: MissionDto
-    selectMission: string | MissionType
+    toggleMission: () => void
+    map: naver.maps.Map | null
 }
 
-export const Mission = ({
-    isCreateMission,
-    setSelectMission,
-    setMissionData,
-    setIsCreateMission,
-    setIsCreateStart,
-    missionData,
-    selectMission,
-    isCreateStart,
-}: MissionProps) => {
-    const toggleCreateMission = () => {
-        setSelectMission('')
-        setMissionData((prev: MissionDto) => ({
-            ...prev,
-            name: '',
-            type: 0,
-        }))
+export const Mission = ({ toggleMission, map }: MissionProps) => {
+    const [isCreateMission, setIsCreateMission] = useState(false)
+    const [missionType, setMissionType] = useState<null | number>(null)
+    const [activeMission, setActiveMission] = useState<
+        null | 'waypoint' | 'grid'
+    >(null)
+    const [missionState, setMissionState] = useState<MissionStateItem>({
+        mainPoints: [],
+        distance: 0,
+        areaSize: 0,
+    })
+    const [areaOptions, setAreaOptions] = useState<AreaOptions>({
+        droneAltitude: 100,
+        speed: 5,
+        angle: 45,
+        droneAngle: 45,
+        horizontalRedundancy: 70,
+        verticalRedundancy: 70,
+        photoWidthRatio: 4,
+        photoHeightRatio: 3,
+    })
+
+    const setCreateMission = () => {
         setIsCreateMission((prev) => !prev)
+        setActiveMission(null)
     }
 
-    const selectMissionType = (type: string) => {
-        setSelectMission((prev) => (prev === type ? '' : type))
+    const selectMissionType = (type: number) => {
+        setMissionType(type)
     }
 
-    const submitCreateMission = () => {
-        if (!missionData.name || !selectMission) {
-            alert('빈 값 없이 선택해 주시기 바랍니다.')
-        } else {
-            setIsCreateStart(true)
-            setIsCreateMission((prev) => !prev)
-        }
+    const resetMap = () => {
+        map?.refresh(true)
     }
 
-    const missionInProgress = () => {
-        alert('미션 진행중입니다, 종료 후 실행해 주세요.')
+    const resetMission = () => {
+        // setIsCreateMission(false)
+        // setMissionType(null)
+        // setActiveMission(null)
+        // setMissionState({
+        //     mainPoints: [],
+        //     distance: 0,
+        //     areaSize: 0,
+        // })
+        // setAreaOptions({
+        //     droneAltitude: 100,
+        //     speed: 5,
+        //     angle: 45,
+        //     droneAngle: 45,
+        //     horizontalRedundancy: 70,
+        //     verticalRedundancy: 70,
+        //     photoWidthRatio: 4,
+        //     photoHeightRatio: 3,
+        // })
     }
 
     return (
         <MissionWrap>
+            <MissionList toggleMission={toggleMission} />
+
+            <Button
+                className="create_btn"
+                type="button"
+                onClick={setCreateMission}
+            >
+                <VscGitPullRequestCreate />
+                <span>생성</span>
+            </Button>
+
             {isCreateMission && (
-                <CreateMissionWrap>
-                    <article className="container">
-                        <header>
-                            <h1>New Mission</h1>
-                            <Button
-                                type="button"
-                                text="X"
-                                onClick={toggleCreateMission}
-                            />
-                        </header>
+                <>
+                    <WaypPointMission
+                        map={map}
+                        missionState={missionState}
+                        activeMission={activeMission}
+                        setActiveMission={setActiveMission}
+                        setMissionState={setMissionState}
+                    />
 
-                        <div className="mission_name">
-                            <label>미션 이름</label>
-                            <input
-                                type="text"
-                                onChange={(e) =>
-                                    setMissionData({
-                                        ...missionData,
-                                        name: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
+                    <GridMission
+                        map={map}
+                        missionState={missionState}
+                        setAreaOptions={setAreaOptions}
+                        areaOptions={areaOptions}
+                        activeMission={activeMission}
+                        setMissionState={setMissionState}
+                    />
 
-                        <article className="grid">
-                            <p>미션 타입</p>
-
-                            <div className="grid">
-                                <div className="items">
-                                    <Button
-                                        className={
-                                            selectMission === 'wayline'
-                                                ? 'wayline'
-                                                : ''
-                                        }
-                                        onClick={() =>
-                                            selectMissionType('wayline')
-                                        }
-                                        type="button"
-                                        text="웨이포인트"
-                                    />
-                                </div>
-                                <div className="items">
-                                    <Button
-                                        className={
-                                            selectMission === 'region'
-                                                ? 'region'
-                                                : ''
-                                        }
-                                        onClick={() =>
-                                            selectMissionType('region')
-                                        }
-                                        type="button"
-                                        text="지역"
-                                    />
-                                </div>
-                            </div>
-                        </article>
-
-                        <footer>
-                            <Button
-                                text="닫기"
-                                type="button"
-                                onClick={toggleCreateMission}
-                            />
-                            <Button
-                                className={
-                                    missionData.name && selectMission
-                                        ? 'isSubmit'
-                                        : ''
-                                }
-                                text="생성"
-                                type="button"
-                                onClick={submitCreateMission}
-                            />
-                        </footer>
-                    </article>
-                </CreateMissionWrap>
-            )}
-
-            {isCreateStart ? (
-                <Button
-                    className="create_mission isActive"
-                    type="button"
-                    onClick={missionInProgress}
-                >
-                    <VscGitPullRequestCreate />
-                </Button>
-            ) : (
-                <Button
-                    onClick={toggleCreateMission}
-                    type="button"
-                    className="create_mission"
-                >
-                    <VscGitPullRequestCreate />
-                </Button>
+                    <Button
+                        className="init_btn"
+                        type="button"
+                        onClick={resetMap}
+                    >
+                        <GrPowerReset />
+                        <span>INIT</span>
+                    </Button>
+                </>
             )}
         </MissionWrap>
     )

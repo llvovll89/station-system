@@ -2,41 +2,69 @@ import styled from 'styled-components'
 import theme from '../../styles/theme'
 
 export const MissionWrap = styled.section`
-    .create_mission {
+    & .create_btn {
+        width: 62px;
+        height: 62px;
+        border-radius: 5px;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
         position: absolute;
-        cursor: pointer;
-        top: 76px;
+        top: 16px;
         right: 16px;
-        width: 42px;
-        height: 42px;
-        border-radius: 4px;
-        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.22);
-        background-color: ${theme.color.white};
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: ${theme.color.black};
-        font-weight: bold;
+        background-color: ${theme.color.subBlack};
+        flex-direction: column;
+        gap: 4px;
     }
 
-    .isActive {
-        background-color: ${theme.color.primary};
+    & .init_btn {
+        position: absolute;
+        top: 156px;
+        right: 86px;
+        z-index: 1;
+        width: 62px;
+        height: 62px;
+        background-color: ${(props) => props.theme.color.subBlack};
+        border-radius: 5px;
+        boxs-shadow: ${theme.boxShadow?.lg};
+        flex-direction: column;
+        gap: 4px;
+
+        & span {
+            font-size: 12px;
+            font-weight: bold;
+        }
     }
 
-    .init_mission {
+    & .waypoint_content {
         position: absolute;
-        cursor: pointer;
-        top: 128px;
-        right: 16px;
-        width: 42px;
-        height: 42px;
-        border-radius: 4px;
-        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.22);
-        background-color: ${theme.color.white};
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.8rem 1.5rem;
+        background-color: ${theme.color.subBlack};
+        border-radius: 5px;
+        color: ${theme.color.white};
         display: flex;
-        justify-content: center;
+        gap: 1rem;
         align-items: center;
-        color: ${theme.color.black};
-        font-weight: bold;
+        min-width: 300px;
+
+        & .content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 180px;
+        }
+
+        & .btn_box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            .submit_btn {
+                background-color: ${theme.color.primary};
+                min-width: 100px;
+                border-radius: 5px;
+            }
+        }
     }
 `

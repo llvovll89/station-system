@@ -5,6 +5,7 @@ import { Login } from './login/Login'
 import { Join } from './join/Join'
 import { NotFoundPage } from './404/404'
 import { Main } from './main/Main'
+import { Schedule } from './schedule/Schedule'
 
 const HomeSection = styled.section`
     width: 100vw;

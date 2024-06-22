@@ -6,19 +6,19 @@ import accountIcon from '../assets/image/icon/user(w).png'
 import { useEffect, useState } from 'react'
 import { timeOut } from '../util/timeOut'
 import { IoHomeOutline } from 'react-icons/io5'
-import missionIcon from '../assets/image/navbar/ico_mission.png'
-import stationIcon from '../assets/image/navbar/ico_station.png'
 import { Button } from './button/Button'
 
 const HeaderStyled = styled.header`
-    width: 50px;
+    width: 90px;
     height: 100vh;
-    padding: 1rem 2rem;
+    padding: 1rem 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     position: fixed;
+    left: 0;
+    top: 0;
     z-index: 10;
     background-color: ${theme.color.subBlack};
     color: ${theme.color.white};
@@ -33,12 +33,16 @@ const HeaderStyled = styled.header`
         margin: 0;
         width: 100%;
         height: 100%;
-        gap: 1.5rem;
+        gap: 1rem;
         justify-content: center;
 
         & li {
-            & a {
-                color: ${theme.color.white};
+            width: 100%;
+            text-align: center;
+
+            &.active {
+                background-color: ${theme.color.primary};
+                color: ${theme.color.white}; // 텍스트 색상 변경
             }
         }
     }
@@ -65,9 +69,15 @@ const HeaderStyled = styled.header`
 interface HeaderProps {
     toggleMission: () => void
     toggleStation: () => void
+    toggleSchedule: () => void
 }
 
-export const Header = ({ toggleMission, toggleStation }: HeaderProps) => {
+export const Header = ({
+    toggleMission,
+    toggleStation,
+    toggleSchedule,
+}: HeaderProps) => {
+    const [isActive, setIsActive] = useState('')
     const [isLoggedIn, setIsLoggedIn] = useState(!localStorage.getItem('user'))
     const navigate = useNavigate()
 
@@ -78,6 +88,10 @@ export const Header = ({ toggleMission, toggleStation }: HeaderProps) => {
             localStorage.removeItem('user')
             setIsLoggedIn(true)
         }
+    }
+
+    const toggleActive = (type: string) => {
+        setIsActive((prev) => (prev === type ? '' : type))
     }
 
     useEffect(() => {
@@ -98,14 +112,28 @@ export const Header = ({ toggleMission, toggleStation }: HeaderProps) => {
             </div>
 
             <ul>
-                <li>
+                <li
+                    className={isActive === 'mission' ? 'active' : ''}
+                    onClick={() => toggleActive('mission')}
+                >
                     <Button onClick={toggleMission} type="button">
-                        <img src={missionIcon} alt="Mission_list" />
+                        <span>Mission</span>
                     </Button>
                 </li>
-                <li>
+                <li
+                    className={isActive === 'station' ? 'active' : ''}
+                    onClick={() => toggleActive('station')}
+                >
                     <Button onClick={toggleStation} type="button">
-                        <img src={stationIcon} alt="station" />
+                        <span>Station</span>
+                    </Button>
+                </li>
+                <li
+                    className={isActive === 'schedule' ? 'active' : ''}
+                    onClick={() => toggleActive('schedule')}
+                >
+                    <Button onClick={toggleSchedule} type="button">
+                        <span>Schedule</span>
                     </Button>
                 </li>
             </ul>

@@ -1,10 +1,14 @@
-// import { NaverMap } from "../../components/navermap/Map"
+import { StationWrap } from './StationStyle'
+import { StationList } from './list/StationList'
 
-export const Station = () => {
+interface StationProps {
+    toggleStation: () => void
+}
+
+export const Station = ({ toggleStation }: StationProps) => {
     return (
-        <section>
-            <h1>스테이션 페이지</h1>
-            {/* <NaverMap latitude={35.87772056157816} longitude={128.6110784825801} /> */}
-        </section>
+        <StationWrap>
+            <StationList toggleStation={toggleStation} />
+        </StationWrap>
     )
 }

@@ -1,20 +1,39 @@
-import { useEffect, useMemo, useState } from 'react'
-// import { NaverMap } from '../../components/navermap/Map'
-import { Map, NaverMap } from '../../components/navermap/NaverMap'
+import { useEffect, useRef, useState } from 'react'
 import { Mission } from '../mission/Mission'
-import { MissionDto } from '../../dto/MissionDto'
-import { ActiveType, MissionType } from '../../constant/type'
+import { ActiveType } from '../../constant/type'
 import { useNavigate } from 'react-router-dom'
 import { MainWrap } from './MainStyle'
-import { MissionList } from '../mission/list/MissionList'
 import { Header } from '../../components/Header'
-import { StationList } from '../station/list/StationList'
+import { Station } from '../station/Station'
+import { Schedule } from '../schedule/Schedule'
 
 export const Main = () => {
     const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none)
-    const [isCreateMission, setIsCreateMission] = useState(false)
-    const [selectMission, setSelectMission] = useState<string | MissionType>('')
-    const [isCreateStart, setIsCreateStart] = useState(false)
+    const [map, setMap] = useState<naver.maps.Map | null>(null)
+    const [mapType, setMapType] = useState<naver.maps.MapTypeId>(
+        naver.maps.MapTypeId.NORMAL
+    )
+
+    const mapElement = useRef(null)
+    const mapTypeChange = (mapType: naver.maps.MapTypeId) => {
+        setMapType(mapType)
+        map?.setMapTypeId(mapType)
+    }
+
+    useEffect(() => {
+        if (!mapElement.current || !naver) return
+
+        const location = new naver.maps.LatLng(35.8774, 128.6107)
+        const mapOptions = {
+            center: location,
+            zoom: 17,
+            zoomControl: false,
+            mapDataControl: false,
+            scaleControl: false,
+        }
+
+        setMap(new naver.maps.Map(mapElement.current, mapOptions))
+    }, [mapType])
 
     const navigate = useNavigate()
 
@@ -31,18 +50,27 @@ export const Main = () => {
             <Header
                 toggleMission={() => toggleActive(ActiveType.mission)}
                 toggleStation={() => toggleActive(ActiveType.station)}
+                toggleSchedule={() => toggleActive(ActiveType.schedule)}
             />
 
-            <Map />
+            <div id="map" className="map" ref={mapElement}></div>
 
             {activeType === ActiveType.mission && (
-                <MissionList
+                <Mission
                     toggleMission={() => toggleActive(ActiveType.mission)}
+                    map={map}
                 />
             )}
+
             {activeType === ActiveType.station && (
-                <StationList
+                <Station
                     toggleStation={() => toggleActive(ActiveType.station)}
+                />
+            )}
+
+            {activeType === ActiveType.schedule && (
+                <Schedule
+                    toggleSchedule={() => toggleActive(ActiveType.schedule)}
                 />
             )}
         </MainWrap>

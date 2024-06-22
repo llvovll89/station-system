@@ -2,22 +2,10 @@ import { CreateMissionWrap } from './CreateMissionStyle'
 import { Button } from '../../../components/button/Button'
 
 interface CreateMissionProps {
-    setSelectMission: React.Dispatch<React.SetStateAction<string>>
-    closeCreateMission: () => void
-    submitCreateMission: () => void
-    selectMission: string
+    // setSelectMission: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const CreateMission = ({
-    closeCreateMission,
-    submitCreateMission,
-    setSelectMission,
-    selectMission,
-}: CreateMissionProps) => {
-    const selectMissionType = (type: string) => {
-        setSelectMission(type)
-    }
-
+export const CreateMission = () => {
     return (
         <CreateMissionWrap>
             <article className="container">
@@ -26,7 +14,7 @@ export const CreateMission = ({
                     <Button
                         type="button"
                         text="X"
-                        onClick={closeCreateMission}
+                        // onClick={closeCreateMission}
                     />
                 </header>
 
@@ -35,18 +23,18 @@ export const CreateMission = ({
 
                     <div className="grid">
                         <Button
-                            className={
-                                selectMission === 'wayline' ? 'wayline' : ''
-                            }
-                            onClick={() => selectMissionType('wayline')}
+                            // className={
+                            //     selectMission === 'wayline' ? 'wayline' : ''
+                            // }
+                            // onClick={() => selectMissionType('wayline')}
                             type="button"
                             text="웨이라인"
                         />
                         <Button
-                            className={
-                                selectMission === 'region' ? 'region' : ''
-                            }
-                            onClick={() => selectMissionType('region')}
+                            // className={
+                            //     selectMission === 'region' ? 'region' : ''
+                            // }
+                            // onClick={() => selectMissionType('region')}
                             type="button"
                             text="지역"
                         />
@@ -57,12 +45,12 @@ export const CreateMission = ({
                     <Button
                         text="닫기"
                         type="button"
-                        onClick={closeCreateMission}
+                        // onClick={closeCreateMission}
                     />
                     <Button
                         text="생성"
                         type="button"
-                        onClick={submitCreateMission}
+                        // onClick={submitCreateMission}
                     />
                 </footer>
             </article>

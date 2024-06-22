@@ -7,6 +7,7 @@ export enum ActiveType {
     none = 0,
     mission = 1,
     station = 2,
+    schedule = 3,
 }
 
 export interface AreaOptions {

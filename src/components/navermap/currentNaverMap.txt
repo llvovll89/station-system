@@ -1,14 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import useGeoLocation from '../../hooks/useGeoLocation'
-import { WaypPointMission } from '../../pages/mission/weapoint/WayPointMission'
 import styled from 'styled-components'
-import { GridMission } from '../../pages/mission/list/grid/GridMission'
 import { MissionDto } from '../../dto/MissionDto'
-import { CreateMission } from '../../pages/mission/createmission/CreateMission'
-import { Button } from '../button/Button'
-import { VscActivateBreakpoints } from 'react-icons/vsc'
 import theme from '../../styles/theme'
-import { MissionStateItem } from '../../constant/type'
+import { AreaOptions, MissionStateItem } from '../../constant/type'
 
 const MapWrap = styled.section`
     position: relative;
@@ -18,6 +13,18 @@ const MapWrap = styled.section`
     & #map {
         width: 100vw;
         height: 100vh;
+    }
+
+    & .marker {
+        width: 24px;
+        height: 24px;
+        border-radius: 5px;
+        background-color: ${theme.color.deepKoamaru};
+        border: 1px solid #fefefe;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        color: ${theme.color.white};
     }
 
     & .distance {
@@ -64,19 +71,6 @@ export const Map = () => {
         areaSize: 0,
     })
 
-    const [missionData, setMissionData] = useState<MissionDto>({
-        seq: 0,
-        name: '',
-        type: 0,
-        mainPoint: { latitude: 0, longitude: 0 },
-        transverseRedundancy: 0,
-        longitudinalRedundancy: 0,
-        points: [],
-        angle: 70,
-        createdAt: '',
-        updatedAt: '',
-    })
-
     const { lat, lng } = useGeoLocation().coordinates
     const mapElement = useRef(null)
     const currentPosition = new naver.maps.LatLng(lat, lng)
@@ -95,6 +89,8 @@ export const Map = () => {
         missionState,
         setMissionState,
     })
+
+    const missionProps = () => {}
 
     useEffect(() => {
         if (!mapElement.current || !naver) return
@@ -127,20 +123,7 @@ export const Map = () => {
 
             {/* <CreateMission />  */}
 
-            {map && (
-                <>
-                    <WaypPointMission
-                        map={map}
-                        missionState={missionState}
-                        setMissionState={setMissionState}
-                    />
-                    <GridMission
-                        map={map}
-                        missionState={missionState}
-                        setMissionState={setMissionState}
-                    />
-                </>
-            )}
+            {/* {map && <Mission />} */}
         </MapWrap>
     )
 }
