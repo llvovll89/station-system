@@ -14,6 +14,7 @@ interface WaypPointMissionProps {
     >
     missionData: MissionDto
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
+    setIsCreate: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const WaypPointMission = ({
@@ -22,10 +23,15 @@ export const WaypPointMission = ({
     setMissionData,
     activeMission,
     setActiveMission,
+    setIsCreate,
 }: WaypPointMissionProps) => {
     const [mainPoints, setMainPoints] = useState<naver.maps.LatLng[]>([])
     const [wayLines, setWayLines] = useState<naver.maps.LatLng[]>([])
     const [isStartWaypoint, setIsStartWaypoint] = useState(false)
+    const [wayPointState, setWayPointState] = useState({
+        overlay: null as naver.maps.Polyline | null,
+        markers: [] as naver.maps.Marker[],
+    })
     const [distance, setDistance] = useState(0)
 
     const mainPointMarker: naver.maps.Marker[] = []
@@ -47,6 +53,17 @@ export const WaypPointMission = ({
     })
 
     const resetData = () => {
+        wayPointState.markers.forEach((marker) => marker.setMap(null))
+        wayPointState.overlay && wayPointState.overlay.setMap(null)
+
+        // 상태 초기화
+        setWayPointState({
+            overlay: null,
+            markers: [],
+        })
+
+        setActiveMission(null)
+        setIsStartWaypoint(false)
         setMainPoints([])
         setWayLines([])
         setDistance(0)
@@ -111,6 +128,11 @@ export const WaypPointMission = ({
                         })
 
                         markerArr.push(marker)
+                        setWayPointState((prevState) => ({
+                            ...prevState,
+                            markers: [...prevState.markers, marker],
+                            overlay: wayLine,
+                        }))
                         mainPointMarker.push(marker)
                         dragResize(markerArr, marker)
                         setDistance(wayLine.getDistance())
@@ -211,8 +233,17 @@ export const WaypPointMission = ({
                 const response = await axios.post(MISSION, missionData, {
                     withCredentials: true,
                 })
-                const data = await response.data()
+                const data = await response.data
                 console.log(data)
+
+                setIsCreate((prev) => !prev)
+                const isClose = confirm('생성이 완료 되었습니다')
+
+                if (isClose) {
+                    resetData()
+                } else {
+                    resetData()
+                }
             } catch (err) {
                 console.log(err)
             }

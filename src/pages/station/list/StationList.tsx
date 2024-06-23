@@ -6,6 +6,7 @@ import { MdOutlineDelete } from 'react-icons/md'
 import { Station } from '../../../dto/Station'
 import axios from 'axios'
 import { STATION } from '../../../constant/http'
+import { IoCreateOutline } from 'react-icons/io5'
 import { StationWrap } from './StationListStyle'
 
 interface StationListProps {
@@ -14,7 +15,34 @@ interface StationListProps {
 
 export const StationList = ({ toggleStation }: StationListProps) => {
     const [stations, setStations] = useState<Station[]>([])
+    const [isHttpRequest, setIsHttpRequest] = useState(false)
     const [selectedStation, setSelectedStation] = useState<Station | null>(null)
+
+    const createStation = async () => {
+        const name = localStorage.getItem('user')
+
+        const params = {
+            name,
+            latitude: '',
+            longitude: '',
+            drone: {
+                name: 'm30t',
+                latitude: '',
+                longitude: '',
+            },
+        }
+
+        try {
+            const response = await axios.post(STATION, params, {
+                withCredentials: true,
+            })
+            const data = await response.data
+            console.log(data)
+            setIsHttpRequest((prev) => !prev)
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     const selectStation = (station: Station) => {
         setSelectedStation(station)
@@ -47,7 +75,7 @@ export const StationList = ({ toggleStation }: StationListProps) => {
 
     const getStation = async () => {
         try {
-            const response = await axios.get(STATION)
+            const response = await axios.get(STATION, { withCredentials: true })
             const data = await response.data
 
             if (response.status === 200) {
@@ -61,16 +89,26 @@ export const StationList = ({ toggleStation }: StationListProps) => {
 
     useEffect(() => {
         getStation()
-    }, [])
+    }, [isHttpRequest])
 
     return (
         <StationWrap>
             <header>
                 <h1>스테이션</h1>
 
-                <Button type={'button'} onClick={toggleStation}>
-                    <IoClose />
-                </Button>
+                <div className="btn_content">
+                    <Button
+                        type={'button'}
+                        onClick={createStation}
+                        className="create_btn"
+                    >
+                        <IoCreateOutline />
+                    </Button>
+
+                    <Button type={'button'} onClick={toggleStation}>
+                        <IoClose />
+                    </Button>
+                </div>
             </header>
 
             <article className="container">

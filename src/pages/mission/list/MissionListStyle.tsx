@@ -37,9 +37,10 @@ export const MissionListWrap = styled.section`
                 background-color: ${theme.color.white};
                 padding: 0.5rem 0.7rem;
                 border-radius: 4px;
+                cursor: pointer;
 
-                & .active {
-                    border: 1.5px solid ${theme.color.primary};
+                &.active {
+                    border: 3px solid ${theme.color.primary};
                 }
 
                 & header {
@@ -71,7 +72,113 @@ export const MissionListWrap = styled.section`
                     gap: 0.3rem;
                     font-size: 12px;
                     color: ${theme.color.black};
+
+                    & .date {
+                        display: flex;
+                        flex-direction: column;
+
+                        span {
+                            font-size: 12px;
+                        }
+                    }
                 }
+            }
+        }
+    }
+
+    .mission_info {
+        position: absolute;
+        background-color: ${theme.color.white};
+        min-width: 360px;
+        color: ${theme.color.black};
+        left: 400px;
+        top: 16px;
+        border-radius: 5px;
+        box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.33);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        font-size: 14px;
+
+        & header {
+            color: ${theme.color.black};
+
+            & .close_btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: max-content;
+                height: max-content;
+
+                & span {
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 100%;
+                    background-color: ${theme.color.black};
+                    display: inline-block;
+                    color: ${theme.color.white};
+                }
+            }
+        }
+
+        & .content {
+            display: flex;
+            gap: 0.8rem;
+            flex-direction: column;
+
+            .top {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+
+                label {
+                    width: 30%;
+                }
+
+                input {
+                    width: 70%;
+                    height: 36px;
+                    border: 1px solid ${theme.color.subBlack};
+                    border-radius: 5px;
+                    padding: 0 0.75rem;
+                }
+            }
+
+            & .mission_type {
+                font-size: 12px;
+            }
+
+            & .ways {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                & div {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.25rem;
+
+                    & span {
+                        font-size: 14px;
+                    }
+                }
+            }
+
+            & .date {
+                display: flex;
+                flex-direction: column;
+
+                span {
+                    font-size: 12px;
+                }
+            }
+
+            .update_btn {
+                color: ${theme.color.white};
+                background-color: ${theme.color.primary};
+                border-radius: 5px;
+                box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.33);
             }
         }
     }

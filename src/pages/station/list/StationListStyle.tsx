@@ -20,8 +20,14 @@ export const StationWrap = styled.section`
             padding-left: 12px;
         }
 
-        button {
-            width: 52px;
+        & .btn_content {
+            display: flex;
+            align-items: center;
+            padding-right: 12px;
+
+            button {
+                width: 36px;
+            }
         }
     }
 

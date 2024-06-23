@@ -15,6 +15,7 @@ interface MissionProps {
 
 export const Mission = ({ toggleMission, map }: MissionProps) => {
     const [isCreateMission, setIsCreateMission] = useState(false)
+    const [isCreate, setIsCreate] = useState(false)
     const [missionData, setMissionData] = useState<MissionDto>({
         name: '',
         type: 0,
@@ -59,7 +60,7 @@ export const Mission = ({ toggleMission, map }: MissionProps) => {
 
     return (
         <MissionWrap>
-            <MissionList toggleMission={toggleMission} />
+            <MissionList toggleMission={toggleMission} isCreate={isCreate} />
 
             <Button
                 className="create_btn"
@@ -78,6 +79,7 @@ export const Mission = ({ toggleMission, map }: MissionProps) => {
                         setActiveMission={setActiveMission}
                         setMissionData={setMissionData}
                         missionData={missionData}
+                        setIsCreate={setIsCreate}
                     />
 
                     <GridMission
@@ -86,6 +88,7 @@ export const Mission = ({ toggleMission, map }: MissionProps) => {
                         setActiveMission={setActiveMission}
                         setMissionData={setMissionData}
                         missionData={missionData}
+                        setIsCreate={setIsCreate}
                     />
 
                     <Button
