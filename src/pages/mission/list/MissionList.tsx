@@ -14,6 +14,7 @@ interface MissionListProps {
 
 export const MissionList = ({ toggleMission }: MissionListProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
+    const [selectMission, setSelectMission] = useState<null | MissionDto>(null)
 
     const getMission = async () => {
         try {
@@ -29,17 +30,7 @@ export const MissionList = ({ toggleMission }: MissionListProps) => {
     const updeateMission = async (mission: MissionDto) => {
         try {
             const { seq } = mission
-            const params = {
-                name: '',
-                type: 1,
-                mainPoint: [],
-                points: [],
-                ways: [],
-                angle: 70,
-                transverseRedundancy: 0,
-                longitudinalRedundancy: 0,
-            }
-            const response = await axios.put(MISSION + `${seq}`, {
+            const response = await axios.put(`${MISSION}/${seq}`, {
                 withCredentials: true,
             })
             const data = await response.data
@@ -50,35 +41,45 @@ export const MissionList = ({ toggleMission }: MissionListProps) => {
         }
     }
 
-    // const getInfoMission = async (mission) => {
-    //     try {
-    //         const { seq } = mission
-    //         const response = await axios.get(MISSION + `${seq}`, {
-    //             withCredentials: true,
-    //         })
-    //         const data = await response.data
+    const getInfoMission = async (mission: MissionDto) => {
+        if (selectMission && mission.seq === selectMission.seq) {
+            setSelectMission(null)
+        } else {
+            setSelectMission(mission)
 
-    //         console.log(data)
-    //     } catch (err) {
-    //         console.log(err)
-    //     }
-    // }
+            try {
+                const { seq } = mission
+                const response = await axios.get(`${MISSION}/${seq}`, {
+                    withCredentials: true,
+                })
+                const data = await response.data
+                console.log(data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    }
 
     const deleteMission = async (mission: MissionDto) => {
-        try {
-            const { seq } = mission
-            const response = await axios.delete(MISSION + `${seq}`, {
-                withCredentials: true,
-            })
-            const data = await response.data
-            console.log(data)
-        } catch (err) {
-            console.log(err)
+        const deleteAlert = confirm('정말 삭제 하시겠습니까?')
+
+        if (deleteAlert) {
+            try {
+                const { seq } = mission
+                const response = await axios.delete(`${MISSION}/${seq}`, {
+                    withCredentials: true,
+                })
+                const data = await response.data
+                console.log(data)
+            } catch (err) {
+                console.log(err)
+            }
+        } else {
+            return
         }
     }
 
     useEffect(() => {
-        // mission 요청 에러가 나서 막아둠
         getMission()
     }, [])
 
@@ -96,11 +97,21 @@ export const MissionList = ({ toggleMission }: MissionListProps) => {
                 <div className="content">
                     {missions.length > 0 &&
                         missions.map((mission) => (
-                            <ul className="mission" key={mission.seq}>
+                            <ul
+                                className={
+                                    selectMission &&
+                                    selectMission.seq === mission.seq
+                                        ? 'mission active'
+                                        : 'mission'
+                                }
+                                key={mission.seq}
+                                onClick={() => getInfoMission(mission)}
+                            >
                                 <header>
                                     <p className="mission_name">
                                         {mission.name}
                                     </p>
+
                                     <div className="content_actios">
                                         <button
                                             onClick={() =>
@@ -118,6 +129,7 @@ export const MissionList = ({ toggleMission }: MissionListProps) => {
                                         </button>
                                     </div>
                                 </header>
+
                                 <div className="content">
                                     <p>
                                         {mission.type === 0
@@ -125,10 +137,11 @@ export const MissionList = ({ toggleMission }: MissionListProps) => {
                                             : '그리드'}
                                         미션
                                     </p>
-                                    {/* <div className="date">
-                                        <span>{mission?.createdAt}</span>
-                                        <span>{mission?.updatedAt}</span>
-                                    </div> */}
+
+                                    <div className="date">
+                                        <span>{mission.createdAt}</span>
+                                        <span>{mission.updatedAt}</span>
+                                    </div>
                                 </div>
                             </ul>
                         ))}

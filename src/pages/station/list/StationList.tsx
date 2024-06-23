@@ -1,7 +1,6 @@
 import { IoClose } from 'react-icons/io5'
 import { Button } from '../../../components/button/Button'
 import { useEffect, useState } from 'react'
-import { mockStation as initialMockStation } from '../Mock'
 import { CiEdit } from 'react-icons/ci'
 import { MdOutlineDelete } from 'react-icons/md'
 import { Station } from '../../../dto/Station'
@@ -21,15 +20,6 @@ export const StationList = ({ toggleStation }: StationListProps) => {
         setSelectedStation(station)
         getDockMarker(station)
     }
-
-    const toggleIsOpen = () => {
-        setSelectedStation(null)
-    }
-
-    const stationControlProps = () => ({
-        selectedStation,
-        toggleIsOpen,
-    })
 
     const editStation = (station: Station) => {
         console.log(station)
@@ -56,8 +46,6 @@ export const StationList = ({ toggleStation }: StationListProps) => {
     }
 
     const getStation = async () => {
-        setStations(initialMockStation)
-
         try {
             const response = await axios.get(STATION)
             const data = await response.data

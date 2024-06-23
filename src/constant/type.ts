@@ -10,13 +10,18 @@ export enum ActiveType {
     schedule = 3,
 }
 
+export interface MissionOverlay {
+    polygon: naver.maps.Polygon | null
+    polyline: naver.maps.Polyline | null
+}
+
 export interface AreaOptions {
     droneAltitude: number
     speed: number
     angle: number
     droneAngle: number
-    horizontalRedundancy: number
-    verticalRedundancy: number
+    longitudinalRedundancy: number
+    transverseRedundancy: number
     photoWidthRatio: number
     photoHeightRatio: number
 }
@@ -39,6 +44,7 @@ export enum StationStatus {
 export interface Point {
     latitude: number
     longitude: number
+    height: number
 }
 
 export interface MissionStateItem {

@@ -39,28 +39,54 @@ export const MissionWrap = styled.section`
         top: 16px;
         left: 50%;
         transform: translateX(-50%);
-        padding: 0.8rem 1.5rem;
+        padding: 1.5rem;
         background-color: ${theme.color.subBlack};
         border-radius: 5px;
         color: ${theme.color.white};
-        display: flex;
-        gap: 1rem;
-        align-items: center;
         min-width: 300px;
+        box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.33);
 
         & .content {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            min-width: 180px;
+            gap: 12px;
+            min-width: 300px;
+
+            .overlay_info {
+                & span {
+                    width: 100%;
+                }
+            }
+
+            & div {
+                display: flex;
+                gap: 6px;
+                align-items: center;
+
+                & label {
+                    width: 50px;
+                }
+
+                & .name {
+                    width: 100%;
+                    border-radius: 5px;
+                    border: 1px solid ${theme.color.subPrimary};
+                    color: ${theme.color.white};
+                    padding: 0 0.35rem;
+                    height: 32px;
+                }
+            }
         }
 
         & .btn_box {
             display: flex;
-            flex-direction: column;
             gap: 4px;
 
-            .submit_btn {
+            & button {
+                height: 32px;
+            }
+
+            & .submit_btn {
                 background-color: ${theme.color.primary};
                 min-width: 100px;
                 border-radius: 5px;

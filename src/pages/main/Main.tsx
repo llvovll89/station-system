@@ -10,15 +10,15 @@ import { Schedule } from '../schedule/Schedule'
 export const Main = () => {
     const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none)
     const [map, setMap] = useState<naver.maps.Map | null>(null)
-    const [mapType, setMapType] = useState<naver.maps.MapTypeId>(
-        naver.maps.MapTypeId.NORMAL
-    )
+    // const [mapType, setMapType] = useState<naver.maps.MapTypeId>(
+    //     naver.maps.MapTypeId.NORMAL
+    // )
 
     const mapElement = useRef(null)
-    const mapTypeChange = (mapType: naver.maps.MapTypeId) => {
-        setMapType(mapType)
-        map?.setMapTypeId(mapType)
-    }
+    // const mapTypeChange = (mapType: naver.maps.MapTypeId) => {
+    //     setMapType(mapType)
+    //     map?.setMapTypeId(mapType)
+    // }
 
     useEffect(() => {
         if (!mapElement.current || !naver) return
@@ -33,7 +33,7 @@ export const Main = () => {
         }
 
         setMap(new naver.maps.Map(mapElement.current, mapOptions))
-    }, [mapType])
+    }, [])
 
     const navigate = useNavigate()
 

@@ -11,6 +11,7 @@ export const GridMissionWrap = styled.section`
     background-color: ${theme.color.subBlack};
     border-radius: 5px;
     boxs-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+    overflow: hidden;
 
     & .disabled {
         background-color: ${theme.color.green};
@@ -25,5 +26,9 @@ export const GridMissionWrap = styled.section`
         span {
             font-size: 14px;
         }
+    }
+
+    .active {
+        background-color: ${theme.color.primary};
     }
 `

@@ -38,6 +38,10 @@ export const MissionListWrap = styled.section`
                 padding: 0.5rem 0.7rem;
                 border-radius: 4px;
 
+                & .active {
+                    border: 1.5px solid ${theme.color.primary};
+                }
+
                 & header {
                     display: flex;
                     justify-content: space-between;
@@ -59,6 +63,14 @@ export const MissionListWrap = styled.section`
                         justify-content: center;
                         cursor: pointer;
                     }
+                }
+
+                & .content {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.3rem;
+                    font-size: 12px;
+                    color: ${theme.color.black};
                 }
             }
         }

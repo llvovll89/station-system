@@ -11,6 +11,15 @@ export const MainWrap = styled.section`
         height: 100vh;
     }
 
+    & .delete_marker {
+        background-color: ${theme.color.subBlack};
+        color: ${theme.color.white};
+        padding: 0.3rem 0.75rem;
+        font-size: 12px;
+        border-radius: 5px;
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+    }
+
     & .marker {
         width: 24px;
         height: 24px;
@@ -41,6 +50,19 @@ export const MainWrap = styled.section`
         width: 52px;
         height: 52px;
         background-color: ${(props) => props.theme.color.subBlack};
+    }
+
+    & .start_marker,
+    & .end_marker {
+        width: 24px;
+        height: 24px;
+        border-radius: 100%;
+        background-color: ${theme.color.white};
+        border: 2px solid ${theme.color.primary};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: ${theme.color.black};
     }
 
     & .wayline_marker {

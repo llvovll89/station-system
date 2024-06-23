@@ -33,8 +33,8 @@ export const findMinMaxCoordinates = (coordinates: Point[]): Point[] => {
     })
 
     return [
-        { latitude: minLatitude, longitude: minLongitude },
-        { latitude: maxLatitude, longitude: maxLongitude },
+        { latitude: minLatitude, longitude: minLongitude, height: 100 },
+        { latitude: maxLatitude, longitude: maxLongitude, height: 100 },
     ]
 }
 
@@ -55,8 +55,8 @@ export const isPointInOverlayUtils = (
         if (
             isPointOnLineSegment(
                 point,
-                { longitude: xi, latitude: yi },
-                { longitude: xj, latitude: yj }
+                { longitude: xi, latitude: yi, height: 100 },
+                { longitude: xj, latitude: yj, height: 100 }
             )
         ) {
             return true
