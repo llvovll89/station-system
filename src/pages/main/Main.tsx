@@ -10,6 +10,7 @@ import { Schedule } from '../schedule/Schedule'
 export const Main = () => {
     const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none)
     const [map, setMap] = useState<naver.maps.Map | null>(null)
+    const [isActive, setIsActive] = useState('')
     // const [mapType, setMapType] = useState<naver.maps.MapTypeId>(
     //     naver.maps.MapTypeId.NORMAL
     // )
@@ -48,6 +49,8 @@ export const Main = () => {
     return (
         <MainWrap>
             <Header
+                isActive={isActive}
+                setIsActive={setIsActive}
                 toggleMission={() => toggleActive(ActiveType.mission)}
                 toggleStation={() => toggleActive(ActiveType.station)}
                 toggleSchedule={() => toggleActive(ActiveType.schedule)}
@@ -57,6 +60,7 @@ export const Main = () => {
 
             {activeType === ActiveType.mission && (
                 <Mission
+                    setIsActive={setIsActive}
                     toggleMission={() => toggleActive(ActiveType.mission)}
                     map={map}
                 />

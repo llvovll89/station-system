@@ -65,6 +65,19 @@ export const MainWrap = styled.section`
         color: ${theme.color.black};
     }
 
+    & .waypoint_marker {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 100%;
+        border: 2px solid ${theme.color.primary};
+        background-color: ${theme.color.white};
+        color: ${theme.color.black};
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+    }
+
     & .wayline_marker {
         width: 24px;
         height: 24px;
@@ -75,6 +88,15 @@ export const MainWrap = styled.section`
         background-color: ${theme.color.primary};
         border-radius: 5px;
         border: 1px solid ${theme.color.subWhite};
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+    }
+
+    & .points_marker {
+        width: 26px;
+        height: 26px;
+        border-radius: 100%;
+        border: 2px solid ${theme.color.black};
+        background-color: ${theme.color.primary};
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
     }
 `

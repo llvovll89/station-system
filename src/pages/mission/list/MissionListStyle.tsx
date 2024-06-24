@@ -86,7 +86,7 @@ export const MissionListWrap = styled.section`
         }
     }
 
-    .mission_info {
+    .update_mission {
         position: absolute;
         background-color: ${theme.color.white};
         min-width: 360px;
@@ -101,7 +101,7 @@ export const MissionListWrap = styled.section`
         gap: 1rem;
         font-size: 14px;
 
-        & header {
+        header {
             color: ${theme.color.black};
 
             & .close_btn {
@@ -180,6 +180,31 @@ export const MissionListWrap = styled.section`
                 border-radius: 5px;
                 box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.33);
             }
+        }
+    }
+
+    .mission_info {
+        position: absolute;
+        background-color: ${theme.color.white};
+        min-width: 360px;
+        color: ${theme.color.black};
+        left: 400px;
+        bottom: 16px;
+        border-radius: 5px;
+        box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.33);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        header {
+            color: ${theme.color.black};
+        }
+
+        & .content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
     }
 `

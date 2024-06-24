@@ -11,9 +11,10 @@ import { MissionDto } from '../../dto/MissionDto'
 interface MissionProps {
     toggleMission: () => void
     map: naver.maps.Map | null
+    setIsActive: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const Mission = ({ toggleMission, map }: MissionProps) => {
+export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
     const [isCreateMission, setIsCreateMission] = useState(false)
     const [isCreate, setIsCreate] = useState(false)
     const [missionData, setMissionData] = useState<MissionDto>({
@@ -60,7 +61,12 @@ export const Mission = ({ toggleMission, map }: MissionProps) => {
 
     return (
         <MissionWrap>
-            <MissionList toggleMission={toggleMission} isCreate={isCreate} />
+            <MissionList
+                toggleMission={toggleMission}
+                isCreate={isCreate}
+                map={map}
+                setIsActive={setIsActive}
+            />
 
             <Button
                 className="create_btn"

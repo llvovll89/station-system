@@ -1,23 +1,36 @@
 import { Button } from '../../../components/button/Button'
 import { IoClose } from 'react-icons/io5'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { MISSION } from '../../../constant/http'
 import { CiEdit } from 'react-icons/ci'
 import { MdOutlineDelete } from 'react-icons/md'
 import { MissionDto } from '../../../dto/MissionDto'
 import { MissionListWrap } from './MissionListStyle'
+import axios from 'axios'
 
 interface MissionListProps {
     toggleMission: () => void
     isCreate: boolean
+    map: naver.maps.Map | null
+    setIsActive: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const MissionList = ({ toggleMission, isCreate }: MissionListProps) => {
+export const MissionList = ({
+    toggleMission,
+    isCreate,
+    map,
+    setIsActive,
+}: MissionListProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
     const [selectMission, setSelectMission] = useState<null | MissionDto>(null)
+    const [overlayData, setOverlayData] = useState({
+        distance: '',
+        areaSize: '',
+    })
     const [isUpdateMission, setIsUpdateMission] = useState(false)
     const [isHttpRequest, setIsHttpRequest] = useState(false)
+    const [isSelectInfo, setIsSelectInfo] = useState(false)
+    const [currentMapElements, setCurrentMapElements] = useState<any[]>([])
     const [infoMission, setInfoMission] = useState<MissionDto>({
         seq: 0,
         name: '',
@@ -33,6 +46,12 @@ export const MissionList = ({ toggleMission, isCreate }: MissionListProps) => {
         ways: [],
     })
 
+    const closeMissionList = () => {
+        clearMapElements()
+        setIsActive('')
+        toggleMission()
+    }
+
     const getMission = async () => {
         try {
             const response = await axios.get(MISSION, { withCredentials: true })
@@ -47,6 +66,21 @@ export const MissionList = ({ toggleMission, isCreate }: MissionListProps) => {
 
     const updateModal = () => {
         setIsUpdateMission((prev) => !prev)
+    }
+
+    const clearMapElements = () => {
+        currentMapElements.forEach((element) => {
+            console.log('element', element)
+            element.setMap(null)
+        })
+
+        setOverlayData({
+            ...overlayData,
+            distance: '',
+            areaSize: '',
+        })
+
+        setCurrentMapElements([])
     }
 
     const updeateMission = async (mission: MissionDto) => {
@@ -90,9 +124,128 @@ export const MissionList = ({ toggleMission, isCreate }: MissionListProps) => {
                     points: data.points,
                     ways: data.ways,
                 })
+
+                setIsSelectInfo(true)
             } catch (err) {
                 console.log(err)
             }
+        }
+    }
+
+    const setInfoDataForMap = () => {
+        clearMapElements()
+
+        if (infoMission.type === 0) {
+            const polyline = new naver.maps.Polyline({
+                map: map ? map : undefined,
+                path: infoMission.ways.map(
+                    (p) => new naver.maps.LatLng(p.latitude, p.longitude)
+                ),
+                strokeColor: '#2E8B57',
+                strokeOpacity: 1,
+                strokeWeight: 6,
+                strokeStyle: 'solid',
+            })
+
+            setOverlayData({
+                ...overlayData,
+                distance: polyline.getDistance().toFixed(2),
+            })
+
+            const markers = infoMission.ways.map(
+                (p, index) =>
+                    new naver.maps.Marker({
+                        map: map ? map : undefined,
+                        position: new naver.maps.LatLng(
+                            p.latitude,
+                            p.longitude
+                        ),
+                        icon: {
+                            content: `<div class='waypoint_marker'>${index + 1}</div>`,
+                            anchor: new naver.maps.Point(9, 9),
+                        },
+                    })
+            )
+
+            map && map.fitBounds(polyline.getBounds())
+            setCurrentMapElements([polyline, ...markers])
+            console.log(polyline)
+        } else {
+            const mainPoints: naver.maps.Marker[] = []
+            infoMission.points.forEach((p) => {
+                mainPoints.push(
+                    new naver.maps.Marker({
+                        map: map ? map : undefined,
+                        position: new naver.maps.LatLng(
+                            p.latitude,
+                            p.longitude
+                        ),
+                        icon: {
+                            content: `<div class='points_marker'></div>`,
+                            anchor: new naver.maps.Point(9, 9),
+                        },
+                    })
+                )
+            })
+
+            console.log('mainPoints', mainPoints)
+            console.log('points', infoMission.points)
+
+            const polygon = new naver.maps.Polygon({
+                map: map ? map : undefined,
+                paths: [
+                    infoMission.points.map(
+                        (p) => new naver.maps.LatLng(p.latitude, p.longitude)
+                    ),
+                ],
+                strokeColor: '#0080DE',
+                strokeOpacity: 1,
+                strokeWeight: 4,
+                fillColor: '#fefefe',
+                fillOpacity: 0.6,
+            })
+
+            const polyline = new naver.maps.Polyline({
+                map: map ? map : undefined,
+                path: infoMission.ways.map(
+                    (p) => new naver.maps.LatLng(p.latitude, p.longitude)
+                ),
+                strokeColor: '#2E8B57',
+                strokeOpacity: 1,
+                strokeWeight: 4,
+                strokeStyle: 'solid',
+            })
+
+            setOverlayData({
+                ...overlayData,
+                areaSize: polygon.getAreaSize().toFixed(2),
+                distance: polyline.getDistance().toFixed(2),
+            })
+
+            const markers = infoMission.ways.map(
+                (p, index) =>
+                    new naver.maps.Marker({
+                        map: map ? map : undefined,
+                        position: new naver.maps.LatLng(
+                            p.latitude,
+                            p.longitude
+                        ),
+                        icon: {
+                            content: `<div class='waypoint_marker'>${index + 1}</div>`,
+                            anchor: new naver.maps.Point(12, 12),
+                        },
+                    })
+            )
+
+            map && map.fitBounds(polygon.getBounds())
+
+            console.log(polygon, polyline)
+            setCurrentMapElements([
+                ...mainPoints,
+                polygon,
+                polyline,
+                ...markers,
+            ])
         }
     }
 
@@ -120,12 +273,18 @@ export const MissionList = ({ toggleMission, isCreate }: MissionListProps) => {
         getMission()
     }, [isCreate, isHttpRequest])
 
+    useEffect(() => {
+        if (isSelectInfo) {
+            setInfoDataForMap()
+        }
+    }, [infoMission])
+
     return (
         <MissionListWrap>
             <header>
                 <h1>미션</h1>
 
-                <Button type={'button'} onClick={toggleMission}>
+                <Button type={'button'} onClick={closeMissionList}>
                     <IoClose />
                 </Button>
             </header>
@@ -178,7 +337,7 @@ export const MissionList = ({ toggleMission, isCreate }: MissionListProps) => {
             </article>
 
             {isUpdateMission && (
-                <article className="mission_info">
+                <article className="update_mission">
                     <header>
                         <p>미션 수정</p>
                         <div className="content_actios">
@@ -236,6 +395,22 @@ export const MissionList = ({ toggleMission, isCreate }: MissionListProps) => {
                         >
                             <span>수정하기</span>
                         </Button>
+                    </div>
+                </article>
+            )}
+
+            {isSelectInfo && (
+                <article className="mission_info">
+                    <header>
+                        <p>{infoMission.name}</p>
+                        <div className="content_actios">
+                            <span>웨이포인트 {infoMission.points.length}</span>
+                        </div>
+                    </header>
+
+                    <div className="content">
+                        <span>비행거리 {overlayData.distance} m</span>
+                        <span>비행면적 {overlayData.areaSize} 제곱미터</span>
                     </div>
                 </article>
             )}

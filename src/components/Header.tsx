@@ -70,14 +70,17 @@ interface HeaderProps {
     toggleMission: () => void
     toggleStation: () => void
     toggleSchedule: () => void
+    isActive: string
+    setIsActive: React.Dispatch<React.SetStateAction<string>>
 }
 
 export const Header = ({
     toggleMission,
     toggleStation,
     toggleSchedule,
+    isActive,
+    setIsActive,
 }: HeaderProps) => {
-    const [isActive, setIsActive] = useState('')
     const [isLoggedIn, setIsLoggedIn] = useState(!localStorage.getItem('user'))
     const navigate = useNavigate()
 
