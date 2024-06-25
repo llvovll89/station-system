@@ -194,10 +194,30 @@ export const WaypPointMission = ({
                 const index = markerArr.indexOf(marker)
 
                 if (index !== -1) {
-                    mainPointMarker[index].setMap(null)
-                    mainPointMarker.splice(index, 1)
+                    marker.setMap(null)
+                    markerArr.splice(index, 1)
                     mainPoints.splice(index, 1)
                     wayLines.splice(index, 1)
+                    wayLine.setPath(mainPoints)
+                    setDistance(wayLine.getDistance())
+
+                    markerArr.forEach((marker, i) => {
+                        marker.setIcon({
+                            content: `<div class='wayline_marker'>${i + 1}</div>`,
+                            anchor: new naver.maps.Point(12, 12),
+                        })
+                    })
+
+                    setMissionData((prev) => ({
+                        ...prev,
+                        points: prev.points.filter((_, i) => i !== index),
+                        ways: prev.ways.filter((_, i) => i !== index),
+                    }))
+
+                    setWayPointState((prev) => ({
+                        ...prev,
+                        markers: prev.markers.filter((_, i) => i !== index),
+                    }))
                 }
             })
         })
@@ -288,17 +308,19 @@ export const WaypPointMission = ({
                         </div>
 
                         <div className="overlay_info">
-                            <span>포인트 갯수: {mainPoints.length}</span>
+                            <span>
+                                웨이포인트: {wayPointState.markers.length}
+                            </span>
                             <span>총 거리: {distance.toFixed(2)}m</span>
                         </div>
 
                         <div className="btn_box">
                             <Button
-                                onClick={submitWaypoint}
+                                onClick={resetData}
                                 type="button"
                                 className="submit_btn"
                             >
-                                <span>추가하기</span>
+                                <span>초기화</span>
                             </Button>
                             <Button
                                 onClick={submitWaypoint}

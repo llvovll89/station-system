@@ -99,4 +99,21 @@ export const MainWrap = styled.section`
         background-color: ${theme.color.primary};
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
     }
+
+    & .dock_marker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 100%;
+        border: 3px solid #181818;
+        background-color: ${theme.color.white};
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+
+        & span {
+            color: ${theme.color.black};
+            font-size: 12px;
+        }
+    }
 `

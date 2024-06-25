@@ -67,10 +67,17 @@ export const StationList = ({ toggleStation }: StationListProps) => {
 
     const getDockMarker = (station: Station) => {
         const { latitude, longitude } = station
-        new naver.maps.Marker({
+        const dockMarker = new naver.maps.Marker({
             map: (document.getElementById('map') as any) || naver.maps.Map,
             position: new naver.maps.LatLng(latitude, longitude),
+            icon: {
+                content: `<div class='dock_marker'><span>D</span></div>`,
+                anchor: new naver.maps.Point(16, 16),
+            },
         })
+
+        console.log(station)
+        console.log(dockMarker)
     }
 
     const getStation = async () => {

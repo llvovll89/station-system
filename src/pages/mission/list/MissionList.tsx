@@ -269,6 +269,10 @@ export const MissionList = ({
         }
     }
 
+    const formatDateString = (dateString: any) => {
+        return dateString.replace('T', ' ')
+    }
+
     useEffect(() => {
         getMission()
     }, [isCreate, isHttpRequest])
@@ -327,8 +331,16 @@ export const MissionList = ({
                                     </p>
 
                                     <div className="date">
-                                        <span>{mission.createdAt}</span>
-                                        <span>{mission.updatedAt}</span>
+                                        <span>
+                                            {formatDateString(
+                                                mission.createdAt
+                                            )}
+                                        </span>
+                                        <span>
+                                            {formatDateString(
+                                                mission.updatedAt
+                                            )}
+                                        </span>
                                     </div>
                                 </div>
                             </ul>
