@@ -1,9 +1,7 @@
 import { IoClose } from 'react-icons/io5'
 import { Button } from '../../../components/button/Button'
 import { useEffect, useState } from 'react'
-import { CiEdit } from 'react-icons/ci'
-import { MdOutlineDelete } from 'react-icons/md'
-import { Station } from '../../../dto/Station'
+import { StationDto } from '../../../dto/Station'
 import axios from 'axios'
 import { STATION } from '../../../constant/http'
 import { IoCreateOutline } from 'react-icons/io5'
@@ -14,9 +12,11 @@ interface StationListProps {
 }
 
 export const StationList = ({ toggleStation }: StationListProps) => {
-    const [stations, setStations] = useState<Station[]>([])
+    const [stations, setStations] = useState<StationDto[]>([])
     const [isHttpRequest, setIsHttpRequest] = useState(false)
-    const [selectedStation, setSelectedStation] = useState<Station | null>(null)
+    const [selectedStation, setSelectedStation] = useState<StationDto | null>(
+        null
+    )
 
     const createStation = async () => {
         const name = localStorage.getItem('user')
@@ -44,41 +44,25 @@ export const StationList = ({ toggleStation }: StationListProps) => {
         }
     }
 
-    const selectStation = (station: Station) => {
+    const selectStation = (station: StationDto) => {
         setSelectedStation(station)
-        getDockMarker(station)
+        // getDockMarker(station)
     }
 
-    const editStation = (station: Station) => {
-        console.log(station)
-    }
+    // const getDockMarker = (station: StationDto) => {
+    //     const { latitude, longitude } = station
+    //     const dockMarker = new naver.maps.Marker({
+    //         map: (document.getElementById('map') as any) || naver.maps.Map,
+    //         position: new naver.maps.LatLng(latitude, longitude),
+    //         icon: {
+    //             content: `<div class='dock_marker'><span>D</span></div>`,
+    //             anchor: new naver.maps.Point(16, 16),
+    //         },
+    //     })
 
-    const deleteStation = (station: Station, index: number) => {
-        if (window.confirm('정말 삭제 하시겠습니까?')) {
-            const updatedStations = stations.filter((_, i) => i !== index)
-            setStations(updatedStations)
-
-            if (selectedStation && selectedStation.seq === station.seq) {
-                setSelectedStation(null)
-                console.log(selectedStation)
-            }
-        }
-    }
-
-    const getDockMarker = (station: Station) => {
-        const { latitude, longitude } = station
-        const dockMarker = new naver.maps.Marker({
-            map: (document.getElementById('map') as any) || naver.maps.Map,
-            position: new naver.maps.LatLng(latitude, longitude),
-            icon: {
-                content: `<div class='dock_marker'><span>D</span></div>`,
-                anchor: new naver.maps.Point(16, 16),
-            },
-        })
-
-        console.log(station)
-        console.log(dockMarker)
-    }
+    //     console.log(station)
+    //     console.log(dockMarker)
+    // }
 
     const getStation = async () => {
         try {
@@ -119,7 +103,7 @@ export const StationList = ({ toggleStation }: StationListProps) => {
             </header>
 
             <article className="container">
-                {stations.map((station, index) => (
+                {stations.map((station) => (
                     <section
                         className={`content ${selectedStation === station ? 'selected' : ''}`}
                         key={station.seq}
@@ -127,17 +111,37 @@ export const StationList = ({ toggleStation }: StationListProps) => {
                     >
                         <div className="content_header">
                             <h1>{station.name}</h1>
-                            <div className="content_header_items">
-                                <button onClick={() => editStation(station)}>
-                                    <CiEdit />
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        deleteStation(station, index)
+                        </div>
+
+                        <div className="content_body">
+                            <div>
+                                <span>상태: </span>
+                                <span
+                                    className={
+                                        station.status === 0 ? 'idle' : 'active'
                                     }
                                 >
-                                    <MdOutlineDelete />
-                                </button>
+                                    {station.status === 0
+                                        ? ' 대기중'
+                                        : ' 작동중'}
+                                </span>
+                            </div>
+                            <div className="coords">
+                                <span>
+                                    위도: {Number(station.latitude.toFixed(6))}
+                                </span>
+                                <span>
+                                    경도: {Number(station.longitude.toFixed(6))}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="content_drone">
+                            <div className="drone">
+                                <span>드론: </span>
+                                <span className="name">
+                                    {station.drone.name}
+                                </span>
                             </div>
                         </div>
                     </section>

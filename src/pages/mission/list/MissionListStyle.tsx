@@ -38,6 +38,8 @@ export const MissionListWrap = styled.section`
                 padding: 0.5rem 0.7rem;
                 border-radius: 4px;
                 cursor: pointer;
+                border: 3px solid ${theme.color.green};
+                transition: all 0.15s ease-in-out;
 
                 &.active {
                     border: 3px solid ${theme.color.primary};
@@ -55,6 +57,15 @@ export const MissionListWrap = styled.section`
                     & .content_actios {
                         display: flex;
                         align-items: center;
+
+                        & button {
+                            width: 36px;
+                            height: 24px;
+
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
                     }
 
                     button {
@@ -73,12 +84,35 @@ export const MissionListWrap = styled.section`
                     font-size: 12px;
                     color: ${theme.color.black};
 
+                    & .mission_type {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.35rem;
+
+                        & span {
+                            font-size: 12px;
+                            &:first-child {
+                                color: rgba(140, 140, 140, 1);
+                            }
+                        }
+                    }
+
                     & .date {
                         display: flex;
                         flex-direction: column;
 
-                        span {
-                            font-size: 12px;
+                        & div {
+                            display: flex;
+                            align-items: center;
+                            gap: 0.25rem;
+
+                            span {
+                                font-size: 12px;
+
+                                &:first-child {
+                                    color: rgba(140, 140, 140, 1);
+                                }
+                            }
                         }
                     }
                 }
@@ -103,6 +137,18 @@ export const MissionListWrap = styled.section`
 
         header {
             color: ${theme.color.black};
+
+            & .header_title {
+                display: flex;
+                gap: 0.25rem;
+                align-items: center;
+
+                & span {
+                    &:first-child {
+                        font-size: 16px;
+                    }
+                }
+            }
 
             & .close_btn {
                 display: flex;

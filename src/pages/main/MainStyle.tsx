@@ -95,8 +95,8 @@ export const MainWrap = styled.section`
         width: 26px;
         height: 26px;
         border-radius: 100%;
-        border: 2px solid ${theme.color.black};
-        background-color: ${theme.color.primary};
+        border: 3px solid ${theme.color.primary};
+        background-color: ${theme.color.white};
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
     }
 
@@ -104,16 +104,35 @@ export const MainWrap = styled.section`
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 100%;
-        border: 3px solid #181818;
-        background-color: ${theme.color.white};
+        border: 3px solid ${theme.color.primary};
+        background-color: #231f20;
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
 
         & span {
-            color: ${theme.color.black};
+            color: ${theme.color.white};
             font-size: 12px;
+            font-weight: bold;
+        }
+    }
+
+    & .drone_marker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 100%;
+        border: 3px solid ${theme.color.green};
+        background-color: #231f20;
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+
+        & span {
+            color: ${theme.color.white};
+            font-size: 12px;
+            font-weight: bold;
         }
     }
 `

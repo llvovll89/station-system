@@ -407,6 +407,26 @@ export const GridMission = ({
         }
     }
 
+    const resetGridMission = () => {
+        clearMap()
+        setActiveMission(null)
+        setMissionData({
+            ...missionData,
+            name: '',
+            points: [],
+            ways: [],
+        })
+        setOverlays({
+            startMarker: null,
+            endMarker: null,
+            wayLine: null,
+            overlay: null,
+        })
+        setMarkers([])
+        setMainPoints([])
+        console.log(mainPoints)
+    }
+
     const clearMap = () => {
         markers.forEach((marker) => marker.setMap(null))
         if (polygon) polygon.setMap(null)
@@ -456,6 +476,7 @@ export const GridMission = ({
 
             {activeMission === 'grid' && (
                 <GridMissionOptions
+                    resetGridMission={resetGridMission}
                     areaOptions={areaOptions}
                     setAreaOptions={setAreaOptions}
                     setMissionData={setMissionData}

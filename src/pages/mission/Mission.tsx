@@ -1,7 +1,6 @@
 import { MissionWrap } from './MissionStyle'
 import { Button } from '../../components/button/Button'
 import { VscGitPullRequestCreate } from 'react-icons/vsc'
-import { GrPowerReset } from 'react-icons/gr'
 import { WaypPointMission } from './weapoint/WayPointMission'
 import { GridMission } from './grid/GridMission'
 import { MissionList } from './list/MissionList'
@@ -40,25 +39,6 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
         setActiveMission(null)
     }
 
-    const resetMission = () => {
-        setMissionData({
-            name: '',
-            type: 0,
-            mainPoint: {
-                latitude: 0,
-                longitude: 0,
-                height: 100,
-            },
-            points: [],
-            ways: [],
-            transverseRedundancy: 70,
-            longitudinalRedundancy: 70,
-            angle: 36,
-        })
-        setActiveMission(null)
-        location.reload()
-    }
-
     return (
         <MissionWrap>
             <MissionList
@@ -74,7 +54,9 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                 onClick={setCreateMission}
             >
                 <VscGitPullRequestCreate />
-                <span>생성</span>
+                <span className={isCreateMission ? 'active' : ''}>
+                    {isCreateMission ? '종료' : '생성'}
+                </span>
             </Button>
 
             {isCreateMission && (
@@ -96,15 +78,6 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                         missionData={missionData}
                         setIsCreate={setIsCreate}
                     />
-
-                    <Button
-                        className="init_btn"
-                        type="button"
-                        onClick={resetMission}
-                    >
-                        <GrPowerReset />
-                        <span>INIT</span>
-                    </Button>
                 </>
             )}
         </MissionWrap>

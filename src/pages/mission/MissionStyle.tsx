@@ -13,6 +13,12 @@ export const MissionWrap = styled.section`
         background-color: ${theme.color.subBlack};
         flex-direction: column;
         gap: 4px;
+
+        & span {
+            &.active {
+                color: ${theme.color.primary};
+            }
+        }
     }
 
     & .init_btn {

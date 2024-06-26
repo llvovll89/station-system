@@ -42,7 +42,7 @@ export const StationWrap = styled.section`
             padding: 0.5rem 0.7rem;
             display: flex;
             flex-direction: column;
-            gap: 0.6rem;
+            gap: 0.25rem;
             border-radius: 4px;
             border: 2px solid ${theme.color.white};
             transition: all 0.3s ease-in-out;
@@ -77,24 +77,35 @@ export const StationWrap = styled.section`
             & .content_body {
                 display: flex;
                 flex-direction: column;
+                gap: 0.25rem;
 
-                & .content_desc {
-                    font-size: 0.9rem;
+                & div {
+                    display: flex;
+                    gap: 0.25rem;
+                    align-items: center;
+
+                    & span {
+                        &.idle {
+                            color: ${theme.color.green};
+                        }
+
+                        &.active {
+                            color: ${theme.color.primary};
+                        }
+                    }
                 }
 
-                & .content_sn {
+                & .coords {
                     display: flex;
-                    flex-direction: column;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+            }
 
-                    & div {
-                        display: flex;
-                        align-items: center;
-                        gap: 0.5rem;
-
-                        & span {
-                            font-size: 0.8rem;
-                            font-weight: bold;
-                        }
+            & .content_drone {
+                & .drone {
+                    & .name {
+                        color: ${theme.color.green};
                     }
                 }
             }

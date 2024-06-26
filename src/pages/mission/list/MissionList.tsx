@@ -64,7 +64,8 @@ export const MissionList = ({
         }
     }
 
-    const updateModal = () => {
+    const updateModal = (e: React.MouseEvent) => {
+        e.stopPropagation()
         setIsUpdateMission((prev) => !prev)
     }
 
@@ -100,7 +101,17 @@ export const MissionList = ({
     const getInfoMission = async (mission: MissionDto) => {
         if (selectMission && mission.seq === selectMission.seq) {
             setSelectMission(null)
+            setIsSelectInfo(false)
+            clearMapElements()
+
+            if (isUpdateMission) {
+                setIsUpdateMission(false)
+            }
         } else {
+            if (isUpdateMission) {
+                setIsUpdateMission(false)
+            }
+
             setSelectMission(mission)
 
             try {
@@ -249,7 +260,8 @@ export const MissionList = ({
         }
     }
 
-    const deleteMission = async (mission: MissionDto) => {
+    const deleteMission = async (mission: MissionDto, e: React.MouseEvent) => {
+        e.stopPropagation()
         const deleteAlert = confirm('정말 삭제 하시겠습니까?')
 
         if (deleteAlert) {
@@ -260,6 +272,7 @@ export const MissionList = ({
                 })
                 const data = await response.data
                 console.log(data)
+                clearMapElements()
                 setIsHttpRequest((prev) => !prev)
             } catch (err) {
                 console.log(err)
@@ -308,39 +321,56 @@ export const MissionList = ({
                                     </p>
 
                                     <div className="content_actios">
-                                        <button onClick={updateModal}>
-                                            <CiEdit />
+                                        <button onClick={(e) => updateModal(e)}>
+                                            <CiEdit
+                                                style={{
+                                                    width: '20px',
+                                                    height: '20px',
+                                                }}
+                                            />
                                         </button>
                                         <button
-                                            onClick={() =>
-                                                deleteMission(mission)
+                                            onClick={(e) =>
+                                                deleteMission(mission, e)
                                             }
                                         >
-                                            <MdOutlineDelete />
+                                            <MdOutlineDelete
+                                                style={{
+                                                    width: '20px',
+                                                    height: '20px',
+                                                }}
+                                            />
                                         </button>
                                     </div>
                                 </header>
 
                                 <div className="content">
-                                    <p>
-                                        (
-                                        {mission.type === 0
-                                            ? '웨이포인트'
-                                            : '그리드'}
-                                        )
-                                    </p>
+                                    <div className="mission_type">
+                                        <span>타입</span>
+                                        <span>
+                                            {mission.type === 0
+                                                ? '웨이포인트'
+                                                : '그리드'}
+                                        </span>
+                                    </div>
 
                                     <div className="date">
-                                        <span>
-                                            {formatDateString(
-                                                mission.createdAt
-                                            )}
-                                        </span>
-                                        <span>
-                                            {formatDateString(
-                                                mission.updatedAt
-                                            )}
-                                        </span>
+                                        <div>
+                                            <span>createdAt: </span>
+                                            <span>
+                                                {formatDateString(
+                                                    mission.createdAt
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span>updatedAt: </span>
+                                            <span>
+                                                {formatDateString(
+                                                    mission.updatedAt
+                                                )}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </ul>
@@ -351,7 +381,16 @@ export const MissionList = ({
             {isUpdateMission && (
                 <article className="update_mission">
                     <header>
-                        <p>미션 수정</p>
+                        <div className="header_title">
+                            <span>미션 수정</span>
+                            <span className="mission_type">
+                                (
+                                {infoMission.type === 0
+                                    ? '웨이포인트'
+                                    : '그리드'}
+                                )
+                            </span>
+                        </div>
                         <div className="content_actios">
                             <Button
                                 className="close_btn"
@@ -380,15 +419,18 @@ export const MissionList = ({
                             />
                         </div>
 
-                        <p className="mission_type">
-                            {infoMission.type === 0 ? '웨이포인트' : '그리드'}
-                        </p>
-
                         <div className="ways">
-                            <div>
-                                <span>웨이포인트:</span>
-                                <span>{infoMission.ways.length}</span>
-                            </div>
+                            {infoMission.type === 0 ? (
+                                <div>
+                                    <span>웨이포인트:</span>
+                                    <span>{infoMission.ways.length}</span>
+                                </div>
+                            ) : (
+                                <div>
+                                    <span>사진:</span>
+                                    <span>{infoMission.ways.length}</span>
+                                </div>
+                            )}
                             <div>
                                 <span>도형 포인트:</span>
                                 <span>{infoMission.points.length}</span>
@@ -396,8 +438,18 @@ export const MissionList = ({
                         </div>
 
                         <div className="date">
-                            <span>생성날짜 - {infoMission.createdAt}</span>
-                            <span>업데이트 날짜 - {infoMission.updatedAt}</span>
+                            <div>
+                                <span>createdAt: </span>
+                                <span>
+                                    {formatDateString(infoMission.createdAt)}
+                                </span>
+                            </div>
+                            <div>
+                                <span>updatedAt: </span>
+                                <span>
+                                    {formatDateString(infoMission.updatedAt)}
+                                </span>
+                            </div>
                         </div>
 
                         <Button

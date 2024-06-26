@@ -3,13 +3,14 @@ enum StationStatus {
     running = 1,
 }
 
-export interface Station {
+export interface StationDto {
     seq: number
     name: string
     latitude: number
     longitude: number
     status: StationStatus
     createdAt: Date
+    drone: Drone
 }
 
 export interface Drone {

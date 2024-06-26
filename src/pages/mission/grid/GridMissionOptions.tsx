@@ -35,18 +35,32 @@ const GridMissionOptionsWrap = styled.section`
             }
 
             & input {
+                border-radius: 5px;
                 width: 100%;
                 height: 32px;
                 border: 1px solid ${theme.color.subWhite};
                 padding: 0 0.75rem;
                 color: ${theme.color.white};
+                transition: all 0.15s ease-in-out;
+
+                &:focus {
+                    border: 1px solid ${theme.color.primary};
+                    color: ${theme.color.primary};
+                }
             }
         }
     }
 
-    & .submit {
-        background-color: ${theme.color.primary};
-        border-radius: 5px;
+    & .btns {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.35rem;
+
+        & .submit,
+        & .reset_btn {
+            background-color: ${theme.color.primary};
+            border-radius: 5px;
+        }
     }
 `
 
@@ -56,6 +70,7 @@ interface GridMissionOptionsProps {
     submitGridMission: () => void
     missionData: MissionDto
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
+    resetGridMission: () => void
 }
 
 export const GridMissionOptions = ({
@@ -64,6 +79,7 @@ export const GridMissionOptions = ({
     submitGridMission,
     missionData,
     setMissionData,
+    resetGridMission,
 }: GridMissionOptionsProps) => {
     return (
         <GridMissionOptionsWrap>
@@ -96,24 +112,6 @@ export const GridMissionOptions = ({
                         }
                         min={'0'}
                         max={'360'}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="speed">
-                        속도 ({areaOptions.speed}) m/s
-                    </label>
-                    <input
-                        type="range"
-                        id="speed"
-                        value={areaOptions.speed}
-                        onChange={(e) =>
-                            setAreaOptions({
-                                ...areaOptions,
-                                speed: Number(e.target.value),
-                            })
-                        }
-                        min={'1'}
-                        max={'15'}
                     />
                 </div>
                 <div>
@@ -171,13 +169,23 @@ export const GridMissionOptions = ({
                     />
                 </div>
             </div>
-            <Button
-                className="submit"
-                onClick={submitGridMission}
-                type="button"
-            >
-                <span>저장하기</span>
-            </Button>
+            <div className="btns">
+                <Button
+                    type="button"
+                    onClick={resetGridMission}
+                    className="reset_btn"
+                >
+                    <span>초기화</span>
+                </Button>
+
+                <Button
+                    className="submit"
+                    onClick={submitGridMission}
+                    type="button"
+                >
+                    <span>저장하기</span>
+                </Button>
+            </div>
         </GridMissionOptionsWrap>
     )
 }
