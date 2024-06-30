@@ -9,60 +9,30 @@ import { StationWrap } from './StationListStyle'
 
 interface StationListProps {
     toggleStation: () => void
+    setIsActive: React.Dispatch<React.SetStateAction<string>>
+    isHttpRequest: boolean
+    toggleCreateStation: () => void
 }
 
-export const StationList = ({ toggleStation }: StationListProps) => {
+export const StationList = ({
+    toggleStation,
+    setIsActive,
+    isHttpRequest,
+    toggleCreateStation,
+}: StationListProps) => {
     const [stations, setStations] = useState<StationDto[]>([])
-    const [isHttpRequest, setIsHttpRequest] = useState(false)
     const [selectedStation, setSelectedStation] = useState<StationDto | null>(
         null
     )
 
-    const createStation = async () => {
-        const name = localStorage.getItem('user')
-
-        const params = {
-            name,
-            latitude: '',
-            longitude: '',
-            drone: {
-                name: 'm30t',
-                latitude: '',
-                longitude: '',
-            },
-        }
-
-        try {
-            const response = await axios.post(STATION, params, {
-                withCredentials: true,
-            })
-            const data = await response.data
-            console.log(data)
-            setIsHttpRequest((prev) => !prev)
-        } catch (err) {
-            console.log(err)
-        }
+    const toggleActiveStation = () => {
+        toggleStation()
+        setIsActive('')
     }
 
     const selectStation = (station: StationDto) => {
         setSelectedStation(station)
-        // getDockMarker(station)
     }
-
-    // const getDockMarker = (station: StationDto) => {
-    //     const { latitude, longitude } = station
-    //     const dockMarker = new naver.maps.Marker({
-    //         map: (document.getElementById('map') as any) || naver.maps.Map,
-    //         position: new naver.maps.LatLng(latitude, longitude),
-    //         icon: {
-    //             content: `<div class='dock_marker'><span>D</span></div>`,
-    //             anchor: new naver.maps.Point(16, 16),
-    //         },
-    //     })
-
-    //     console.log(station)
-    //     console.log(dockMarker)
-    // }
 
     const getStation = async () => {
         try {
@@ -90,13 +60,13 @@ export const StationList = ({ toggleStation }: StationListProps) => {
                 <div className="btn_content">
                     <Button
                         type={'button'}
-                        onClick={createStation}
+                        onClick={toggleCreateStation}
                         className="create_btn"
                     >
                         <IoCreateOutline />
                     </Button>
 
-                    <Button type={'button'} onClick={toggleStation}>
+                    <Button type={'button'} onClick={toggleActiveStation}>
                         <IoClose />
                     </Button>
                 </div>

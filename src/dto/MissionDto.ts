@@ -1,10 +1,10 @@
 import { Point } from '../constant/type'
 
 export interface MissionDto {
-    seq?: number
+    seq: number
     name: string
     type: number | string
-    mainPoint: Point // 아직 무슨 타입일지
+    mainPoint: Point
     createdAt?: string
     updatedAt?: string
     transverseRedundancy?: number

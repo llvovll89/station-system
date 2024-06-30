@@ -9,24 +9,17 @@ import { Schedule } from '../schedule/Schedule'
 import axios from 'axios'
 import { StationDto } from '../../dto/Station'
 import { STATION } from '../../constant/http'
+import { DarkMode } from '../../components/Darkmode'
 
 export const Main = () => {
     const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none)
     const [map, setMap] = useState<naver.maps.Map | null>(null)
-    const [station, setStation] = useState<StationDto>()
+    const [station, setStation] = useState<StationDto | null>(null)
     const [isActive, setIsActive] = useState('')
     let dockMarker = useRef<naver.maps.Marker | null>(null).current
     let droneMarker = useRef<naver.maps.Marker | null>(null).current
 
-    // const [mapType, setMapType] = useState<naver.maps.MapTypeId>(
-    //     naver.maps.MapTypeId.NORMAL
-    // )
-
     const mapElement = useRef(null)
-    // const mapTypeChange = (mapType: naver.maps.MapTypeId) => {
-    //     setMapType(mapType)
-    //     map?.setMapTypeId(mapType)
-    // }
 
     useEffect(() => {
         if (!mapElement.current || !naver) return
@@ -56,9 +49,6 @@ export const Main = () => {
 
             if (response.status === 200) {
                 setStation(data[0])
-                console.log('data[0]:', data[0])
-                console.log('station:', station)
-
                 const params = {
                     latitude: data[0].latitude,
                     longitude: data[0].longitude,
@@ -111,9 +101,6 @@ export const Main = () => {
         })
 
         dockMarker = marker
-        console.log('params:', params)
-        console.log('dockMarker:', dockMarker)
-        console.log(marker)
     }
 
     useEffect(() => {
@@ -153,14 +140,19 @@ export const Main = () => {
             {activeType === ActiveType.station && (
                 <Station
                     toggleStation={() => toggleActive(ActiveType.station)}
+                    setIsActive={setIsActive}
                 />
             )}
 
             {activeType === ActiveType.schedule && (
                 <Schedule
+                    setIsActive={setIsActive}
+                    station={station}
                     toggleSchedule={() => toggleActive(ActiveType.schedule)}
                 />
             )}
+
+            <DarkMode />
         </MainWrap>
     )
 }

@@ -7,7 +7,7 @@ export const ScheduleListWrap = styled.section`
     position: absolute;
     left: 90px;
     top: 0;
-    background-color: ${theme.color.subBlack};
+    background-color: rgba(0, 0, 0, 0.88);
 
     & header {
         display: flex;
@@ -20,8 +20,16 @@ export const ScheduleListWrap = styled.section`
             padding-left: 12px;
         }
 
-        button {
-            width: 52px;
+        .content_btn {
+            display: flex;
+            align-items: center;
+
+            & button {
+                width: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
         }
     }
 `

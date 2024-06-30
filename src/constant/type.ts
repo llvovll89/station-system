@@ -52,3 +52,19 @@ export interface MissionStateItem {
     distance: number
     areaSize: number
 }
+
+export interface CreateStation {
+    name: string
+    latitude: number
+    longitude: number
+    drone: {
+        name: string
+        latitude: number
+        longitude: number
+    }
+}
+
+export interface DarkModeContextType {
+    isDarkMode: boolean
+    toggleDarkMode: () => void
+}

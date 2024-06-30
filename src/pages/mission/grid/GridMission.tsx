@@ -39,12 +39,21 @@ export const GridMission = ({
         startMarker: naver.maps.Marker | null
         endMarker: naver.maps.Marker | null
         wayLine: naver.maps.Polyline | null
-        overlay: naver.maps.Polygon | null
+        overlay: naver.maps.Polygon
     }>({
         startMarker: null,
         endMarker: null,
         wayLine: null,
-        overlay: null,
+        overlay: new naver.maps.Polygon({
+            map: map ? map : undefined,
+            paths: [],
+            strokeColor: '#0080DE',
+            strokeOpacity: 1,
+            strokeWeight: 4,
+            fillColor: '#fefefe',
+            fillOpacity: 0.6,
+            strokeStyle: 'solid',
+        }),
     })
     const [areaOptions, setAreaOptions] = useState<AreaOptions>({
         droneAltitude: 100,
@@ -420,7 +429,16 @@ export const GridMission = ({
             startMarker: null,
             endMarker: null,
             wayLine: null,
-            overlay: null,
+            overlay: new naver.maps.Polygon({
+                map: map ? map : undefined,
+                paths: [],
+                strokeColor: '#0080DE',
+                strokeOpacity: 1,
+                strokeWeight: 4,
+                fillColor: '#fefefe',
+                fillOpacity: 0.6,
+                strokeStyle: 'solid',
+            }),
         })
         setMarkers([])
         setMainPoints([])
@@ -448,7 +466,16 @@ export const GridMission = ({
             startMarker: null,
             endMarker: null,
             wayLine: null,
-            overlay: null,
+            overlay: new naver.maps.Polygon({
+                map: map ? map : undefined,
+                paths: [],
+                strokeColor: '#0080DE',
+                strokeOpacity: 1,
+                strokeWeight: 4,
+                fillColor: '#fefefe',
+                fillOpacity: 0.6,
+                strokeStyle: 'solid',
+            }),
         })
         setMarkers([])
         setMainPoints([])

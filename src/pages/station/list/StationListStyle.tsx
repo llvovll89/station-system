@@ -7,7 +7,7 @@ export const StationWrap = styled.section`
     position: absolute;
     left: 90px;
     top: 0;
-    background-color: ${theme.color.subBlack};
+    background-color: rgba(0, 0, 0, 0.88);
 
     & header {
         display: flex;
@@ -47,11 +47,11 @@ export const StationWrap = styled.section`
             border: 2px solid ${theme.color.white};
             transition: all 0.3s ease-in-out;
             cursor: pointer;
+            box-shadow: rgba(255, 255, 255, 0.22);
 
             &.selected {
                 background-color: #2eb573;
                 color: ${theme.color.white};
-                // border: 2px solid ${theme.color.primary};
             }
 
             & .content_header {

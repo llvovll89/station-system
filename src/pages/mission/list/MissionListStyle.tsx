@@ -7,7 +7,7 @@ export const MissionListWrap = styled.section`
     position: absolute;
     left: 90px;
     top: 0;
-    background-color: ${theme.color.subBlack};
+    background-color: rgba(0, 0, 0, 0.88);
 
     & header {
         display: flex;
@@ -36,13 +36,20 @@ export const MissionListWrap = styled.section`
             & .mission {
                 background-color: ${theme.color.white};
                 padding: 0.5rem 0.7rem;
-                border-radius: 4px;
+                border-radius: 5px;
                 cursor: pointer;
-                border: 3px solid ${theme.color.green};
                 transition: all 0.15s ease-in-out;
+                box-shadow: rgba(255, 255, 255, 0.22);
 
                 &.active {
-                    border: 3px solid ${theme.color.primary};
+                    background-color: rgb(46, 181, 115);
+                    color: ${theme.color.white};
+
+                    & .content,
+                    & header,
+                    & .date {
+                        color: ${theme.color.white};
+                    }
                 }
 
                 & header {

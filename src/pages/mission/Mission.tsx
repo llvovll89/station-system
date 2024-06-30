@@ -19,6 +19,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
     const [missionData, setMissionData] = useState<MissionDto>({
         name: '',
         type: 0,
+        seq: 0,
         mainPoint: {
             latitude: 0,
             longitude: 0,

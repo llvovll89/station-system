@@ -20,7 +20,7 @@ const HeaderStyled = styled.header`
     left: 0;
     top: 0;
     z-index: 10;
-    background-color: ${theme.color.subBlack};
+    background-color: rgba(0, 0, 0, 0.88);
     color: ${theme.color.white};
     border-right: 1px solid rgba(255, 255, 255, 0.3);
 

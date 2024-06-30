@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import theme from "../../styles/theme";
+import styled from 'styled-components'
+import theme from '../../styles/theme'
 
 export const LoginWrap = styled.section`
     width: 100vw;
@@ -107,14 +107,20 @@ export const LoginWrap = styled.section`
                 & .fail {
                     color: ${theme.color.red};
                     font-size: ${theme.fontSize.xs};
-                    padding: 2px 3px;
+                    padding: 6px 12px;
                     background-color: ${theme.color.subWhite};
+                    border-radius: 5px;
+                    height: 32px;
+                    line-height: 32px;
                 }
 
                 & .suc {
+                    border-radius: 5px;
                     color: ${theme.color.white};
                     font-size: ${theme.fontSize.xs};
-                    padding: 2px 3px;
+                    padding: 6px 12px;
+                    height: 32px;
+                    line-height: 32px;
                     background-color: ${theme.color.primary};
                 }
             
