@@ -44,6 +44,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
         <MissionWrap>
             <MissionList
                 toggleMission={toggleMission}
+                isCreateMission={isCreateMission}
                 isCreate={isCreate}
                 map={map}
                 setIsActive={setIsActive}
@@ -56,7 +57,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
             >
                 <VscGitPullRequestCreate />
                 <span className={isCreateMission ? 'active' : ''}>
-                    {isCreateMission ? '종료' : '생성'}
+                    {isCreateMission ? '실행중' : '생성'}
                 </span>
             </Button>
 

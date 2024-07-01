@@ -23,6 +23,7 @@ export const ScheduleListWrap = styled.section`
         .content_btn {
             display: flex;
             align-items: center;
+            padding-right: 12px;
 
             & button {
                 width: 36px;

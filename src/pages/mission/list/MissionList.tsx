@@ -13,6 +13,7 @@ interface MissionListProps {
     isCreate: boolean
     map: naver.maps.Map | null
     setIsActive: React.Dispatch<React.SetStateAction<string>>
+    isCreateMission: boolean
 }
 
 export const MissionList = ({
@@ -20,6 +21,7 @@ export const MissionList = ({
     isCreate,
     map,
     setIsActive,
+    isCreateMission,
 }: MissionListProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
     const [selectMission, setSelectMission] = useState<null | MissionDto>(null)
@@ -120,7 +122,7 @@ export const MissionList = ({
                     withCredentials: true,
                 })
                 const data = await response.data
-                console.log(data)
+                // console.log(data)
 
                 setInfoMission({
                     ...infoMission,
@@ -295,6 +297,15 @@ export const MissionList = ({
             setInfoDataForMap()
         }
     }, [infoMission])
+
+    useEffect(() => {
+        if (isCreateMission) {
+            clearMapElements()
+            setIsUpdateMission(false)
+            setIsSelectInfo(false)
+            setSelectMission(null)
+        }
+    }, [isCreateMission])
 
     return (
         <MissionListWrap>

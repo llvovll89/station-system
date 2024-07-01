@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { MdOutlineDarkMode } from 'react-icons/md'
 import { useDarkMode } from '../hooks/useDarkmode'
+import theme from '../styles/theme'
 
 const DarkmodeWrap = styled.button<{ isDarkMode: boolean }>`
     position: absolute;
@@ -13,9 +14,10 @@ const DarkmodeWrap = styled.button<{ isDarkMode: boolean }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: ${({ isDarkMode }) => (isDarkMode ? '#333' : '#fff')};
+    background-color: ${({ isDarkMode }) =>
+        isDarkMode ? '#4B89DC' : 'rgba(0, 0, 0, 0.88)'};
     cursor: pointer;
-    color: ${({ isDarkMode }) => (isDarkMode ? '#fff' : '#000')};
+    color: ${theme.color.white};
 `
 
 export const DarkMode = () => {

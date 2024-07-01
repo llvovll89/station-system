@@ -115,12 +115,14 @@ export const LoginWrap = styled.section`
                 }
 
                 & .suc {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     border-radius: 5px;
                     color: ${theme.color.white};
                     font-size: ${theme.fontSize.xs};
                     padding: 6px 12px;
                     height: 32px;
-                    line-height: 32px;
                     background-color: ${theme.color.primary};
                 }
             

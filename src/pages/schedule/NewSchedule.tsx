@@ -19,7 +19,7 @@ const NewSchduleWrqp = styled.section`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    background-color: #000000;
+    background-color: rgb(31, 30, 37);
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
     z-index: 50;
     color: ${theme.color.white};
@@ -28,6 +28,11 @@ const NewSchduleWrqp = styled.section`
         display: flex;
         justify-content: space-between;
         align-items: center;
+
+        & h2 {
+            font-size: 22px;
+            font-weight: bold;
+        }
 
         & button {
             height: 32px;
@@ -56,6 +61,7 @@ const NewSchduleWrqp = styled.section`
                 padding: 0 0.52rem;
                 color: ${theme.color.white};
                 border-radius: 5px;
+                background-color: #181818;
 
                 &:focus {
                     border: 1px solid ${theme.color.primary};
@@ -70,6 +76,7 @@ const NewSchduleWrqp = styled.section`
             padding: 0.5rem; 0.3rem;
             border: 1px solid rgba(255,2525,255, 0.16);
             border-radius: 5px;
+            background-color: #181818;
 
             & span {
                 font-weight: bold;
@@ -84,7 +91,7 @@ const NewSchduleWrqp = styled.section`
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.35rem;
 
             & .station_content {
                 display: flex;
@@ -102,6 +109,10 @@ const NewSchduleWrqp = styled.section`
         }
 
         & .mission {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+
             & ul {
                 display: flex;
                 flex-direction: column;
@@ -143,6 +154,8 @@ const NewSchduleWrqp = styled.section`
             justify-content: center;
             border-radius: 5px;
             border: 1px solid rgba(255,255,255,0.33);
+            background-color: #181818;
+            transition: all 0.15s linear;
 
             &:hover {
                 background-color: ${theme.color.primary};
@@ -164,7 +177,7 @@ export const NewSchdule = ({
 }: NewSchduleProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
     const [createData, setCreateData] = useState({
-        name: '',
+        name: 'Untitile Schedule',
         stationSEQ: 0,
         missionSEQ: 0,
     })
@@ -227,7 +240,7 @@ export const NewSchdule = ({
         <>
             <NewSchduleWrqp>
                 <header>
-                    <h1>New Schedule</h1>
+                    <h1>스케줄 추가 </h1>
                     <Button type={'button'} onClick={toggleCreateSchedule}>
                         <IoClose />
                     </Button>
@@ -253,13 +266,14 @@ export const NewSchdule = ({
                     <div
                         className="station"
                         onClick={() =>
+                            station &&
                             setCreateData({
                                 ...createData,
                                 stationSEQ: station?.seq as number,
                             })
                         }
                     >
-                        <span>&lt;Station&gt;</span>
+                        <span>&lt;스테이션&gt;</span>
                         <div
                             className={
                                 createData.stationSEQ === station?.seq
@@ -267,16 +281,24 @@ export const NewSchdule = ({
                                     : 'station_content'
                             }
                         >
-                            <p>name: {station?.name}</p>
-                            <p>
-                                상태:{' '}
-                                {station?.status === 0 ? '대기중' : '실행중'}
-                            </p>
+                            {station ? (
+                                <>
+                                    <p>name: {station?.name}</p>
+                                    <p>
+                                        상태:{' '}
+                                        {station?.status === 0
+                                            ? '대기중'
+                                            : '실행중'}
+                                    </p>
+                                </>
+                            ) : (
+                                <p>Not Found Station</p>
+                            )}
                         </div>
                     </div>
 
                     <div className="mission">
-                        <span>&lt;MissionList&gt;</span>
+                        <span>&lt;미션리스트&gt;</span>
                         <ul>
                             {missions.length > 0 &&
                                 missions.map((mission) => (
@@ -295,12 +317,12 @@ export const NewSchdule = ({
                                             })
                                         }
                                     >
-                                        <span>{mission.name}</span>
+                                        <span>미션명: {mission.name}</span>
                                         <span>
                                             타입:
                                             {mission.type === 0
-                                                ? '웨이포인트'
-                                                : '그리드'}
+                                                ? ' 웨이포인트'
+                                                : ' 그리드'}
                                         </span>
                                     </li>
                                 ))}
