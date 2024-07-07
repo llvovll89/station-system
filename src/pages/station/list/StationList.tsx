@@ -2,16 +2,16 @@ import { IoClose } from 'react-icons/io5'
 import { Button } from '../../../components/button/Button'
 import { useEffect, useState } from 'react'
 import { StationDto } from '../../../dto/Station'
-import axios from 'axios'
-import { STATION } from '../../../constant/http'
 import { IoCreateOutline } from 'react-icons/io5'
 import { StationWrap } from './StationListStyle'
+import { getStations } from '../../../util/requestHttp'
 
 interface StationListProps {
     toggleStation: () => void
     setIsActive: React.Dispatch<React.SetStateAction<string>>
     isHttpRequest: boolean
     toggleCreateStation: () => void
+    map: naver.maps.Map | null
 }
 
 export const StationList = ({
@@ -19,6 +19,7 @@ export const StationList = ({
     setIsActive,
     isHttpRequest,
     toggleCreateStation,
+    map,
 }: StationListProps) => {
     const [stations, setStations] = useState<StationDto[]>([])
     const [selectedStation, setSelectedStation] = useState<StationDto | null>(
@@ -32,24 +33,20 @@ export const StationList = ({
 
     const selectStation = (station: StationDto) => {
         setSelectedStation(station)
-    }
-
-    const getStation = async () => {
-        try {
-            const response = await axios.get(STATION, { withCredentials: true })
-            const data = await response.data
-
-            if (response.status === 200) {
-                setStations(data)
-                console.log(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
+        const coords = new naver.maps.LatLng(
+            station.latitude,
+            station.longitude
+        )
+        map && map.morph(coords, 16)
     }
 
     useEffect(() => {
-        getStation()
+        const fetchStation = async () => {
+            const data = await getStations()
+            setStations(data)
+        }
+
+        fetchStation()
     }, [isHttpRequest])
 
     return (

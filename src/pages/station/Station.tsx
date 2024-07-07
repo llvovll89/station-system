@@ -6,9 +6,10 @@ import { NewStation } from './NewStation'
 interface StationProps {
     toggleStation: () => void
     setIsActive: React.Dispatch<React.SetStateAction<string>>
+    map: naver.maps.Map | null
 }
 
-export const Station = ({ toggleStation, setIsActive }: StationProps) => {
+export const Station = ({ toggleStation, setIsActive, map }: StationProps) => {
     const [isCreateStation, setIsCreateStation] = useState(false)
     const [isHttpRequest, setIsHttpRequest] = useState(false)
 
@@ -23,6 +24,7 @@ export const Station = ({ toggleStation, setIsActive }: StationProps) => {
                 setIsActive={setIsActive}
                 isHttpRequest={isHttpRequest}
                 toggleCreateStation={toggleCreateStation}
+                map={map}
             />
 
             {isCreateStation && (

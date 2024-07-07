@@ -1,12 +1,16 @@
 import { Button } from '../../../components/button/Button'
 import { IoClose } from 'react-icons/io5'
 import { useEffect, useState } from 'react'
-import { MISSION } from '../../../constant/http'
-import { CiEdit } from 'react-icons/ci'
-import { MdOutlineDelete } from 'react-icons/md'
 import { MissionDto } from '../../../dto/MissionDto'
 import { MissionListWrap } from './MissionListStyle'
 import axios from 'axios'
+
+import DeleteIcon from '../../../assets/image/icon/ico_trash(dark).png'
+import DeleteWhiteIcon from '../../../assets/image/icon/ico_trash.png'
+import UpdateIcon from '../../../assets/image/icon/ico_edit02(dark).png'
+import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit02.png'
+import { getMissions, updeateMission } from '../../../util/requestHttp'
+import { MISSION } from '../../../constant/http'
 
 interface MissionListProps {
     toggleMission: () => void
@@ -14,6 +18,7 @@ interface MissionListProps {
     map: naver.maps.Map | null
     setIsActive: React.Dispatch<React.SetStateAction<string>>
     isCreateMission: boolean
+    isRunningMission: boolean
 }
 
 export const MissionList = ({
@@ -22,6 +27,7 @@ export const MissionList = ({
     map,
     setIsActive,
     isCreateMission,
+    isRunningMission,
 }: MissionListProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
     const [selectMission, setSelectMission] = useState<null | MissionDto>(null)
@@ -54,18 +60,6 @@ export const MissionList = ({
         toggleMission()
     }
 
-    const getMission = async () => {
-        try {
-            const response = await axios.get(MISSION, { withCredentials: true })
-            const data = await response.data
-            setMissions(data)
-            console.log(data)
-            setIsHttpRequest(false)
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
     const updateModal = (e: React.MouseEvent) => {
         e.stopPropagation()
         setIsUpdateMission((prev) => !prev)
@@ -77,71 +71,64 @@ export const MissionList = ({
             element.setMap(null)
         })
 
+        setCurrentMapElements((prev) => {
+            prev.forEach((el) => el.setMap(null))
+            return []
+        })
+
         setOverlayData({
             ...overlayData,
             distance: '',
             areaSize: '',
         })
-
-        setCurrentMapElements([])
-    }
-
-    const updeateMission = async (mission: MissionDto) => {
-        try {
-            const { seq } = mission
-            const response = await axios.put(`${MISSION}/${seq}`, infoMission, {
-                withCredentials: true,
-            })
-            const data = await response.data
-            setIsHttpRequest((prev) => !prev)
-            console.log(data)
-        } catch (err) {
-            console.log(err)
-        }
     }
 
     const getInfoMission = async (mission: MissionDto) => {
-        if (selectMission && mission.seq === selectMission.seq) {
-            setSelectMission(null)
-            setIsSelectInfo(false)
-            clearMapElements()
+        if (!isRunningMission) {
+            if (selectMission && mission.seq === selectMission.seq) {
+                setSelectMission(null)
+                setIsSelectInfo(false)
+                clearMapElements()
 
-            if (isUpdateMission) {
-                setIsUpdateMission(false)
+                if (isUpdateMission) {
+                    setIsUpdateMission(false)
+                }
+            } else {
+                if (isUpdateMission) {
+                    setIsUpdateMission(false)
+                }
+
+                setSelectMission(mission)
+
+                try {
+                    const { seq } = mission
+                    const response = await axios.get(`${MISSION}/${seq}`, {
+                        withCredentials: true,
+                    })
+                    const data = await response.data
+                    // console.log(data)
+
+                    setInfoMission({
+                        ...infoMission,
+                        seq: data.seq,
+                        name: data.name,
+                        type: data.type,
+                        mainPoint: data.mainPoint,
+                        createdAt: data.createdAt,
+                        updatedAt: data.updatedAt,
+                        transverseRedundancy: data.transverseRedundancy,
+                        longitudinalRedundancy: data.longitudinalRedundancy,
+                        points: data.points,
+                        ways: data.ways,
+                    })
+
+                    setIsSelectInfo(true)
+                } catch (err) {
+                    console.log(err)
+                }
             }
         } else {
-            if (isUpdateMission) {
-                setIsUpdateMission(false)
-            }
-
-            setSelectMission(mission)
-
-            try {
-                const { seq } = mission
-                const response = await axios.get(`${MISSION}/${seq}`, {
-                    withCredentials: true,
-                })
-                const data = await response.data
-                // console.log(data)
-
-                setInfoMission({
-                    ...infoMission,
-                    seq: data.seq,
-                    name: data.name,
-                    type: data.type,
-                    mainPoint: data.mainPoint,
-                    createdAt: data.createdAt,
-                    updatedAt: data.updatedAt,
-                    transverseRedundancy: data.transverseRedundancy,
-                    longitudinalRedundancy: data.longitudinalRedundancy,
-                    points: data.points,
-                    ways: data.ways,
-                })
-
-                setIsSelectInfo(true)
-            } catch (err) {
-                console.log(err)
-            }
+            alert('미션이 생성 중 입니다.')
         }
     }
 
@@ -154,9 +141,9 @@ export const MissionList = ({
                 path: infoMission.ways.map(
                     (p) => new naver.maps.LatLng(p.latitude, p.longitude)
                 ),
-                strokeColor: '#2E8B57',
+                strokeColor: '#2eb573',
                 strokeOpacity: 1,
-                strokeWeight: 6,
+                strokeWeight: 4,
                 strokeStyle: 'solid',
             })
 
@@ -223,7 +210,7 @@ export const MissionList = ({
                 path: infoMission.ways.map(
                     (p) => new naver.maps.LatLng(p.latitude, p.longitude)
                 ),
-                strokeColor: '#2E8B57',
+                strokeColor: '#2eb573',
                 strokeOpacity: 1,
                 strokeWeight: 4,
                 strokeStyle: 'solid',
@@ -235,30 +222,10 @@ export const MissionList = ({
                 distance: polyline.getDistance().toFixed(2),
             })
 
-            const markers = infoMission.ways.map(
-                (p, index) =>
-                    new naver.maps.Marker({
-                        map: map ? map : undefined,
-                        position: new naver.maps.LatLng(
-                            p.latitude,
-                            p.longitude
-                        ),
-                        icon: {
-                            content: `<div class='waypoint_marker'>${index + 1}</div>`,
-                            anchor: new naver.maps.Point(12, 12),
-                        },
-                    })
-            )
-
             map && map.fitBounds(polygon.getBounds())
 
             console.log(polygon, polyline)
-            setCurrentMapElements([
-                ...mainPoints,
-                polygon,
-                polyline,
-                ...markers,
-            ])
+            setCurrentMapElements([...mainPoints, polygon, polyline])
         }
     }
 
@@ -289,7 +256,13 @@ export const MissionList = ({
     }
 
     useEffect(() => {
-        getMission()
+        const fetchMissions = async () => {
+            const data = await getMissions()
+            setMissions(data)
+            setIsHttpRequest(false)
+        }
+
+        fetchMissions()
     }, [isCreate, isHttpRequest])
 
     useEffect(() => {
@@ -306,6 +279,13 @@ export const MissionList = ({
             setSelectMission(null)
         }
     }, [isCreateMission])
+
+    useEffect(() => {
+        return () => {
+            console.log('unmount missionList')
+            clearMapElements()
+        }
+    }, [])
 
     return (
         <MissionListWrap>
@@ -333,24 +313,52 @@ export const MissionList = ({
 
                                     <div className="content_actios">
                                         <button onClick={(e) => updateModal(e)}>
-                                            <CiEdit
-                                                style={{
-                                                    width: '20px',
-                                                    height: '20px',
-                                                }}
-                                            />
+                                            {selectMission?.seq ===
+                                            mission.seq ? (
+                                                <img
+                                                    src={UpdateWhiteIcon}
+                                                    alt="update"
+                                                    style={{
+                                                        width: '16px',
+                                                        height: '16px',
+                                                    }}
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={UpdateIcon}
+                                                    alt="update"
+                                                    style={{
+                                                        width: '16px',
+                                                        height: '16px',
+                                                    }}
+                                                />
+                                            )}
                                         </button>
                                         <button
                                             onClick={(e) =>
                                                 deleteMission(mission, e)
                                             }
                                         >
-                                            <MdOutlineDelete
-                                                style={{
-                                                    width: '20px',
-                                                    height: '20px',
-                                                }}
-                                            />
+                                            {selectMission?.seq ===
+                                            mission.seq ? (
+                                                <img
+                                                    src={DeleteWhiteIcon}
+                                                    alt="update"
+                                                    style={{
+                                                        width: '20px',
+                                                        height: '20xp',
+                                                    }}
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={DeleteIcon}
+                                                    alt="update"
+                                                    style={{
+                                                        width: '20px',
+                                                        height: '20xp',
+                                                    }}
+                                                />
+                                            )}
                                         </button>
                                     </div>
                                 </header>

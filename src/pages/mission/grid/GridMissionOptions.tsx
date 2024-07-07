@@ -3,6 +3,7 @@ import { AreaOptions } from '../../../constant/type'
 import theme from '../../../styles/theme'
 import { Button } from '../../../components/button/Button'
 import { MissionDto } from '../../../dto/MissionDto'
+// import { useEffect } from 'react'
 
 const GridMissionOptionsWrap = styled.section`
     min-width: 400px;
@@ -71,6 +72,7 @@ interface GridMissionOptionsProps {
     missionData: MissionDto
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
     resetGridMission: () => void
+    // createWays: () => void
 }
 
 export const GridMissionOptions = ({
@@ -80,7 +82,17 @@ export const GridMissionOptions = ({
     missionData,
     setMissionData,
     resetGridMission,
+    // createWays,
 }: GridMissionOptionsProps) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target
+        setAreaOptions((prev) => ({ ...prev, [name]: Number(value) }))
+    }
+
+    // useEffect(() => {
+    //     createWays()
+    // }, [areaOptions])
+
     return (
         <GridMissionOptionsWrap>
             <div className="content">
@@ -104,12 +116,7 @@ export const GridMissionOptions = ({
                         type="range"
                         id="angle"
                         value={areaOptions.angle}
-                        onChange={(e) =>
-                            setAreaOptions({
-                                ...areaOptions,
-                                angle: Number(e.target.value),
-                            })
-                        }
+                        onChange={handleChange}
                         min={'0'}
                         max={'360'}
                     />
@@ -120,12 +127,7 @@ export const GridMissionOptions = ({
                     </label>
                     <input
                         value={areaOptions.longitudinalRedundancy}
-                        onChange={(e) =>
-                            setAreaOptions({
-                                ...areaOptions,
-                                longitudinalRedundancy: Number(e.target.value),
-                            })
-                        }
+                        onChange={handleChange}
                         type="range"
                         min={'10'}
                         max={'90'}
@@ -138,12 +140,7 @@ export const GridMissionOptions = ({
                     </label>
                     <input
                         value={areaOptions.transverseRedundancy}
-                        onChange={(e) =>
-                            setAreaOptions({
-                                ...areaOptions,
-                                transverseRedundancy: Number(e.target.value),
-                            })
-                        }
+                        onChange={handleChange}
                         type="range"
                         min={'10'}
                         max={'90'}
@@ -156,12 +153,7 @@ export const GridMissionOptions = ({
                     </label>
                     <input
                         value={areaOptions.droneAltitude}
-                        onChange={(e) =>
-                            setAreaOptions({
-                                ...areaOptions,
-                                droneAltitude: Number(e.target.value),
-                            })
-                        }
+                        onChange={handleChange}
                         min={'50'}
                         max={'1000'}
                         type="range"

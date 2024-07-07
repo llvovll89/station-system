@@ -6,13 +6,15 @@ import { NewSchdule } from './NewSchedule'
 
 interface ScheduleProps {
     toggleSchedule: () => void
-    station: StationDto | null
+    stations: StationDto[]
     setIsActive: React.Dispatch<React.SetStateAction<string>>
+    isRunningSchedule: boolean
 }
 
 export const Schedule = ({
     toggleSchedule,
-    station,
+    isRunningSchedule,
+    stations,
     setIsActive,
 }: ScheduleProps) => {
     const [isCreateSchedule, setIsCreateSchedule] = useState(false)
@@ -25,6 +27,7 @@ export const Schedule = ({
     return (
         <ScheudleWrap>
             <ScheduleList
+                isRunningSchedule={isRunningSchedule}
                 toggleSchedule={toggleSchedule}
                 toggleCreateSchedule={toggleCreateSchedule}
                 setIsActive={setIsActive}
@@ -35,7 +38,7 @@ export const Schedule = ({
             {isCreateSchedule && (
                 <NewSchdule
                     toggleCreateSchedule={toggleCreateSchedule}
-                    station={station}
+                    stations={stations}
                     setIsHttpRequest={setIsHttpRequest}
                 />
             )}

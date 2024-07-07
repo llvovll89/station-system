@@ -21,7 +21,7 @@ const HeaderStyled = styled.header<{ isDarkMode: boolean }>`
     top: 0;
     z-index: 10;
     background-color: ${({ isDarkMode }) =>
-        isDarkMode ? '#4B89DC' : 'rgba(0, 0, 0, 0.88)'};
+        isDarkMode ? theme.color.primary : 'rgba(0, 0, 0, 0.88)'};
     color: ${theme.color.white};
     border-right: 1px solid rgba(255, 255, 255, 0.3);
 

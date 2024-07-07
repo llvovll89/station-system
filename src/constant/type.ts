@@ -55,12 +55,12 @@ export interface MissionStateItem {
 
 export interface CreateStation {
     name: string
-    latitude: number
-    longitude: number
+    latitude: string
+    longitude: string
     drone: {
         name: string
-        latitude: number
-        longitude: number
+        latitude: string
+        longitude: string
     }
 }
 

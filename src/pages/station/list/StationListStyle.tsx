@@ -44,14 +44,31 @@ export const StationWrap = styled.section`
             flex-direction: column;
             gap: 0.25rem;
             border-radius: 4px;
-            border: 2px solid ${theme.color.white};
             transition: all 0.3s ease-in-out;
             cursor: pointer;
             box-shadow: rgba(255, 255, 255, 0.22);
 
+            & h1 {
+                font-size: 16px;
+            }
+
+            & span {
+                font-size: 14px;
+            }
+
             &.selected {
-                background-color: #2eb573;
+                background-color: ${theme.color.primary};
                 color: ${theme.color.white};
+
+                & span {
+                    &.idle {
+                        color: ${theme.color.white};
+                    }
+
+                    &.active {
+                        color: ${theme.color.black};
+                    }
+                }
             }
 
             & .content_header {

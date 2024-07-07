@@ -5,8 +5,11 @@ import axios from 'axios'
 import { SCHEDULE } from '../../../constant/http'
 import { useEffect, useState } from 'react'
 import { SchduleDto } from '../../../dto/ScheduleDto'
-import { CiEdit } from 'react-icons/ci'
-import { MdOutlineDelete } from 'react-icons/md'
+import { getSchedule } from '../../../util/requestHttp'
+import DeleteIcon from '../../../assets/image/icon/ico_trash(dark).png'
+import DeleteWhiteIcon from '../../../assets/image/icon/ico_trash.png'
+import UpdateIcon from '../../../assets/image/icon/ico_edit02(dark).png'
+import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit02.png'
 
 interface ScheduleListProps {
     toggleSchedule: () => void
@@ -14,6 +17,7 @@ interface ScheduleListProps {
     setIsActive: React.Dispatch<React.SetStateAction<string>>
     isHttpRequest: boolean
     setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>
+    isRunningSchedule: boolean
 }
 
 export const ScheduleList = ({
@@ -22,24 +26,12 @@ export const ScheduleList = ({
     setIsActive,
     isHttpRequest,
     setIsHttpRequest,
+    isRunningSchedule,
 }: ScheduleListProps) => {
     const [schedules, setSchedules] = useState<SchduleDto[]>([])
     const [selectSchedule, setSelectSchedule] = useState<SchduleDto | null>(
         null
     )
-
-    const getSchedule = async () => {
-        try {
-            const response = await axios.get(SCHEDULE, {
-                withCredentials: true,
-            })
-            const data = await response.data
-            setSchedules(data)
-            console.log(data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     const toggleActiveSchedule = () => {
         toggleSchedule()
@@ -59,20 +51,43 @@ export const ScheduleList = ({
     }
 
     const deleteSchdule = async (schedule: SchduleDto) => {
-        try {
-            const response = await axios.delete(`${SCHEDULE}/${schedule.seq}`)
-            const data = await response.data
+        const requestDelete = confirm('정말 삭제 하시겠습니까?')
+        if (requestDelete) {
+            {
+                try {
+                    const response = await axios.delete(
+                        `${SCHEDULE}/${schedule.seq}`
+                    )
+                    const data = await response.data
 
-            console.log(data)
-            setIsHttpRequest((prev) => !prev)
-        } catch (error) {
-            console.log(error)
+                    console.log(data)
+                    setIsHttpRequest((prev) => !prev)
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        } else {
+            return
         }
     }
 
+    const selectScheduleItem = (schedule: SchduleDto) => {
+        if (selectSchedule) {
+            setSelectSchedule(null)
+        }
+
+        console.log(schedule)
+        setSelectSchedule(schedule)
+    }
+
     useEffect(() => {
-        getSchedule()
-    }, [isHttpRequest])
+        const fetchSchedules = async () => {
+            const data = await getSchedule()
+            setSchedules(data)
+        }
+
+        fetchSchedules()
+    }, [isHttpRequest, isRunningSchedule])
 
     return (
         <ScheduleListWrap>
@@ -96,40 +111,91 @@ export const ScheduleList = ({
                             <li
                                 className={`schedule ${selectSchedule?.seq === schedule.seq ? 'active' : ''}`}
                                 key={schedule.seq}
-                                onClick={() => setSelectSchedule(schedule)}
+                                onClick={() => selectScheduleItem(schedule)}
                             >
                                 <div className="content_header">
-                                    <span>스케줄명: {schedule.name}</span>
+                                    <span className="title">
+                                        {schedule.name}
+                                    </span>
                                     <div className="btn_box">
                                         <button
                                             onClick={() =>
                                                 updateSchedule(schedule)
                                             }
                                         >
-                                            <CiEdit
-                                                style={{
-                                                    width: '20px',
-                                                    height: '20px',
-                                                }}
-                                            />
+                                            {selectSchedule?.seq ===
+                                            schedule.seq ? (
+                                                <img
+                                                    src={UpdateWhiteIcon}
+                                                    alt="update"
+                                                    style={{
+                                                        width: '16px',
+                                                        height: '16px',
+                                                    }}
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={UpdateIcon}
+                                                    alt="update"
+                                                    style={{
+                                                        width: '16px',
+                                                        height: '16px',
+                                                    }}
+                                                />
+                                            )}
                                         </button>
                                         <button
                                             onClick={() =>
                                                 deleteSchdule(schedule)
                                             }
                                         >
-                                            <MdOutlineDelete
-                                                style={{
-                                                    width: '20px',
-                                                    height: '20px',
-                                                }}
-                                            />
+                                            {selectSchedule?.seq ===
+                                            schedule.seq ? (
+                                                <img
+                                                    src={DeleteWhiteIcon}
+                                                    alt="delete"
+                                                    style={{
+                                                        width: '20px',
+                                                        height: '20px',
+                                                    }}
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={DeleteIcon}
+                                                    alt="delete"
+                                                    style={{
+                                                        width: '20px',
+                                                        height: '20px',
+                                                    }}
+                                                />
+                                            )}
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="scheudle_content">
-                                    <span>상태: {schedule.status}</span>
+                                <div className="scheudule_content">
+                                    <span>
+                                        상태:{' '}
+                                        {schedule.status === 0
+                                            ? '대기중'
+                                            : schedule.status === 1
+                                              ? '진행중'
+                                              : '비행완료'}
+                                    </span>
+                                    <span>
+                                        스테이션: {schedule.station.name}
+                                    </span>
+                                </div>
+
+                                <div className="schedule_date">
+                                    <span className="gray">createdAt:</span>
+                                    <span>
+                                        {schedule.startedAt.split('T')[0] +
+                                            ' ' +
+                                            schedule.startedAt
+                                                .split('T')[1]
+                                                .slice(0, 5)}
+                                    </span>
                                 </div>
                             </li>
                         ))}

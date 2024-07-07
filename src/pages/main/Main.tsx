@@ -9,37 +9,24 @@ import { Schedule } from '../schedule/Schedule'
 import { StationDto } from '../../dto/Station'
 import { STATION } from '../../constant/http'
 import { DarkMode } from '../../components/Darkmode'
+import { RunningSchedule } from './RunningSchedule'
+import { getSchedule } from '../../util/requestHttp'
 import axios from 'axios'
+import DroneImage from '../../assets/image/icon/ico_airplane(w).png'
 
 export const Main = () => {
     const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none)
     const [map, setMap] = useState<naver.maps.Map | null>(null)
-    const [station, setStation] = useState<StationDto | null>(null)
     const [stations, setStations] = useState<StationDto[]>([])
     const [isActive, setIsActive] = useState('')
+    const [isRunningSchedule, setIsRunningSchedule] = useState(false)
 
     const dockMarkers = useRef<naver.maps.Marker[]>([])
     const droneMarkers = useRef<naver.maps.Marker[]>([])
-
     const mapElement = useRef(null)
 
-    const getWeather = async () => {
-        try {
-            // const response = await axios.get(
-            //     `api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_OPEN_WEATHER_MAP_APIKEY}`
-            // )
-            const response = await axios.get(
-                `https://api.openweathermap.org/data/2.5/forecast?lat=35.8774&lon=128.6107&appid=${import.meta.env.VITE_OPEN_WEATHER_MAP_APIKEY}`,
-                {
-                    withCredentials: true,
-                }
-            )
-            const data = await response.data
-            console.log(data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const waylines = useRef<naver.maps.Polyline | null>(null)
+    const markers = useRef<naver.maps.Marker[]>([])
 
     useEffect(() => {
         if (!mapElement.current || !naver) return
@@ -54,7 +41,7 @@ export const Main = () => {
         }
 
         setMap(new naver.maps.Map(mapElement.current, mapOptions))
-        getWeather()
+        // getWeather()
     }, [])
 
     const navigate = useNavigate()
@@ -70,8 +57,6 @@ export const Main = () => {
 
             if (response.status === 200) {
                 setStations(data)
-                setStation(data[0])
-                console.log(stations)
 
                 clearMarkers(dockMarkers.current)
                 clearMarkers(droneMarkers.current)
@@ -81,16 +66,95 @@ export const Main = () => {
                         latitude: number
                         longitude: number
                         status: number
+                        drone: {
+                            name: string
+                            latitude: number
+                            longitude: number
+                        }
                     }) => {
                         const params = {
                             latitude: station.latitude,
                             longitude: station.longitude,
                             status: station.status,
+                            drone: station.drone,
                         }
 
                         setDockMarker(params)
                     }
                 )
+
+                const hasRunning = data.some(
+                    (station: StationDto) => station.status === 1
+                )
+                setIsRunningSchedule(hasRunning)
+                hasRunning && getSchedule()
+
+                if (sessionStorage.getItem('missionInfo') && hasRunning) {
+                    const data = JSON.parse(
+                        sessionStorage.getItem('missionInfo')!
+                    )
+
+                    // 기존 폴리라인과 마커 삭제
+                    if (waylines.current) {
+                        waylines.current.setMap(null)
+                    }
+                    markers.current.forEach((marker) => marker.setMap(null))
+                    markers.current = []
+
+                    // 새 폴리라인과 마커 추가
+                    waylines.current = new naver.maps.Polyline({
+                        map: map ? map : undefined,
+                        path:
+                            data &&
+                            data.data.ways.map(
+                                (p: { latitude: number; longitude: number }) =>
+                                    new naver.maps.LatLng(
+                                        p.latitude,
+                                        p.longitude
+                                    )
+                            ),
+                        strokeColor: '#0080DE',
+                        strokeOpacity: 1,
+                        strokeWeight: 4,
+                        strokeStyle: 'solid',
+                    })
+
+                    data.data.points.forEach(
+                        (
+                            p: { latitude: number; longitude: number },
+                            index: number
+                        ) => {
+                            const isStart = index === 0
+                            const isEnd = index === data.data.points.length - 1
+
+                            const marker = new naver.maps.Marker({
+                                map: map ? map : undefined,
+                                position: new naver.maps.LatLng(
+                                    p.latitude,
+                                    p.longitude
+                                ),
+                                icon: {
+                                    content: `<div class='waypoint_marker'>
+                                        <span>${isStart ? 'S' : isEnd ? 'E' : ''}</span>
+                                    </div>`,
+                                    anchor: new naver.maps.Point(9, 9),
+                                },
+                            })
+
+                            markers.current.push(marker)
+                        }
+                    )
+                } else {
+                    if (waylines.current) {
+                        waylines.current.setMap(null)
+                        waylines.current = null
+                    }
+
+                    markers.current.forEach((marker) => marker.setMap(null))
+                    markers.current = []
+                    sessionStorage.removeItem('missionInfo')
+                    setIsRunningSchedule(false)
+                }
             }
         } catch (error) {
             console.log(error)
@@ -101,16 +165,25 @@ export const Main = () => {
         latitude: number
         longitude: number
         status: number
+        drone: {
+            name: string
+            latitude: number
+            longitude: number
+        }
     }) => {
         const { latitude, longitude, status } = params
 
         if (status === 1) {
             const drone = new naver.maps.Marker({
                 map: map ? map : undefined,
-                position: new naver.maps.LatLng(latitude, longitude),
-                animation: naver.maps.Animation.BOUNCE,
+                position: new naver.maps.LatLng(
+                    params.drone.latitude,
+                    params.drone.longitude
+                ),
                 icon: {
-                    content: `<div class='drone_marker'><span>🛸</span></div>`,
+                    content: `<div class='drone_marker'>
+                        <img src=${DroneImage} alt='drone_image' />
+                    </div>`,
                     anchor: new naver.maps.Point(16, 16),
                 },
             })
@@ -121,7 +194,6 @@ export const Main = () => {
         const marker = new naver.maps.Marker({
             map: map ? map : undefined,
             position: new naver.maps.LatLng(latitude, longitude),
-            animation: naver.maps.Animation.BOUNCE,
             icon: {
                 content: `<div class='dock_marker'><span>🚍</span></div>`,
                 anchor: new naver.maps.Point(18, 18),
@@ -174,17 +246,20 @@ export const Main = () => {
                 <Station
                     toggleStation={() => toggleActive(ActiveType.station)}
                     setIsActive={setIsActive}
+                    map={map}
                 />
             )}
 
             {activeType === ActiveType.schedule && (
                 <Schedule
+                    isRunningSchedule={isRunningSchedule}
                     setIsActive={setIsActive}
-                    station={station}
+                    stations={stations}
                     toggleSchedule={() => toggleActive(ActiveType.schedule)}
                 />
             )}
 
+            {isRunningSchedule && <RunningSchedule />}
             <DarkMode />
         </MainWrap>
     )

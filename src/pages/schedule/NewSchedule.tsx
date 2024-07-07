@@ -80,6 +80,12 @@ const NewSchduleWrqp = styled.section`
 
             & span {
                 font-weight: bold;
+                
+                &.title {
+                    text-align: center;
+                    display: inline-block;
+                    width: 100%;
+                }
             }
 
             & p {
@@ -94,16 +100,28 @@ const NewSchduleWrqp = styled.section`
             gap: 0.35rem;
 
             & .station_content {
-                display: flex;
-                gap: 0.5rem;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.25rem; 0.3rem;
+                padding: 0.5rem;
                 border-radius: 5px;
+
+                &:hover {
+                    color: ${theme.color.primary};
+                }
                 
                 &.active {
                     background-color: ${theme.color.primary};
                     color: ${theme.color.white};
+                }
+
+                & .station_items {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    
+                    &:first-child {
+                        gap: 0.75rem;
+                        justify-content: flex-start;
+                    }
+                    
                 }
             }
         }
@@ -119,7 +137,6 @@ const NewSchduleWrqp = styled.section`
                 gap: 0.5rem;
 
                 & li {
-                    border-bottom: 1px solid rgba(255,2525,255, 0.16);
                     cursor: pointer;
                     padding: 0.25rem; 0.3rem;
                     border-radius: 5px;
@@ -127,12 +144,16 @@ const NewSchduleWrqp = styled.section`
                     flex-direction: column;
                     gap: 0.25rem;
 
+                    &:hover {
+                        color: ${theme.color.primary};
+                    }
+
                     &.active {
                         background: ${theme.color.primary};
                         color: ${theme.color.white};
                     }
 
-                    &:last-childe {
+                    &:last-child {
                         border-bottom: none;
                     }
                 }
@@ -166,20 +187,20 @@ const NewSchduleWrqp = styled.section`
 
 interface NewSchduleProps {
     toggleCreateSchedule: () => void
-    station: StationDto | null
+    stations: StationDto[]
     setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const NewSchdule = ({
     toggleCreateSchedule,
-    station,
+    stations,
     setIsHttpRequest,
 }: NewSchduleProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
     const [createData, setCreateData] = useState({
         name: 'Untitile Schedule',
-        stationSEQ: 0,
-        missionSEQ: 0,
+        stationSeq: 0,
+        missionSeq: 0,
     })
 
     const createScheudle = async () => {
@@ -188,12 +209,12 @@ export const NewSchdule = ({
             return
         }
 
-        if (createData.stationSEQ === 0) {
+        if (createData.stationSeq === 0) {
             alert('스테이션을 선택해 주세요!')
             return
         }
 
-        if (createData.missionSEQ === 0) {
+        if (createData.missionSeq === 0) {
             alert('미션을 선택해 주세요!')
             return
         }
@@ -207,6 +228,7 @@ export const NewSchdule = ({
             const data = await response.data
             console.log('create_schedule:', data)
             setIsHttpRequest((prev) => !prev)
+            toggleCreateSchedule()
         } catch (error) {
             console.log(error)
         }
@@ -215,8 +237,8 @@ export const NewSchdule = ({
     const resetScheudle = () => {
         setCreateData({
             name: '',
-            stationSEQ: 0,
-            missionSEQ: 0,
+            stationSeq: 0,
+            missionSeq: 0,
         })
 
         toggleCreateSchedule()
@@ -226,6 +248,7 @@ export const NewSchdule = ({
         try {
             const response = await axios.get(MISSION, { withCredentials: true })
             const data = await response.data
+            console.log(data)
             setMissions(data)
         } catch (err) {
             console.log(err)
@@ -233,7 +256,28 @@ export const NewSchdule = ({
     }
 
     useEffect(() => {
+        const fetchInfoMission = async () => {
+            try {
+                const response = await axios.get(
+                    `${MISSION}/${createData.missionSeq}`,
+                    {
+                        withCredentials: true,
+                    }
+                )
+
+                console.log('missionInfo', response.data)
+                sessionStorage.setItem('missionInfo', JSON.stringify(response))
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        fetchInfoMission()
+    }, [createData.missionSeq])
+
+    useEffect(() => {
         getMission()
+        console.log('stations:', stations)
     }, [])
 
     return (
@@ -263,48 +307,48 @@ export const NewSchdule = ({
                             }
                         />
                     </div>
-                    <div
-                        className="station"
-                        onClick={() =>
-                            station &&
-                            setCreateData({
-                                ...createData,
-                                stationSEQ: station?.seq as number,
-                            })
-                        }
-                    >
-                        <span>&lt;스테이션&gt;</span>
-                        <div
-                            className={
-                                createData.stationSEQ === station?.seq
-                                    ? 'station_content active'
-                                    : 'station_content'
-                            }
-                        >
-                            {station ? (
-                                <>
-                                    <p>name: {station?.name}</p>
-                                    <p>
-                                        상태:{' '}
-                                        {station?.status === 0
-                                            ? '대기중'
-                                            : '실행중'}
-                                    </p>
-                                </>
-                            ) : (
-                                <p>Not Found Station</p>
-                            )}
-                        </div>
+                    <div className="station">
+                        <span className="title">&lt;스테이션&gt;</span>
+                        <ul>
+                            {stations.length > 0 &&
+                                stations.map((station, index) => (
+                                    <li
+                                        className={
+                                            createData.stationSeq ===
+                                            station?.seq
+                                                ? 'station_content active'
+                                                : 'station_content'
+                                        }
+                                        onClick={() =>
+                                            setCreateData({
+                                                ...createData,
+                                                stationSeq:
+                                                    station?.seq as number,
+                                            })
+                                        }
+                                        key={station.seq}
+                                    >
+                                        <div className="station_items">
+                                            <span>[{index + 1}]</span>
+                                            <span>{station.name}</span>
+                                        </div>
+                                        <div className="station_items">
+                                            <span>드론명</span>
+                                            <span>{station.drone.name}</span>
+                                        </div>
+                                    </li>
+                                ))}
+                        </ul>
                     </div>
 
                     <div className="mission">
-                        <span>&lt;미션리스트&gt;</span>
+                        <span className="title">&lt;미션리스트&gt;</span>
                         <ul>
                             {missions.length > 0 &&
                                 missions.map((mission) => (
                                     <li
                                         className={
-                                            createData.missionSEQ ===
+                                            createData.missionSeq ===
                                             mission.seq
                                                 ? 'active'
                                                 : ''
@@ -313,7 +357,7 @@ export const NewSchdule = ({
                                         onClick={() =>
                                             setCreateData({
                                                 ...createData,
-                                                missionSEQ: mission.seq,
+                                                missionSeq: mission.seq,
                                             })
                                         }
                                     >

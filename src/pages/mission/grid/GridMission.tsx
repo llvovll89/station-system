@@ -23,6 +23,7 @@ interface GridMissionProps {
     missionData: MissionDto
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
     setIsCreate: React.Dispatch<React.SetStateAction<boolean>>
+    setIsRunningMission: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const GridMission = ({
@@ -32,6 +33,7 @@ export const GridMission = ({
     missionData,
     setMissionData,
     setIsCreate,
+    setIsRunningMission,
 }: GridMissionProps) => {
     const [markers, setMarkers] = useState<naver.maps.Marker[]>([])
     const [mainPoints, setMainPoints] = useState<naver.maps.LatLng[]>([])
@@ -91,6 +93,7 @@ export const GridMission = ({
     const createGridMission = () => {
         if (map) {
             if (activeMission !== 'waypoint') {
+                setIsRunningMission((prev) => !prev)
                 setActiveMission('grid')
 
                 const setGridMission = naver.maps.Event.addListener(
@@ -121,7 +124,7 @@ export const GridMission = ({
                         const marker = new naver.maps.Marker({
                             map,
                             position: e.coord,
-                            // draggable: true,
+                            draggable: true,
                             clickable: true,
                             icon: {
                                 content: `<div class='marker'>${mainPoint.length}</div>`,
@@ -132,7 +135,7 @@ export const GridMission = ({
                         mainPointMarker.push(marker)
                         setMarkers((prev) => [...prev, marker])
                         polygon.setPath(mainPoint)
-                        // polygonResize(marker)
+                        polygonResize(marker, mainPointMarker)
 
                         const createGuideLine = naver.maps.Event.addListener(
                             map,
@@ -177,21 +180,24 @@ export const GridMission = ({
         guideLine.setMap(null)
     }
 
-    // const polygonResize = (marker: naver.maps.Marker) => {
-    //     naver.maps.Event.addListener(
-    //         marker,
-    //         'drag',
-    //         (e: { coord: naver.maps.LatLng }) => {
-    //             const newMainPoints = mainPoints.map((point, index) =>
-    //                 markers[index] === marker ? e.coord : point
-    //             )
-    //             setMainPoints(newMainPoints)
-    //             if (polygon) {
-    //                 polygon.setPath(newMainPoints)
-    //             }
-    //         }
-    //     )
-    // }
+    const polygonResize = (
+        marker: naver.maps.Marker,
+        mainPointMarker: naver.maps.Marker[]
+    ) => {
+        console.log(marker, mainPointMarker)
+
+        // naver.maps.Event.addListener(
+        //     marker,
+        //     'drag',
+        //     (e: { coord: naver.maps.LatLng }) => {
+        //         const index = mainPointMarker.indexOf(marker)
+        //         if (index !== -1) {
+        //             mainPoints[index] = e.coord
+        //             polygon.setPath(mainPoints)
+        //         }
+        //     }
+        // )
+    }
 
     const createWays = (polygon: naver.maps.Polygon) => {
         const wayLineItems: naver.maps.LatLng[] = []
@@ -508,6 +514,7 @@ export const GridMission = ({
                     setAreaOptions={setAreaOptions}
                     setMissionData={setMissionData}
                     missionData={missionData}
+                    // createWays={createWays={() => createWays(polygon)}}
                     submitGridMission={submitGridMission}
                 />
             )}

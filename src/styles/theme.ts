@@ -51,7 +51,7 @@ const theme: Theme = {
     },
 
     color: {
-        primary: '#09f',
+        primary: '#3772F0',
         black: '#111111',
         white: '#FDFEFE',
         red: '#ff0000',

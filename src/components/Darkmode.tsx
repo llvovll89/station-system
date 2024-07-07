@@ -15,7 +15,7 @@ const DarkmodeWrap = styled.button<{ isDarkMode: boolean }>`
     align-items: center;
     justify-content: center;
     background-color: ${({ isDarkMode }) =>
-        isDarkMode ? '#4B89DC' : 'rgba(0, 0, 0, 0.88)'};
+        isDarkMode ? theme.color.primary : 'rgba(0, 0, 0, 0.88)'};
     cursor: pointer;
     color: ${theme.color.white};
 `

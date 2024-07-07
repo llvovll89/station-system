@@ -15,6 +15,7 @@ interface MissionProps {
 
 export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
     const [isCreateMission, setIsCreateMission] = useState(false)
+    const [isRunningMission, setIsRunningMission] = useState(false)
     const [isCreate, setIsCreate] = useState(false)
     const [missionData, setMissionData] = useState<MissionDto>({
         name: '',
@@ -36,6 +37,10 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
     >(null)
 
     const setCreateMission = () => {
+        if (isCreateMission) {
+            setIsRunningMission(false)
+        }
+
         setIsCreateMission((prev) => !prev)
         setActiveMission(null)
     }
@@ -46,6 +51,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                 toggleMission={toggleMission}
                 isCreateMission={isCreateMission}
                 isCreate={isCreate}
+                isRunningMission={isRunningMission}
                 map={map}
                 setIsActive={setIsActive}
             />
@@ -70,6 +76,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                         setMissionData={setMissionData}
                         missionData={missionData}
                         setIsCreate={setIsCreate}
+                        setIsRunningMission={setIsRunningMission}
                     />
 
                     <GridMission
@@ -79,6 +86,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                         setMissionData={setMissionData}
                         missionData={missionData}
                         setIsCreate={setIsCreate}
+                        setIsRunningMission={setIsRunningMission}
                     />
                 </>
             )}

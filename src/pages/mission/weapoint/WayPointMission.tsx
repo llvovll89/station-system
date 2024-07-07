@@ -15,6 +15,7 @@ interface WaypPointMissionProps {
     missionData: MissionDto
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
     setIsCreate: React.Dispatch<React.SetStateAction<boolean>>
+    setIsRunningMission: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const WaypPointMission = ({
@@ -24,6 +25,7 @@ export const WaypPointMission = ({
     activeMission,
     setActiveMission,
     setIsCreate,
+    setIsRunningMission,
 }: WaypPointMissionProps) => {
     const [mainPoints, setMainPoints] = useState<naver.maps.LatLng[]>([])
     const [wayLines, setWayLines] = useState<naver.maps.LatLng[]>([])
@@ -75,6 +77,7 @@ export const WaypPointMission = ({
                 alert('미션이 진행 중 입니다.')
             } else {
                 setActiveMission('waypoint')
+                setIsRunningMission((prev) => !prev)
                 setMissionData({
                     ...missionData,
                     type: 0,

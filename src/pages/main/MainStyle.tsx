@@ -95,8 +95,8 @@ export const MainWrap = styled.section`
         width: 26px;
         height: 26px;
         border-radius: 100%;
-        border: 3px solid ${theme.color.primary};
-        background-color: ${theme.color.white};
+        border: 3px solid #231f20;
+        background-color: #3772f0;
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
     }
 
