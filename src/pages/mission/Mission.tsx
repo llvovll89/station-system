@@ -4,7 +4,7 @@ import { VscGitPullRequestCreate } from 'react-icons/vsc'
 import { WaypPointMission } from './weapoint/WayPointMission'
 import { GridMission } from './grid/GridMission'
 import { MissionList } from './list/MissionList'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MissionDto } from '../../dto/MissionDto'
 
 interface MissionProps {
@@ -32,18 +32,25 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
         longitudinalRedundancy: 70,
         angle: 36,
     })
+
     const [activeMission, setActiveMission] = useState<
         null | 'waypoint' | 'grid'
     >(null)
 
     const setCreateMission = () => {
-        if (isCreateMission) {
-            setIsRunningMission(false)
+        if (isCreateMission && activeMission !== null) {
+            alert('미션 생성 또는 초기화 후 클릭해 주세요.')
+            return
+            // setIsRunningMission(false)
         }
 
         setIsCreateMission((prev) => !prev)
         setActiveMission(null)
     }
+
+    useEffect(() => {
+        console.log(isCreateMission)
+    }, [isCreateMission])
 
     return (
         <MissionWrap>
@@ -77,6 +84,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                         missionData={missionData}
                         setIsCreate={setIsCreate}
                         setIsRunningMission={setIsRunningMission}
+                        setIsCreateMission={setIsCreateMission}
                     />
 
                     <GridMission
@@ -87,6 +95,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                         missionData={missionData}
                         setIsCreate={setIsCreate}
                         setIsRunningMission={setIsRunningMission}
+                        setIsCreateMission={setIsCreateMission}
                     />
                 </>
             )}

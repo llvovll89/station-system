@@ -33,11 +33,15 @@ export const StationList = ({
 
     const selectStation = (station: StationDto) => {
         setSelectedStation(station)
+
         const coords = new naver.maps.LatLng(
             station.latitude,
             station.longitude
         )
-        map && map.morph(coords, 16)
+
+        if (map) {
+            map.morph(coords, 16)
+        }
     }
 
     useEffect(() => {

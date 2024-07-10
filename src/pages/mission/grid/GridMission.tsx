@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AreaOptions } from '../../../constant/type'
 import { Button } from '../../../components/button/Button'
 import { TbAtom } from 'react-icons/tb'
@@ -10,8 +10,8 @@ import {
     isPointInOverlayUtils,
 } from '../../../util/missionUtils'
 import { GridMissionOptions } from './GridMissionOptions'
-import axios from 'axios'
 import { MissionDto } from '../../../dto/MissionDto'
+import axios from 'axios'
 import { MISSION } from '../../../constant/http'
 
 interface GridMissionProps {
@@ -24,6 +24,7 @@ interface GridMissionProps {
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
     setIsCreate: React.Dispatch<React.SetStateAction<boolean>>
     setIsRunningMission: React.Dispatch<React.SetStateAction<boolean>>
+    setIsCreateMission: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const GridMission = ({
@@ -33,30 +34,13 @@ export const GridMission = ({
     missionData,
     setMissionData,
     setIsCreate,
+    setIsCreateMission,
     setIsRunningMission,
 }: GridMissionProps) => {
     const [markers, setMarkers] = useState<naver.maps.Marker[]>([])
     const [mainPoints, setMainPoints] = useState<naver.maps.LatLng[]>([])
-    const [overlays, setOverlays] = useState<{
-        startMarker: naver.maps.Marker | null
-        endMarker: naver.maps.Marker | null
-        wayLine: naver.maps.Polyline | null
-        overlay: naver.maps.Polygon
-    }>({
-        startMarker: null,
-        endMarker: null,
-        wayLine: null,
-        overlay: new naver.maps.Polygon({
-            map: map ? map : undefined,
-            paths: [],
-            strokeColor: '#0080DE',
-            strokeOpacity: 1,
-            strokeWeight: 4,
-            fillColor: '#fefefe',
-            fillOpacity: 0.6,
-            strokeStyle: 'solid',
-        }),
-    })
+    const [areaSize, setAreaSize] = useState<string | null>(null)
+    const [isOptions, setIsOptions] = useState(false)
     const [areaOptions, setAreaOptions] = useState<AreaOptions>({
         droneAltitude: 100,
         speed: 5,
@@ -68,41 +52,58 @@ export const GridMission = ({
         photoHeightRatio: 3,
     })
 
+    const wayLineRef = useRef<naver.maps.Polyline | null>(null)
+    const guideLineRef = useRef<naver.maps.Polyline | null>(null)
+    const mainPointsRef = useRef<naver.maps.Marker[]>([])
+    const polygonRef = useRef<naver.maps.Polygon | null>(null)
+    const dragMarkerRef = useRef<naver.maps.Marker | null>(null)
     const mainPointMarker: naver.maps.Marker[] = []
     const mainPoint: naver.maps.LatLng[] = []
-    const polygon = new naver.maps.Polygon({
-        map: map ? map : undefined,
-        paths: [],
-        strokeColor: '#0080DE',
-        strokeOpacity: 1,
-        strokeWeight: 4,
-        fillColor: '#fefefe',
-        fillOpacity: 0.6,
-        strokeStyle: 'solid',
-    })
 
-    const guideLine = new naver.maps.Polyline({
-        map: map ? map : undefined,
-        path: [],
-        strokeColor: '#0080DE',
-        strokeWeight: 4,
-        strokeStyle: [4, 4],
-        strokeOpacity: 0.8,
-    })
+    const clearMissionData = () => {
+        setMissionData({
+            name: '',
+            type: 0,
+            seq: 0,
+            mainPoint: {
+                latitude: 0,
+                longitude: 0,
+                height: 100,
+            },
+            points: [],
+            ways: [],
+            transverseRedundancy: 70,
+            longitudinalRedundancy: 70,
+            angle: 36,
+        })
+    }
 
     const createGridMission = () => {
+        let gridMissionListener: any = null
+        // guideLineListener: any = null
+
+        polygonRef.current = new naver.maps.Polygon({
+            map: map ? map : undefined,
+            paths: [],
+            strokeColor: '#0080DE',
+            strokeOpacity: 1,
+            strokeWeight: 4,
+            fillColor: '#fefefe',
+            fillOpacity: 0.6,
+            strokeStyle: 'solid',
+        })
+
         if (map) {
             if (activeMission !== 'waypoint') {
                 setIsRunningMission((prev) => !prev)
                 setActiveMission('grid')
 
-                const setGridMission = naver.maps.Event.addListener(
+                gridMissionListener = naver.maps.Event.addListener(
                     map,
                     'click',
                     (e: { coord: naver.maps.LatLng }) => {
                         mainPoint.push(e.coord)
                         setMainPoints((prev) => [...prev, e.coord])
-
                         setMissionData((prev) => ({
                             ...prev,
                             type: 1,
@@ -134,37 +135,62 @@ export const GridMission = ({
 
                         mainPointMarker.push(marker)
                         setMarkers((prev) => [...prev, marker])
-                        polygon.setPath(mainPoint)
+                        polygonRef.current &&
+                            polygonRef.current.setPath(mainPoint)
                         polygonResize(marker, mainPointMarker)
 
-                        const createGuideLine = naver.maps.Event.addListener(
-                            map,
-                            'mousemove',
-                            (e: { coord: naver.maps.LatLng }) => {
-                                const lastLatLng =
-                                    mainPointMarker[
-                                        mainPointMarker.length - 1
-                                    ].getPosition()
-                                guideLine.setPath([lastLatLng, e.coord])
-                            }
-                        )
+                        // guideLineListener = naver.maps.Event.addListener(
+                        //     map,
+                        //     'mousemove',
+                        //     (e: { coord: naver.maps.LatLng }) => {
+                        //         const lastLatLng =
+                        //             mainPointMarker[
+                        //                 mainPointMarker.length - 1
+                        //             ].getPosition()
+
+                        //         guideLineRef.current = new naver.maps.Polyline({
+                        //             map: map ? map : undefined,
+                        //             path: [lastLatLng, e.coord],
+                        //             strokeColor: '#0080DE',
+                        //             strokeWeight: 4,
+                        //             strokeStyle: [4, 4],
+                        //             strokeOpacity: 0.8,
+                        //         })
+                        //     }
+                        // )
 
                         if (mainPoint.length > 2) {
                             naver.maps.Event.addListener(
                                 mainPointMarker[mainPointMarker.length - 1],
                                 'click',
                                 () => {
-                                    createWays(polygon)
+                                    if (polygonRef.current) {
+                                        createWays(polygonRef.current)
+                                        calculateArea(
+                                            polygonRef.current.getAreaSize()
+                                        )
+                                    }
+
+                                    if (guideLineRef.current) {
+                                        guideLineRef.current.setMap(null)
+                                        guideLineRef.current = null
+                                    }
+
+                                    if (dragMarkerRef.current) {
+                                        dragMarkerRef.current.setMap(null)
+                                        dragMarkerRef.current = null
+                                    }
 
                                     naver.maps.Event.removeListener(
-                                        setGridMission
+                                        gridMissionListener
                                     )
-                                    naver.maps.Event.removeListener(
-                                        createGuideLine
-                                    )
-                                    initSetOverlay()
-                                    // calculateArea(mainPoint)
-                                    // calculateDistances(mainPoint)
+
+                                    setIsOptions((prev) => !prev)
+
+                                    // setDragPolygon()
+                                    // naver.maps.Event.removeListener(
+                                    //     guideLineListener
+                                    // )
                                 }
                             )
                         }
@@ -176,30 +202,107 @@ export const GridMission = ({
         }
     }
 
-    const initSetOverlay = () => {
-        guideLine.setMap(null)
+    const calculateArea = (areaSize: number) => {
+        const squarKm = 1000000
+
+        if (areaSize >= squarKm) {
+            setAreaSize(parseFloat((areaSize / squarKm).toFixed(1)) + ' km²')
+        } else {
+            setAreaSize(
+                parseFloat(areaSize.toFixed(1)).toLocaleString() + ' m²'
+            )
+        }
     }
+
+    // const setDragPolygon = () => {
+    //     const bounds =
+    //         polygonRef.current?.getBounds() as naver.maps.LatLngBounds
+    //     const ne = bounds?.getNE()
+    //     const sw = bounds?.getSW()
+
+    //     const se = new naver.maps.LatLng(sw.lat(), ne.lng())
+
+    //     const bottom = new naver.maps.LatLng(
+    //         (sw.lat() + se.lat()) / 2,
+    //         (sw.lng() + se.lng()) / 2
+    //     )
+
+    //     dragMarkerRef.current = new naver.maps.Marker({
+    //         map: map ? map : undefined,
+    //         position: bottom,
+    //         clickable: true,
+    //         icon: {
+    //             content: `<div class='edit_marker'>⚔️</div>`,
+    //             anchor: new naver.maps.Point(16, 0),
+    //         },
+    //     })
+    // }
 
     const polygonResize = (
         marker: naver.maps.Marker,
         mainPointMarker: naver.maps.Marker[]
     ) => {
-        console.log(marker, mainPointMarker)
+        naver.maps.Event.addListener(
+            marker,
+            'drag',
+            (e: { coord: naver.maps.LatLng }) => {
+                if (wayLineRef.current) {
+                    wayLineRef.current.setMap(null)
+                    wayLineRef.current = null
+                }
 
-        // naver.maps.Event.addListener(
-        //     marker,
-        //     'drag',
-        //     (e: { coord: naver.maps.LatLng }) => {
-        //         const index = mainPointMarker.indexOf(marker)
-        //         if (index !== -1) {
-        //             mainPoints[index] = e.coord
-        //             polygon.setPath(mainPoints)
-        //         }
-        //     }
-        // )
+                if (mainPointsRef.current.length > 0) {
+                    mainPointsRef.current.forEach((m) => m.setMap(null))
+                    mainPointsRef.current = []
+                }
+
+                const newPosition = e.coord
+                const markerIndex = mainPointMarker.indexOf(marker)
+                mainPoint[markerIndex] = newPosition
+
+                polygonRef.current && polygonRef.current.setPath(mainPoint)
+
+                const newPoints = mainPoint.map((point) => ({
+                    latitude: point.lat(),
+                    longitude: point.lng(),
+                    height: 100,
+                }))
+
+                setMissionData((prev) => ({
+                    ...prev,
+                    points: newPoints,
+                }))
+            }
+        )
+
+        naver.maps.Event.addListener(marker, 'dragend', () => {
+            if (polygonRef.current) {
+                clearWaylines()
+                createWays(polygonRef.current)
+            }
+        })
+    }
+
+    const clearWaylines = () => {
+        if (wayLineRef.current) {
+            wayLineRef.current.setMap(null)
+            wayLineRef.current = null
+        }
+
+        if (mainPointsRef.current.length > 0) {
+            mainPointsRef.current.forEach((m) => m.setMap(null))
+            mainPointsRef.current = []
+        }
     }
 
     const createWays = (polygon: naver.maps.Polygon) => {
+        // clearMissionData()
+        setMissionData((prevData) => ({
+            ...prevData,
+            ways: [],
+        }))
+        clearWaylines()
+
         const wayLineItems: naver.maps.LatLng[] = []
         const path = polygon.getPath() as naver.maps.KVOArrayOfCoords
 
@@ -352,13 +455,19 @@ export const GridMission = ({
         }
 
         setOverlay(wayLineItems)
-        setOverlays((prev) => ({
-            ...prev,
-            overlay: polygon,
-        }))
     }
 
     const setOverlay = (wayLineItems: naver.maps.LatLng[]) => {
+        if (wayLineRef.current) {
+            wayLineRef.current.setMap(null)
+            wayLineRef.current = null
+        }
+
+        if (mainPointsRef.current) {
+            mainPointsRef.current.forEach((m) => m.setMap(null))
+            mainPointsRef.current = []
+        }
+
         const newStartMarker = new naver.maps.Marker({
             map: map ? map : undefined,
             position: wayLineItems[0],
@@ -377,7 +486,7 @@ export const GridMission = ({
             },
         })
 
-        const newWayLine = new naver.maps.Polyline({
+        wayLineRef.current = new naver.maps.Polyline({
             map: map ? map : undefined,
             path: wayLineItems,
             strokeColor: '#0CF395',
@@ -385,12 +494,8 @@ export const GridMission = ({
             strokeWeight: 5,
         })
 
-        setOverlays({
-            ...overlays,
-            startMarker: newStartMarker,
-            endMarker: newEndMarker,
-            wayLine: newWayLine,
-        })
+        mainPointsRef.current.push(newStartMarker)
+        mainPointsRef.current.push(newEndMarker)
     }
 
     const submitGridMission = async () => {
@@ -414,6 +519,9 @@ export const GridMission = ({
                 } else {
                     clearMap()
                 }
+
+                setIsRunningMission((prev) => !prev)
+                setIsCreateMission((prev) => !prev)
             } catch (err) {
                 console.log(err)
             }
@@ -425,42 +533,35 @@ export const GridMission = ({
     const resetGridMission = () => {
         clearMap()
         setActiveMission(null)
-        setMissionData({
-            ...missionData,
-            name: '',
-            points: [],
-            ways: [],
-        })
-        setOverlays({
-            startMarker: null,
-            endMarker: null,
-            wayLine: null,
-            overlay: new naver.maps.Polygon({
-                map: map ? map : undefined,
-                paths: [],
-                strokeColor: '#0080DE',
-                strokeOpacity: 1,
-                strokeWeight: 4,
-                fillColor: '#fefefe',
-                fillOpacity: 0.6,
-                strokeStyle: 'solid',
-            }),
-        })
+        clearMissionData()
         setMarkers([])
         setMainPoints([])
-        console.log(mainPoints)
+        setAreaSize(null)
+        setIsRunningMission((prev) => !prev)
+        setIsCreateMission((prev) => !prev)
+
+        if (wayLineRef.current) {
+            wayLineRef.current.setMap(null)
+            wayLineRef.current = null
+        }
+
+        if (guideLineRef.current) {
+            guideLineRef.current.setMap(null)
+            guideLineRef.current = null
+        }
     }
 
     const clearMap = () => {
         markers.forEach((marker) => marker.setMap(null))
-        if (polygon) polygon.setMap(null)
-        if (guideLine) guideLine.setMap(null)
-        if (overlays.wayLine) overlays.wayLine.setMap(null)
-        if (overlays.startMarker) overlays.startMarker.setMap(null)
-        if (overlays.endMarker) overlays.endMarker.setMap(null)
-        if (overlays.overlay) overlays.overlay.setMap(null)
+        if (polygonRef.current) polygonRef.current.setMap(null)
+        if (wayLineRef.current) wayLineRef.current.setMap(null)
+        if (mainPointsRef.current.length > 0) {
+            mainPointsRef.current.forEach((m) => m.setMap(null))
+            mainPointsRef.current = []
+        }
 
         // Reset state values
+        polygonRef.current = null
         setActiveMission(null)
         setMissionData({
             ...missionData,
@@ -468,25 +569,19 @@ export const GridMission = ({
             points: [],
             ways: [],
         })
-        setOverlays({
-            startMarker: null,
-            endMarker: null,
-            wayLine: null,
-            overlay: new naver.maps.Polygon({
-                map: map ? map : undefined,
-                paths: [],
-                strokeColor: '#0080DE',
-                strokeOpacity: 1,
-                strokeWeight: 4,
-                fillColor: '#fefefe',
-                fillOpacity: 0.6,
-                strokeStyle: 'solid',
-            }),
-        })
         setMarkers([])
         setMainPoints([])
         console.log(mainPoints)
     }
+
+    useEffect(() => {
+        if (polygonRef.current) createWays(polygonRef.current)
+    }, [
+        areaOptions.angle,
+        areaOptions.droneAltitude,
+        areaOptions.longitudinalRedundancy,
+        areaOptions.transverseRedundancy,
+    ])
 
     return (
         <>
@@ -507,14 +602,19 @@ export const GridMission = ({
                 </Button>
             </GridMissionWrap>
 
-            {activeMission === 'grid' && (
+            {areaSize && (
+                <div className="area_size">
+                    <span>총면적: {areaSize}</span>
+                </div>
+            )}
+
+            {activeMission === 'grid' && isOptions && (
                 <GridMissionOptions
                     resetGridMission={resetGridMission}
                     areaOptions={areaOptions}
                     setAreaOptions={setAreaOptions}
                     setMissionData={setMissionData}
                     missionData={missionData}
-                    // createWays={createWays={() => createWays(polygon)}}
                     submitGridMission={submitGridMission}
                 />
             )}

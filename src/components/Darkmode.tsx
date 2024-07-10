@@ -7,8 +7,8 @@ const DarkmodeWrap = styled.button<{ isDarkMode: boolean }>`
     position: absolute;
     bottom: 16px;
     right: 16px;
-    width: 62px;
-    height: 62px;
+    width: 52px;
+    height: 52px;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
     border-radius: 5px;
     display: flex;

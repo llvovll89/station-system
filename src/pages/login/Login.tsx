@@ -58,7 +58,6 @@ export const Login = () => {
                             failed: '',
                             success: '',
                         }))
-                        navigate(routes.MAIN)
                     })
                 }
             } catch (error) {
@@ -69,47 +68,43 @@ export const Login = () => {
                         ...prev,
                         failed: '로그인 실패, 비밀번호가 틀렸습니다. 다시 확인해 주세요.',
                     }))
-                    timeOut(2000, () => {
-                        setMessage((prev) => ({
-                            ...prev,
-                            failed: '',
-                        }))
-                        setLoginData(() => ({
-                            password: '',
-                        }))
-                    })
+
+                    setMessage((prev) => ({
+                        ...prev,
+                        failed: '',
+                    }))
+
+                    setLoginData(() => ({
+                        password: '',
+                    }))
                 } else if (err?.response?.status === 404) {
                     setMessage((prev) => ({
                         ...prev,
                         failed: '로그인 실패, 없는 아이디 입니다. 다시 확인해 주세요.',
                     }))
-                    timeOut(2000, () => {
-                        setMessage((prev) => ({
-                            ...prev,
-                            failed: '',
-                            success: '',
-                        }))
-                        setLoginData(() => ({
-                            id: '',
-                            password: '',
-                        }))
-                    })
+                    setMessage((prev) => ({
+                        ...prev,
+                        failed: '',
+                        success: '',
+                    }))
+                    setLoginData(() => ({
+                        id: '',
+                        password: '',
+                    }))
                 } else {
                     setMessage((prev) => ({
                         ...prev,
                         failed: '로그인 실패, 아이디 / 비밀번호를 잘못 입력하셨습니다.',
                     }))
-                    timeOut(2000, () => {
-                        setMessage((prev) => ({
-                            ...prev,
-                            failed: '',
-                            success: '',
-                        }))
-                        setLoginData(() => ({
-                            id: '',
-                            password: '',
-                        }))
-                    })
+                    setMessage((prev) => ({
+                        ...prev,
+                        failed: '',
+                        success: '',
+                    }))
+                    setLoginData(() => ({
+                        id: '',
+                        password: '',
+                    }))
                 }
             }
         } else {

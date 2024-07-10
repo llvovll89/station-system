@@ -16,6 +16,7 @@ interface WaypPointMissionProps {
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
     setIsCreate: React.Dispatch<React.SetStateAction<boolean>>
     setIsRunningMission: React.Dispatch<React.SetStateAction<boolean>>
+    setIsCreateMission: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const WaypPointMission = ({
@@ -26,6 +27,7 @@ export const WaypPointMission = ({
     setActiveMission,
     setIsCreate,
     setIsRunningMission,
+    setIsCreateMission,
 }: WaypPointMissionProps) => {
     const [mainPoints, setMainPoints] = useState<naver.maps.LatLng[]>([])
     const [wayLines, setWayLines] = useState<naver.maps.LatLng[]>([])
@@ -267,6 +269,9 @@ export const WaypPointMission = ({
                 } else {
                     resetData()
                 }
+
+                setIsRunningMission((prev) => !prev)
+                setIsCreateMission((prev) => !prev)
             } catch (err) {
                 console.log(err)
             }

@@ -177,9 +177,9 @@ export const ScheduleList = ({
                                     <span>
                                         상태:{' '}
                                         {schedule.status === 0
-                                            ? '대기중'
+                                            ? '진행중'
                                             : schedule.status === 1
-                                              ? '진행중'
+                                              ? 'failed'
                                               : '비행완료'}
                                     </span>
                                     <span>

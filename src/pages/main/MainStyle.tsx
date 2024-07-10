@@ -32,6 +32,18 @@ export const MainWrap = styled.section`
         color: ${theme.color.white};
     }
 
+    & .area_size {
+        padding: 0.75rem;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 16px;
+        border-radius: 5px;
+        box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.26);
+        background-color: ${theme.color.black};
+        color: ${theme.color.white};
+    }
+
     & .distance {
         position: absolute;
         left: 50%;
@@ -63,6 +75,17 @@ export const MainWrap = styled.section`
         align-items: center;
         justify-content: center;
         color: ${theme.color.black};
+    }
+
+    & .edit_marker {
+        width: 32px;
+        height: 32px;
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid ${theme.color.primary};
+        background-color: ${theme.color.white};
     }
 
     & .waypoint_marker {

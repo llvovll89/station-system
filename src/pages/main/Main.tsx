@@ -13,6 +13,7 @@ import { RunningSchedule } from './RunningSchedule'
 import { getSchedule } from '../../util/requestHttp'
 import axios from 'axios'
 import DroneImage from '../../assets/image/icon/ico_airplane(w).png'
+import { MapButton } from '../../components/MapButton'
 
 export const Main = () => {
     const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none)
@@ -27,6 +28,7 @@ export const Main = () => {
 
     const waylines = useRef<naver.maps.Polyline | null>(null)
     const markers = useRef<naver.maps.Marker[]>([])
+    const polygon = useRef<naver.maps.Polygon | null>(null)
 
     useEffect(() => {
         if (!mapElement.current || !naver) return
@@ -48,6 +50,65 @@ export const Main = () => {
 
     const toggleActive = (type: ActiveType) => {
         setIsActiveType((prev) => (prev === type ? ActiveType.none : type))
+    }
+
+    const resetOverlay = () => {
+        // 기존 폴리라인과 마커 삭제
+        if (waylines.current) {
+            waylines.current.setMap(null)
+            waylines.current = null
+        }
+
+        if (polygon.current) {
+            polygon.current.setMap(null)
+            polygon.current = null
+        }
+
+        markers.current.forEach((marker) => marker.setMap(null))
+        markers.current = []
+    }
+
+    const createWayline = (data: any) => {
+        const path =
+            data &&
+            data.data.ways.map(
+                (p: { latitude: number; longitude: number }) =>
+                    new naver.maps.LatLng(p.latitude, p.longitude)
+            )
+
+        waylines.current = new naver.maps.Polyline({
+            map: map ? map : undefined,
+            path: path,
+            strokeColor: '#2E8B57',
+            strokeOpacity: 1,
+            strokeWeight: 4,
+            strokeStyle: 'solid',
+        })
+
+        const startPoint = path[0]
+        const endPoint = path[path.length - 1]
+
+        const startMarker = new naver.maps.Marker({
+            position: startPoint,
+            map: map ? map : undefined,
+            icon: {
+                content: '<div class="start_marker">S</div>',
+                anchor: new naver.maps.Point(12, 12),
+            },
+        })
+
+        markers.current.push(startMarker)
+
+        const endMarker = new naver.maps.Marker({
+            position: endPoint,
+            map: map ? map : undefined,
+            icon: {
+                content: '<div class="end_marker">E</div>',
+                anchor: new naver.maps.Point(12, 12),
+            },
+        })
+
+        markers.current.push(endMarker)
     }
 
     const getStation = async () => {
@@ -89,69 +150,71 @@ export const Main = () => {
                 setIsRunningSchedule(hasRunning)
                 hasRunning && getSchedule()
 
-                if (sessionStorage.getItem('missionInfo') && hasRunning) {
+                if (hasRunning) {
                     const data = JSON.parse(
                         sessionStorage.getItem('missionInfo')!
                     )
 
-                    // 기존 폴리라인과 마커 삭제
-                    if (waylines.current) {
-                        waylines.current.setMap(null)
-                    }
-                    markers.current.forEach((marker) => marker.setMap(null))
-                    markers.current = []
+                    resetOverlay()
 
-                    // 새 폴리라인과 마커 추가
-                    waylines.current = new naver.maps.Polyline({
-                        map: map ? map : undefined,
-                        path:
-                            data &&
-                            data.data.ways.map(
+                    if (data.data.type === 1) {
+                        polygon.current = new naver.maps.Polygon({
+                            map: map ? map : undefined,
+                            paths: data.data.points.map(
                                 (p: { latitude: number; longitude: number }) =>
                                     new naver.maps.LatLng(
                                         p.latitude,
                                         p.longitude
                                     )
                             ),
-                        strokeColor: '#0080DE',
-                        strokeOpacity: 1,
-                        strokeWeight: 4,
-                        strokeStyle: 'solid',
-                    })
+                            strokeColor: '#0080DE',
+                            strokeOpacity: 1,
+                            strokeWeight: 4,
+                            fillColor: '#fefefe',
+                            fillOpacity: 0.6,
+                            strokeStyle: 'solid',
+                        })
 
-                    data.data.points.forEach(
-                        (
-                            p: { latitude: number; longitude: number },
-                            index: number
-                        ) => {
-                            const isStart = index === 0
-                            const isEnd = index === data.data.points.length - 1
+                        data.data.points.forEach(
+                            (p: { latitude: number; longitude: number }) => {
+                                const marker = new naver.maps.Marker({
+                                    map: map ? map : undefined,
+                                    position: new naver.maps.LatLng(
+                                        p.latitude,
+                                        p.longitude
+                                    ),
+                                    icon: {
+                                        content: `<div class='waypoint_marker'></div>`,
+                                        anchor: new naver.maps.Point(9, 9),
+                                    },
+                                })
 
-                            const marker = new naver.maps.Marker({
-                                map: map ? map : undefined,
-                                position: new naver.maps.LatLng(
-                                    p.latitude,
-                                    p.longitude
-                                ),
-                                icon: {
-                                    content: `<div class='waypoint_marker'>
-                                        <span>${isStart ? 'S' : isEnd ? 'E' : ''}</span>
-                                    </div>`,
-                                    anchor: new naver.maps.Point(9, 9),
-                                },
-                            })
+                                markers.current.push(marker)
+                            }
+                        )
+                    } else {
+                        data.data.points.forEach(
+                            (p: { latitude: number; longitude: number }) => {
+                                const marker = new naver.maps.Marker({
+                                    map: map ? map : undefined,
+                                    position: new naver.maps.LatLng(
+                                        p.latitude,
+                                        p.longitude
+                                    ),
+                                    icon: {
+                                        content: `<div class='waypoint_marker'></div>`,
+                                        anchor: new naver.maps.Point(9, 9),
+                                    },
+                                })
 
-                            markers.current.push(marker)
-                        }
-                    )
-                } else {
-                    if (waylines.current) {
-                        waylines.current.setMap(null)
-                        waylines.current = null
+                                markers.current.push(marker)
+                            }
+                        )
                     }
 
-                    markers.current.forEach((marker) => marker.setMap(null))
-                    markers.current = []
+                    createWayline(data)
+                } else {
+                    resetOverlay()
                     sessionStorage.removeItem('missionInfo')
                     setIsRunningSchedule(false)
                 }
@@ -260,7 +323,9 @@ export const Main = () => {
             )}
 
             {isRunningSchedule && <RunningSchedule />}
+
             <DarkMode />
+            <MapButton />
         </MainWrap>
     )
 }

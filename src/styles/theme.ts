@@ -52,7 +52,7 @@ const theme: Theme = {
 
     color: {
         primary: '#3772F0',
-        black: '#111111',
+        black: '#231F20',
         white: '#FDFEFE',
         red: '#ff0000',
         subPrimary: '#F5F7F8',

@@ -3,7 +3,6 @@ import { AreaOptions } from '../../../constant/type'
 import theme from '../../../styles/theme'
 import { Button } from '../../../components/button/Button'
 import { MissionDto } from '../../../dto/MissionDto'
-// import { useEffect } from 'react'
 
 const GridMissionOptionsWrap = styled.section`
     min-width: 400px;
@@ -72,7 +71,6 @@ interface GridMissionOptionsProps {
     missionData: MissionDto
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
     resetGridMission: () => void
-    // createWays: () => void
 }
 
 export const GridMissionOptions = ({
@@ -82,17 +80,7 @@ export const GridMissionOptions = ({
     missionData,
     setMissionData,
     resetGridMission,
-    // createWays,
 }: GridMissionOptionsProps) => {
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target
-        setAreaOptions((prev) => ({ ...prev, [name]: Number(value) }))
-    }
-
-    // useEffect(() => {
-    //     createWays()
-    // }, [areaOptions])
-
     return (
         <GridMissionOptionsWrap>
             <div className="content">
@@ -103,10 +91,10 @@ export const GridMissionOptions = ({
                         id="name"
                         value={missionData.name}
                         onChange={(e) =>
-                            setMissionData({
-                                ...missionData,
+                            setMissionData((prevData) => ({
+                                ...prevData,
                                 name: e.target.value,
-                            })
+                            }))
                         }
                     />
                 </div>
@@ -116,7 +104,12 @@ export const GridMissionOptions = ({
                         type="range"
                         id="angle"
                         value={areaOptions.angle}
-                        onChange={handleChange}
+                        onChange={(e) =>
+                            setAreaOptions((prevData) => ({
+                                ...prevData,
+                                angle: Number(e.target.value),
+                            }))
+                        }
                         min={'0'}
                         max={'360'}
                     />
@@ -127,7 +120,12 @@ export const GridMissionOptions = ({
                     </label>
                     <input
                         value={areaOptions.longitudinalRedundancy}
-                        onChange={handleChange}
+                        onChange={(e) =>
+                            setAreaOptions((prevData) => ({
+                                ...prevData,
+                                longitudinalRedundancy: Number(e.target.value),
+                            }))
+                        }
                         type="range"
                         min={'10'}
                         max={'90'}
@@ -140,7 +138,12 @@ export const GridMissionOptions = ({
                     </label>
                     <input
                         value={areaOptions.transverseRedundancy}
-                        onChange={handleChange}
+                        onChange={(e) =>
+                            setAreaOptions((prevData) => ({
+                                ...prevData,
+                                transverseRedundancy: Number(e.target.value),
+                            }))
+                        }
                         type="range"
                         min={'10'}
                         max={'90'}
@@ -153,9 +156,14 @@ export const GridMissionOptions = ({
                     </label>
                     <input
                         value={areaOptions.droneAltitude}
-                        onChange={handleChange}
+                        onChange={(e) =>
+                            setAreaOptions({
+                                ...areaOptions,
+                                droneAltitude: Number(e.target.value),
+                            })
+                        }
                         min={'50'}
-                        max={'1000'}
+                        max={'500'}
                         type="range"
                         id="altitude"
                     />
