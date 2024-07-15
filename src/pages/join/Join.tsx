@@ -27,6 +27,16 @@ export const Join = () => {
 
     const navigate = useNavigate()
 
+    const resetJoinData = () => {
+        setJoinData({
+            id: '',
+            name: '',
+            password: '',
+            confirmPassword: '',
+        })
+        setFailedMsg('')
+    }
+
     const submitJoin = async () => {
         const userId = !/^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
             joinData.id
@@ -42,11 +52,14 @@ export const Join = () => {
         ) {
             if (userId) {
                 setFailedMsg('아이디는 이메일 형식이어야 합니다.')
+                resetJoinData()
             } else if (!passwordVerification) {
                 setFailedMsg('비밀번호는 8자 이상이어야 합니다.')
+                resetJoinData()
             } else {
                 if (joinData.password !== joinData.confirmPassword) {
                     setFailedMsg('비밀번호가 일치하지 않습니다.')
+                    resetJoinData()
                 } else {
                     try {
                         const response = await axios.post(
@@ -87,11 +100,14 @@ export const Join = () => {
 
     return (
         <JoinWrap>
+            <div className="title">
+                <h1>STATION SIMULATOR ID 생성</h1>
+            </div>
             <article className="content">
                 <header>
-                    <div>
-                        <AiOutlineLeft onClick={() => navigate(-1)} />
-                        <h1>회원가입</h1>
+                    <div onClick={() => navigate(-1)}>
+                        <AiOutlineLeft />
+                        <h1>Back</h1>
                     </div>
                     <p>{failedMsg}</p>
                 </header>

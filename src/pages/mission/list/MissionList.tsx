@@ -1,5 +1,5 @@
 import { Button } from '../../../components/button/Button'
-import { IoClose } from 'react-icons/io5'
+import { IoClose, IoCreateOutline } from 'react-icons/io5'
 import { useEffect, useState } from 'react'
 import { MissionDto } from '../../../dto/MissionDto'
 import { MissionListWrap } from './MissionListStyle'
@@ -14,20 +14,27 @@ import { MISSION } from '../../../constant/http'
 
 interface MissionListProps {
     toggleMission: () => void
-    isCreate: boolean
     map: naver.maps.Map | null
     setIsActive: React.Dispatch<React.SetStateAction<string>>
     isCreateMission: boolean
-    isRunningMission: boolean
+    isHttpRequest: boolean
+    setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>
+    toggleCreateMission: () => void
+    isRunningMission: {
+        waypoint: boolean
+        grid: boolean
+        isStart: boolean
+    }
 }
 
 export const MissionList = ({
     toggleMission,
-    isCreate,
     map,
     setIsActive,
     isCreateMission,
-    isRunningMission,
+    isHttpRequest,
+    setIsHttpRequest,
+    toggleCreateMission,
 }: MissionListProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
     const [selectMission, setSelectMission] = useState<null | MissionDto>(null)
@@ -36,7 +43,6 @@ export const MissionList = ({
         areaSize: '',
     })
     const [isUpdateMission, setIsUpdateMission] = useState(false)
-    const [isHttpRequest, setIsHttpRequest] = useState(false)
     const [isSelectInfo, setIsSelectInfo] = useState(false)
     const [currentMapElements, setCurrentMapElements] = useState<any[]>([])
     const [infoMission, setInfoMission] = useState<MissionDto>({
@@ -84,51 +90,46 @@ export const MissionList = ({
     }
 
     const getInfoMission = async (mission: MissionDto) => {
-        if (!isRunningMission) {
-            if (selectMission && mission.seq === selectMission.seq) {
-                setSelectMission(null)
-                setIsSelectInfo(false)
-                clearMapElements()
+        if (selectMission && mission.seq === selectMission.seq) {
+            setSelectMission(null)
+            setIsSelectInfo(false)
+            clearMapElements()
 
-                if (isUpdateMission) {
-                    setIsUpdateMission(false)
-                }
-            } else {
-                if (isUpdateMission) {
-                    setIsUpdateMission(false)
-                }
-
-                setSelectMission(mission)
-
-                try {
-                    const { seq } = mission
-                    const response = await axios.get(`${MISSION}/${seq}`, {
-                        withCredentials: true,
-                    })
-                    const data = await response.data
-                    // console.log(data)
-
-                    setInfoMission({
-                        ...infoMission,
-                        seq: data.seq,
-                        name: data.name,
-                        type: data.type,
-                        mainPoint: data.mainPoint,
-                        createdAt: data.createdAt,
-                        updatedAt: data.updatedAt,
-                        transverseRedundancy: data.transverseRedundancy,
-                        longitudinalRedundancy: data.longitudinalRedundancy,
-                        points: data.points,
-                        ways: data.ways,
-                    })
-
-                    setIsSelectInfo(true)
-                } catch (err) {
-                    console.log(err)
-                }
+            if (isUpdateMission) {
+                setIsUpdateMission(false)
             }
         } else {
-            alert('미션이 생성 중 입니다.')
+            if (isUpdateMission) {
+                setIsUpdateMission(false)
+            }
+
+            setSelectMission(mission)
+
+            try {
+                const { seq } = mission
+                const response = await axios.get(`${MISSION}/${seq}`, {
+                    withCredentials: true,
+                })
+                const data = await response.data
+
+                setInfoMission({
+                    ...infoMission,
+                    seq: data.seq,
+                    name: data.name,
+                    type: data.type,
+                    mainPoint: data.mainPoint,
+                    createdAt: data.createdAt,
+                    updatedAt: data.updatedAt,
+                    transverseRedundancy: data.transverseRedundancy,
+                    longitudinalRedundancy: data.longitudinalRedundancy,
+                    points: data.points,
+                    ways: data.ways,
+                })
+
+                setIsSelectInfo(true)
+            } catch (err) {
+                console.log(err)
+            }
         }
     }
 
@@ -161,8 +162,8 @@ export const MissionList = ({
                             p.longitude
                         ),
                         icon: {
-                            content: `<div class='waypoint_marker'>${index + 1}</div>`,
-                            anchor: new naver.maps.Point(9, 9),
+                            content: `<div class='wayline_marker'>${index + 1}</div>`,
+                            anchor: new naver.maps.Point(12, 12),
                         },
                     })
             )
@@ -181,8 +182,8 @@ export const MissionList = ({
                             p.longitude
                         ),
                         icon: {
-                            content: `<div class='points_marker'></div>`,
-                            anchor: new naver.maps.Point(9, 9),
+                            content: `<div class='wayline_marker'></div>`,
+                            anchor: new naver.maps.Point(12, 12),
                         },
                     })
                 )
@@ -263,7 +264,7 @@ export const MissionList = ({
         }
 
         fetchMissions()
-    }, [isCreate, isHttpRequest])
+    }, [isHttpRequest])
 
     useEffect(() => {
         if (isSelectInfo) {
@@ -292,9 +293,17 @@ export const MissionList = ({
             <header>
                 <h1>미션</h1>
 
-                <Button type={'button'} onClick={closeMissionList}>
-                    <IoClose />
-                </Button>
+                <div className="header_btn">
+                    <Button type={'button'} onClick={toggleCreateMission}>
+                        <IoCreateOutline
+                            style={{ width: '24PX', height: '24px' }}
+                        />
+                    </Button>
+
+                    <Button type={'button'} onClick={closeMissionList}>
+                        <IoClose style={{ width: '24px', height: '24px' }} />
+                    </Button>
+                </div>
             </header>
 
             <article className="container">
@@ -486,14 +495,20 @@ export const MissionList = ({
                 <article className="mission_info">
                     <header>
                         <p>{infoMission.name}</p>
-                        <div className="content_actios">
-                            <span>웨이포인트 {infoMission.points.length}</span>
-                        </div>
                     </header>
 
                     <div className="content">
-                        <span>비행거리 {overlayData.distance} m</span>
-                        <span>비행면적 {overlayData.areaSize} 제곱미터</span>
+                        <div className="area">
+                            <span>비행거리 {overlayData.distance} m</span>
+                            <span>웨이포인트 {infoMission.points.length}</span>
+                        </div>
+                        {overlayData.areaSize && (
+                            <div className="area">
+                                <span>
+                                    비행면적 {overlayData.areaSize} 제곱미터
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </article>
             )}

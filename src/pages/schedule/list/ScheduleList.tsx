@@ -96,10 +96,12 @@ export const ScheduleList = ({
 
                 <div className="content_btn">
                     <Button type={'button'} onClick={toggleCreateSchedule}>
-                        <IoCreateOutline />
+                        <IoCreateOutline
+                            style={{ width: '24PX', height: '24px' }}
+                        />
                     </Button>
                     <Button type={'button'} onClick={toggleActiveSchedule}>
-                        <IoClose />
+                        <IoClose style={{ width: '24PX', height: '24px' }} />
                     </Button>
                 </div>
             </header>

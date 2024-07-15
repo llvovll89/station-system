@@ -14,13 +14,17 @@ export const MissionListWrap = styled.section`
         align-items: center;
         justify-content: space-between;
         color: ${theme.color.white};
+        border-bottom: 1px solid rgba(255, 255, 255, 0.33);
+        padding: 0 12px;
 
-        h1 {
-            padding-left: 12px;
-        }
+        .header_btn {
+            display: flex;
+            gap: 4px;
+            align-items: center;
 
-        button {
-            width: 52px;
+            & button {
+                width: 36px;
+            }
         }
     }
 
@@ -51,6 +55,7 @@ export const MissionListWrap = styled.section`
                     }
 
                     & header {
+                        padding: 0;
                         & .mission_name {
                             color: ${theme.color.white};
                         }
@@ -244,9 +249,9 @@ export const MissionListWrap = styled.section`
 
     .mission_info {
         position: absolute;
-        background-color: ${theme.color.white};
+        background-color: ${theme.color.black};
         min-width: 360px;
-        color: ${theme.color.black};
+        color: ${theme.color.white};
         left: 400px;
         bottom: 16px;
         border-radius: 5px;
@@ -257,13 +262,19 @@ export const MissionListWrap = styled.section`
         gap: 1rem;
 
         header {
-            color: ${theme.color.black};
+            padding-bottom: 0.5rem;
         }
 
         & .content {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.3rem;
+
+            & .area {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
         }
     }
 `

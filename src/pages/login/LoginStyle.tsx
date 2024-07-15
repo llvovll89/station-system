@@ -10,7 +10,6 @@ export const LoginWrap = styled.section`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: ${theme.color.subPrimary};
 
     & .content {
         flex-direction: column;
@@ -20,8 +19,6 @@ export const LoginWrap = styled.section`
         gap: 2rem;
         padding: 2rem 1.5rem;
         border-radius: 4px;
-        background-color: ${theme.color.white};
-        box-shadow: ${theme.boxShadow?.sm};
 
         .logo_box {
             & h1 {
@@ -64,6 +61,7 @@ export const LoginWrap = styled.section`
                         transition: all 0.15s ease-in-out;
                         padding-left: 38px;
                         height: 50px;
+                        border-radius: 5px;
 
                         &:focus {
                             border: 1px solid #09f;
@@ -132,6 +130,7 @@ export const LoginWrap = styled.section`
                         background-color: ${theme.color.primary};
                         color: ${theme.color.white};
                         height: 50px;
+                        border-radius: 5px;
                     }
                 }
                 }

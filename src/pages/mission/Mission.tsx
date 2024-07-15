@@ -1,11 +1,13 @@
 import { MissionWrap } from './MissionStyle'
-import { Button } from '../../components/button/Button'
-import { VscGitPullRequestCreate } from 'react-icons/vsc'
+// import { Button } from '../../components/button/Button'
+// import { VscGitPullRequestCreate } from 'react-icons/vsc'
 import { WaypPointMission } from './weapoint/WayPointMission'
 import { GridMission } from './grid/GridMission'
 import { MissionList } from './list/MissionList'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { MissionDto } from '../../dto/MissionDto'
+import { NewMission } from './NewMission'
+// import { MissionType } from '../../constant/type'
 
 interface MissionProps {
     toggleMission: () => void
@@ -15,8 +17,12 @@ interface MissionProps {
 
 export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
     const [isCreateMission, setIsCreateMission] = useState(false)
-    const [isRunningMission, setIsRunningMission] = useState(false)
-    const [isCreate, setIsCreate] = useState(false)
+    const [isHttpRequest, setIsHttpRequest] = useState(false)
+    const [isRunningMission, setIsRunningMission] = useState({
+        waypoint: false,
+        grid: false,
+        isStart: false,
+    })
     const [missionData, setMissionData] = useState<MissionDto>({
         name: '',
         type: 0,
@@ -33,71 +39,69 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
         angle: 36,
     })
 
-    const [activeMission, setActiveMission] = useState<
-        null | 'waypoint' | 'grid'
-    >(null)
-
-    const setCreateMission = () => {
-        if (isCreateMission && activeMission !== null) {
-            alert('미션 생성 또는 초기화 후 클릭해 주세요.')
-            return
-            // setIsRunningMission(false)
-        }
-
+    const toggleCreateMission = () => {
         setIsCreateMission((prev) => !prev)
-        setActiveMission(null)
     }
 
-    useEffect(() => {
-        console.log(isCreateMission)
-    }, [isCreateMission])
+    // const [activeMission, setActiveMission] = useState<
+    //     null | 'waypoint' | 'grid'
+    // >(null)
+
+    // const setCreateMission = () => {
+    //     if (isCreateMission && activeMission !== null) {
+    //         alert('미션 생성 또는 초기화 후 클릭해 주세요.')
+    //         return
+    //         // setIsRunningMission(false)
+    //     }
+
+    //     setIsCreateMission((prev) => !prev)
+    //     // setActiveMission(null)
+    // }
 
     return (
         <MissionWrap>
             <MissionList
                 toggleMission={toggleMission}
                 isCreateMission={isCreateMission}
-                isCreate={isCreate}
                 isRunningMission={isRunningMission}
+                toggleCreateMission={toggleCreateMission}
                 map={map}
+                setIsHttpRequest={setIsHttpRequest}
+                isHttpRequest={isHttpRequest}
                 setIsActive={setIsActive}
             />
 
-            <Button
-                className="create_btn"
-                type="button"
-                onClick={setCreateMission}
-            >
-                <VscGitPullRequestCreate />
-                <span className={isCreateMission ? 'active' : ''}>
-                    {isCreateMission ? '실행중' : '생성'}
-                </span>
-            </Button>
-
             {isCreateMission && (
-                <>
-                    <WaypPointMission
-                        map={map}
-                        activeMission={activeMission}
-                        setActiveMission={setActiveMission}
-                        setMissionData={setMissionData}
-                        missionData={missionData}
-                        setIsCreate={setIsCreate}
-                        setIsRunningMission={setIsRunningMission}
-                        setIsCreateMission={setIsCreateMission}
-                    />
+                <NewMission
+                    missionData={missionData}
+                    isRunningMission={isRunningMission}
+                    setIsCreateMission={setIsCreateMission}
+                    setIsRunningMission={setIsRunningMission}
+                    setMissionData={setMissionData}
+                />
+            )}
 
-                    <GridMission
-                        map={map}
-                        activeMission={activeMission}
-                        setActiveMission={setActiveMission}
-                        setMissionData={setMissionData}
-                        missionData={missionData}
-                        setIsCreate={setIsCreate}
-                        setIsRunningMission={setIsRunningMission}
-                        setIsCreateMission={setIsCreateMission}
-                    />
-                </>
+            {isRunningMission.waypoint && isRunningMission.isStart && (
+                <WaypPointMission
+                    map={map}
+                    isRunningMission={isRunningMission}
+                    setIsRunningMission={setIsRunningMission}
+                    setMissionData={setMissionData}
+                    missionData={missionData}
+                    setIsHttpRequest={setIsHttpRequest}
+                    setIsCreateMission={setIsCreateMission}
+                />
+            )}
+
+            {isRunningMission.grid && isRunningMission.isStart && (
+                <GridMission
+                    map={map}
+                    isRunningMission={isRunningMission}
+                    missionData={missionData}
+                    setIsHttpRequest={setIsHttpRequest}
+                    setIsRunningMission={setIsRunningMission}
+                    setMissionData={setMissionData}
+                />
             )}
         </MissionWrap>
     )

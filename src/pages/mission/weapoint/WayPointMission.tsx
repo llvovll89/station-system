@@ -1,37 +1,39 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../../../components/button/Button'
-import { VscActivateBreakpoints } from 'react-icons/vsc'
-import { WaypointWrap } from './WayPointMissionStyle'
-import axios from 'axios'
 import { MISSION } from '../../../constant/http'
 import { MissionDto } from '../../../dto/MissionDto'
+import axios from 'axios'
 
 interface WaypPointMissionProps {
     map: naver.maps.Map | null
-    activeMission: null | 'waypoint' | 'grid'
-    setActiveMission: React.Dispatch<
-        React.SetStateAction<null | 'waypoint' | 'grid'>
+    setIsRunningMission: React.Dispatch<
+        React.SetStateAction<{
+            waypoint: boolean
+            grid: boolean
+            isStart: boolean
+        }>
     >
+    isRunningMission: {
+        waypoint: boolean
+        grid: boolean
+        isStart: boolean
+    }
     missionData: MissionDto
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
-    setIsCreate: React.Dispatch<React.SetStateAction<boolean>>
-    setIsRunningMission: React.Dispatch<React.SetStateAction<boolean>>
     setIsCreateMission: React.Dispatch<React.SetStateAction<boolean>>
+    setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const WaypPointMission = ({
     map,
     missionData,
-    setMissionData,
-    activeMission,
-    setActiveMission,
-    setIsCreate,
+    isRunningMission,
     setIsRunningMission,
-    setIsCreateMission,
+    setIsHttpRequest,
+    setMissionData,
 }: WaypPointMissionProps) => {
     const [mainPoints, setMainPoints] = useState<naver.maps.LatLng[]>([])
     const [wayLines, setWayLines] = useState<naver.maps.LatLng[]>([])
-    const [isStartWaypoint, setIsStartWaypoint] = useState(false)
     const [wayPointState, setWayPointState] = useState({
         overlay: null as naver.maps.Polyline | null,
         markers: [] as naver.maps.Marker[],
@@ -60,123 +62,108 @@ export const WaypPointMission = ({
         wayPointState.markers.forEach((marker) => marker.setMap(null))
         wayPointState.overlay && wayPointState.overlay.setMap(null)
 
-        // 상태 초기화
         setWayPointState({
             overlay: null,
             markers: [],
         })
 
-        setActiveMission(null)
-        setIsStartWaypoint(false)
         setMainPoints([])
         setWayLines([])
         setDistance(0)
     }
 
     const createWayPointMission = () => {
-        if (activeMission !== 'grid') {
-            if (isStartWaypoint) {
-                alert('미션이 진행 중 입니다.')
-            } else {
-                setActiveMission('waypoint')
-                setIsRunningMission((prev) => !prev)
-                setMissionData({
-                    ...missionData,
-                    type: 0,
-                })
-                const markerArr: naver.maps.Marker[] = []
-                const setWayPoint = naver.maps.Event.addListener(
-                    map,
-                    'click',
-                    (e: { coord: naver.maps.LatLng }) => {
-                        setIsStartWaypoint(true)
-                        const path =
-                            wayLine?.getPath() as naver.maps.ArrayOfCoords
-                        path.push(e.coord)
-                        setMainPoints((prev) => [...prev, e.coord])
-                        setWayLines((prev) => [...prev, e.coord])
-                        mainPoints.push(e.coord)
+        if (isRunningMission.waypoint) {
+            setMissionData({
+                ...missionData,
+                type: 0,
+            })
+            const markerArr: naver.maps.Marker[] = []
+            const setWayPoint = naver.maps.Event.addListener(
+                map,
+                'click',
+                (e: { coord: naver.maps.LatLng }) => {
+                    const path = wayLine?.getPath() as naver.maps.ArrayOfCoords
+                    path.push(e.coord)
+                    setMainPoints((prev) => [...prev, e.coord])
+                    setWayLines((prev) => [...prev, e.coord])
+                    mainPoints.push(e.coord)
 
-                        setMissionData((prev) => ({
-                            ...prev,
-                            mainPoint: {
+                    setMissionData((prev) => ({
+                        ...prev,
+                        mainPoint: {
+                            latitude: e.coord.lat(),
+                            longitude: e.coord.lng(),
+                            height: 100,
+                        },
+                        points: [
+                            ...prev.points,
+                            {
                                 latitude: e.coord.lat(),
                                 longitude: e.coord.lng(),
                                 height: 100,
                             },
-                            points: [
-                                ...prev.points,
-                                {
-                                    latitude: e.coord.lat(),
-                                    longitude: e.coord.lng(),
-                                    height: 100,
-                                },
-                            ],
-                            ways: [
-                                ...prev.ways,
-                                {
-                                    latitude: e.coord.lat(),
-                                    longitude: e.coord.lng(),
-                                    height: 100,
-                                },
-                            ],
-                        }))
-
-                        const marker = new naver.maps.Marker({
-                            map: map ? map : undefined,
-                            position: e.coord,
-                            draggable: true,
-                            icon: {
-                                content: `<div class='wayline_marker'>${mainPoints.length}</div>`,
-                                anchor: new naver.maps.Point(12, 12),
+                        ],
+                        ways: [
+                            ...prev.ways,
+                            {
+                                latitude: e.coord.lat(),
+                                longitude: e.coord.lng(),
+                                height: 100,
                             },
-                        })
+                        ],
+                    }))
 
-                        markerArr.push(marker)
-                        setWayPointState((prevState) => ({
-                            ...prevState,
-                            markers: [...prevState.markers, marker],
-                            overlay: wayLine,
-                        }))
-                        mainPointMarker.push(marker)
-                        dragResize(markerArr, marker)
-                        setDistance(wayLine.getDistance())
-                        deletePoint(marker, markerArr)
+                    const marker = new naver.maps.Marker({
+                        map: map ? map : undefined,
+                        position: e.coord,
+                        draggable: true,
+                        icon: {
+                            content: `<div class='wayline_marker'>${mainPoints.length}</div>`,
+                            anchor: new naver.maps.Point(12, 12),
+                        },
+                    })
 
-                        const createGuideLine = naver.maps.Event.addListener(
-                            map,
-                            'mousemove',
-                            (e: { coord: naver.maps.LatLng }) => {
-                                const lastLatLng =
-                                    mainPointMarker[
-                                        mainPointMarker.length - 1
-                                    ].getPosition()
-                                guideLine.setPath([lastLatLng, e.coord])
+                    markerArr.push(marker)
+                    setWayPointState((prevState) => ({
+                        ...prevState,
+                        markers: [...prevState.markers, marker],
+                        overlay: wayLine,
+                    }))
+                    mainPointMarker.push(marker)
+                    dragResize(markerArr, marker)
+                    setDistance(wayLine.getDistance())
+                    deletePoint(marker, markerArr)
+
+                    const createGuideLine = naver.maps.Event.addListener(
+                        map,
+                        'mousemove',
+                        (e: { coord: naver.maps.LatLng }) => {
+                            const lastLatLng =
+                                mainPointMarker[
+                                    mainPointMarker.length - 1
+                                ].getPosition()
+                            guideLine.setPath([lastLatLng, e.coord])
+                        }
+                    )
+
+                    const endWayPointMission = naver.maps.Event.addListener(
+                        markerArr[markerArr.length - 1],
+                        'click',
+                        () => {
+                            if (mainPoints.length > 0) {
+                                guideLine?.setMap(null)
+
+                                naver.maps.Event.removeListener(
+                                    endWayPointMission
+                                )
+                                naver.maps.Event.removeListener(setWayPoint)
+                                naver.maps.Event.removeListener(createGuideLine)
                             }
-                        )
-
-                        const endWayPointMission = naver.maps.Event.addListener(
-                            markerArr[markerArr.length - 1],
-                            'click',
-                            () => {
-                                if (mainPoints.length > 0) {
-                                    guideLine?.setMap(null)
-
-                                    naver.maps.Event.removeListener(
-                                        endWayPointMission
-                                    )
-                                    naver.maps.Event.removeListener(setWayPoint)
-                                    naver.maps.Event.removeListener(
-                                        createGuideLine
-                                    )
-                                }
-                            }
-                        )
-                    }
-                )
-            }
-        } else {
-            alert('그리드 미션이 실행중 입니다.')
+                        }
+                    )
+                }
+            )
         }
     }
 
@@ -261,17 +248,15 @@ export const WaypPointMission = ({
                 const data = await response.data
                 console.log(data)
 
-                setIsCreate((prev) => !prev)
-                const isClose = confirm('생성이 완료 되었습니다')
+                resetData()
+                setIsHttpRequest((prev) => (prev = !prev))
+                setIsRunningMission((prevMission) => ({
+                    ...prevMission,
+                    waypoint: false,
+                    isStart: false,
+                }))
 
-                if (isClose) {
-                    resetData()
-                } else {
-                    resetData()
-                }
-
-                setIsRunningMission((prev) => !prev)
-                setIsCreateMission((prev) => !prev)
+                alert('웨이포인트 미션 생성 완료!')
             } catch (err) {
                 console.log(err)
             }
@@ -284,37 +269,15 @@ export const WaypPointMission = ({
         resetData()
     }, [])
 
+    useEffect(() => {
+        createWayPointMission()
+    }, [])
+
     return (
         <>
-            <WaypointWrap>
-                <Button
-                    onClick={createWayPointMission}
-                    type="button"
-                    className={activeMission === 'waypoint' ? 'active' : ''}
-                >
-                    <VscActivateBreakpoints />
-                    <span>Way</span>
-                </Button>
-            </WaypointWrap>
-
-            {isStartWaypoint && (
+            {isRunningMission.waypoint && (
                 <div className="waypoint_content">
                     <div className="content">
-                        <div>
-                            <label htmlFor="name">이름</label>
-                            <input
-                                type="text"
-                                id="name"
-                                className="name"
-                                onChange={(e) =>
-                                    setMissionData({
-                                        ...missionData,
-                                        name: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
-
                         <div className="overlay_info">
                             <span>
                                 웨이포인트: {wayPointState.markers.length}

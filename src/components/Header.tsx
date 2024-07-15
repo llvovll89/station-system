@@ -8,7 +8,7 @@ import { IoHomeOutline } from 'react-icons/io5'
 import { Button } from './button/Button'
 import { useDarkMode } from '../hooks/useDarkmode'
 
-const HeaderStyled = styled.header<{ isDarkMode: boolean }>`
+const HeaderWrap = styled.header<{ isDarkMode: boolean }>`
     width: 90px;
     height: 100vh;
     padding: 1rem 0;
@@ -38,7 +38,7 @@ const HeaderStyled = styled.header<{ isDarkMode: boolean }>`
         margin: 0;
         width: 100%;
         height: 100%;
-        gap: 1rem;
+        gap: 1.5rem;
         justify-content: center;
 
         & li {
@@ -113,9 +113,9 @@ export const Header = ({
     }, [isLoggedIn])
 
     return (
-        <HeaderStyled isDarkMode={isDarkMode}>
+        <HeaderWrap isDarkMode={isDarkMode}>
             <div className="logo" onClick={() => location.reload()}>
-                <IoHomeOutline style={{ width: '32px', height: '32px' }} />
+                <IoHomeOutline style={{ width: '24px', height: '24px' }} />
             </div>
 
             <ul>
@@ -148,6 +148,6 @@ export const Header = ({
             <button className="account" onClick={logOut}>
                 <img src={accountIcon} alt="user(w).png" />
             </button>
-        </HeaderStyled>
+        </HeaderWrap>
     )
 }

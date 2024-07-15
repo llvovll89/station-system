@@ -64,11 +64,13 @@ export const StationList = ({
                         onClick={toggleCreateStation}
                         className="create_btn"
                     >
-                        <IoCreateOutline />
+                        <IoCreateOutline
+                            style={{ width: '24PX', height: '24px' }}
+                        />
                     </Button>
 
                     <Button type={'button'} onClick={toggleActiveStation}>
-                        <IoClose />
+                        <IoClose style={{ width: '24PX', height: '24px' }} />
                     </Button>
                 </div>
             </header>

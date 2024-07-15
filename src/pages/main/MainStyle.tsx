@@ -109,8 +109,8 @@ export const MainWrap = styled.section`
         justify-content: center;
         color: ${theme.color.white};
         background-color: ${theme.color.primary};
-        border-radius: 5px;
-        border: 1px solid ${theme.color.subWhite};
+        border-radius: 50%;
+        border: 2px solid ${theme.color.subWhite};
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
     }
 
@@ -166,5 +166,13 @@ export const MainWrap = styled.section`
         inset: 0;
         background-color: rgba(0, 0, 0, 0.33);
         z-index: 10;
+    }
+
+    & .bg_wrap {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.32);
+        width: 100vw;
+        height: 100vh;
     }
 `

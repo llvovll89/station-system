@@ -84,31 +84,6 @@ export const Main = () => {
             strokeWeight: 4,
             strokeStyle: 'solid',
         })
-
-        const startPoint = path[0]
-        const endPoint = path[path.length - 1]
-
-        const startMarker = new naver.maps.Marker({
-            position: startPoint,
-            map: map ? map : undefined,
-            icon: {
-                content: '<div class="start_marker">S</div>',
-                anchor: new naver.maps.Point(12, 12),
-            },
-        })
-
-        markers.current.push(startMarker)
-
-        const endMarker = new naver.maps.Marker({
-            position: endPoint,
-            map: map ? map : undefined,
-            icon: {
-                content: '<div class="end_marker">E</div>',
-                anchor: new naver.maps.Point(12, 12),
-            },
-        })
-
-        markers.current.push(endMarker)
     }
 
     const getStation = async () => {
@@ -176,25 +151,36 @@ export const Main = () => {
                         })
 
                         data.data.points.forEach(
-                            (p: { latitude: number; longitude: number }) => {
-                                const marker = new naver.maps.Marker({
-                                    map: map ? map : undefined,
-                                    position: new naver.maps.LatLng(
-                                        p.latitude,
-                                        p.longitude
-                                    ),
-                                    icon: {
-                                        content: `<div class='waypoint_marker'></div>`,
-                                        anchor: new naver.maps.Point(9, 9),
-                                    },
-                                })
+                            (
+                                p: { latitude: number; longitude: number },
+                                index: number
+                            ) => {
+                                console.log(index)
 
-                                markers.current.push(marker)
+                                markers.current.push(
+                                    new naver.maps.Marker({
+                                        map: map ? map : undefined,
+                                        position: new naver.maps.LatLng(
+                                            p.latitude,
+                                            p.longitude
+                                        ),
+                                        icon: {
+                                            content: `<div class='wayline_marker'></div>`,
+                                            anchor: new naver.maps.Point(
+                                                12,
+                                                12
+                                            ),
+                                        },
+                                    })
+                                )
                             }
                         )
                     } else {
                         data.data.points.forEach(
-                            (p: { latitude: number; longitude: number }) => {
+                            (
+                                p: { latitude: number; longitude: number },
+                                index: number
+                            ) => {
                                 const marker = new naver.maps.Marker({
                                     map: map ? map : undefined,
                                     position: new naver.maps.LatLng(
@@ -202,8 +188,8 @@ export const Main = () => {
                                         p.longitude
                                     ),
                                     icon: {
-                                        content: `<div class='waypoint_marker'></div>`,
-                                        anchor: new naver.maps.Point(9, 9),
+                                        content: `<div class='wayline_marker'>${index === 0 ? 'S' : index === data.data.points.length - 1 ? 'E' : ''}</div>`,
+                                        anchor: new naver.maps.Point(12, 12),
                                     },
                                 })
 

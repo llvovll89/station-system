@@ -58,6 +58,8 @@ export const Login = () => {
                             failed: '',
                             success: '',
                         }))
+
+                        navigate(routes.MAIN)
                     })
                 }
             } catch (error) {
@@ -138,7 +140,7 @@ export const Login = () => {
         <LoginWrap>
             <article className="content">
                 <header className="logo_box">
-                    <h1>STATION-SYSTEM</h1>
+                    <h1>STATION-SIMULATOR</h1>
                 </header>
 
                 <article>
