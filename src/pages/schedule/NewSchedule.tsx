@@ -10,7 +10,7 @@ import { MissionDto } from '../../dto/MissionDto'
 
 const NewSchduleWrqp = styled.section`
     position: absolute;
-    min-width: 450px;
+    min-width: 500px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
@@ -18,7 +18,7 @@ const NewSchduleWrqp = styled.section`
     padding: 1.5rem 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     background-color: rgb(31, 30, 37);
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
     z-index: 50;
@@ -53,15 +53,16 @@ const NewSchduleWrqp = styled.section`
         & .name {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.5rem;
 
             & input {
-                height: 36px;
+                height: 42px;
                 border: 1px solid rgba(255,2525,255, 0.26);
                 padding: 0 0.52rem;
                 color: ${theme.color.white};
                 border-radius: 5px;
                 background-color: #181818;
+                transition: all 0.15s linear;
 
                 &:focus {
                     border: 1px solid ${theme.color.primary};
@@ -85,6 +86,7 @@ const NewSchduleWrqp = styled.section`
                     text-align: center;
                     display: inline-block;
                     width: 100%;
+                    padding: 0.5rem; 0;
                 }
             }
 
@@ -98,10 +100,18 @@ const NewSchduleWrqp = styled.section`
             display: flex;
             flex-direction: column;
             gap: 0.35rem;
+            padding: 0.5rem;
+
+            & ul {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
 
             & .station_content {
-                padding: 0.5rem;
+                padding: 1rem 0.75rem;  
                 border-radius: 5px;
+                background-color: ${theme.color.green};
 
                 &:hover {
                     color: ${theme.color.primary};
@@ -130,19 +140,22 @@ const NewSchduleWrqp = styled.section`
             display: flex;
             flex-direction: column;
             gap: 0.35rem;
+            padding: 0.5rem;
 
             & ul {
                 display: flex;
                 flex-direction: column;
                 gap: 0.5rem;
+                padding: 0.5rem;
 
                 & li {
                     cursor: pointer;
-                    padding: 0.25rem; 0.3rem;
+                    padding: 1rem 0.75rem;  
                     border-radius: 5px;
                     display: flex;
                     flex-direction: column;
                     gap: 0.25rem;
+                    background-color: ${theme.color.green};
 
                     &:hover {
                         color: ${theme.color.primary};

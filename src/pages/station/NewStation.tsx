@@ -9,12 +9,12 @@ import axios from 'axios'
 
 const NewStationWrap = styled.section`
     position: absolute;
-    min-width: 450px;
+    min-width: 500px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     border-radius: 5px;
-    padding: 1.5rem 1.8rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -71,17 +71,18 @@ const NewStationWrap = styled.section`
         & .name,
         & .item {
             display: flex;
-            height: 32px;
+            height: 42px;
             align-items: center;
             gap: 0.75rem;
             width: 100%;
         }
 
         & .map {
+            margin-top: 9px;
             width: 100%;
             border-radius: 5px;
             overflow: hidden;
-            height: 200px;
+            height: 250px;
         }
 
         & .content_body {
@@ -96,6 +97,7 @@ const NewStationWrap = styled.section`
                 gap: 1rem;
                 display: flex;
                 flex-direction: column;
+                align-items: center;
 
                 & .header {
                     display: flex;
@@ -103,16 +105,17 @@ const NewStationWrap = styled.section`
 
                     & span {
                         font-weight: 700;
+                        font-size: 18px;
                     }
                 }
             }
 
             & .drone_content,
             & .station_content {
-                margin-top: 0.25rem;
+                margin-top: 0.5rem;
                 width: 100%;
                 align-items: center;
-                gap: 0.5rem;
+                gap: 0.75rem;
                 display: flex;
                 flex-direction: column;
             }
@@ -152,7 +155,7 @@ export const NewStation = ({
         latitude: '0',
         longitude: '0',
         drone: {
-            name: '',
+            name: 'm30t',
             latitude: '0',
             longitude: '0',
         },
@@ -160,6 +163,7 @@ export const NewStation = ({
 
     const [stationMap, setStationMap] = useState<naver.maps.Map | null>(null)
     const [droneMap, setDroneMap] = useState<naver.maps.Map | null>(null)
+    const [isStep, setIsStep] = useState(1)
     const [overlays, setOverlays] = useState<{
         stationMarker: naver.maps.Marker | null
         droneMarker: naver.maps.Marker | null
@@ -322,38 +326,39 @@ export const NewStation = ({
     }
 
     useEffect(() => {
-        if (!stationMapElement.current || !naver) return
+        if (isStep === 1 && stationMapElement.current) {
+            const location = new naver.maps.LatLng(35.8774, 128.6107)
+            const mapOptions = {
+                center: location,
+                zoom: 17,
+                zoomControl: false,
+                mapDataControl: false,
+                scaleControl: false,
+            }
 
-        const location = new naver.maps.LatLng(35.8774, 128.6107)
-        const mapOptions = {
-            center: location,
-            zoom: 17,
-            zoomControl: false,
-            mapDataControl: false,
-            scaleControl: false,
+            const map = new naver.maps.Map(
+                stationMapElement.current,
+                mapOptions
+            )
+            setStationMap(map)
+            stationSetCoords(map)
         }
 
-        const map = new naver.maps.Map(stationMapElement.current, mapOptions)
-        setStationMap(map)
-        stationSetCoords(map)
-    }, [])
+        if (isStep === 2 && droneMapElement.current) {
+            const location = new naver.maps.LatLng(35.8774, 128.6107)
+            const mapOptions = {
+                center: location,
+                zoom: 17,
+                zoomControl: false,
+                mapDataControl: false,
+                scaleControl: false,
+            }
 
-    useEffect(() => {
-        if (!droneMapElement.current || !naver) return
-
-        const location = new naver.maps.LatLng(35.8774, 128.6107)
-        const mapOptions = {
-            center: location,
-            zoom: 17,
-            zoomControl: false,
-            mapDataControl: false,
-            scaleControl: false,
+            const map = new naver.maps.Map(droneMapElement.current, mapOptions)
+            setDroneMap(map)
+            droneSetCoords(map)
         }
-
-        const map = new naver.maps.Map(droneMapElement.current, mapOptions)
-        setDroneMap(map)
-        droneSetCoords(map)
-    }, [])
+    }, [isStep])
 
     return (
         <>
@@ -366,170 +371,214 @@ export const NewStation = ({
                 </header>
 
                 <article className="content">
-                    <div className="name">
-                        <label htmlFor="create_name">스테이션명</label>
-                        <input
-                            type={'text'}
-                            value={createData.name}
-                            autoComplete="off"
-                            id="create_name"
-                            onChange={(
-                                e: React.ChangeEvent<HTMLInputElement>
-                            ) =>
-                                setCreateData((prev) => ({
-                                    ...prev,
-                                    name: e.target.value,
-                                }))
-                            }
-                        />
-                    </div>
-
                     <div className="content_body">
-                        <section className="station">
-                            <div className="header">
-                                <span>STATION</span>
-                            </div>
+                        {isStep === 1 && (
+                            <>
+                                <div className="name">
+                                    <label htmlFor="create_name">
+                                        스테이션명
+                                    </label>
+                                    <input
+                                        type={'text'}
+                                        value={createData.name}
+                                        autoComplete="off"
+                                        id="create_name"
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>
+                                        ) =>
+                                            setCreateData((prev) => ({
+                                                ...prev,
+                                                name: e.target.value,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <section className="station">
+                                    <div className="header">
+                                        <span>&lt;스테이션&gt;</span>
+                                    </div>
 
-                            <div className="station_content">
-                                <div className="item">
-                                    <label htmlFor="station_latitude">
-                                        위도
-                                    </label>
-                                    <input
-                                        type={'text'}
-                                        value={createData.latitude}
-                                        id="station_latitude"
-                                        onChange={(
-                                            e: React.ChangeEvent<HTMLInputElement>
-                                        ) =>
-                                            setCreateData((prev) => ({
-                                                ...prev,
-                                                latitude: e.target.value,
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="item">
-                                    <label htmlFor="station_longitude">
-                                        경도
-                                    </label>
-                                    <input
-                                        type={'text'}
-                                        value={createData.longitude}
-                                        id="station_longitude"
-                                        onChange={(
-                                            e: React.ChangeEvent<HTMLInputElement>
-                                        ) =>
-                                            setCreateData((prev) => ({
-                                                ...prev,
-                                                longitude: e.target.value,
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="map">
-                                    <div
-                                        id="station_map"
-                                        className="map"
-                                        ref={stationMapElement}
-                                        style={{
-                                            width: '100%',
-                                            height: '200px',
-                                        }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </section>
+                                    <div className="station_content">
+                                        <div className="item">
+                                            <label htmlFor="station_latitude">
+                                                위도
+                                            </label>
+                                            <input
+                                                type={'text'}
+                                                value={createData.latitude}
+                                                id="station_latitude"
+                                                onChange={(
+                                                    e: React.ChangeEvent<HTMLInputElement>
+                                                ) =>
+                                                    setCreateData((prev) => ({
+                                                        ...prev,
+                                                        latitude:
+                                                            e.target.value,
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                        <div className="item">
+                                            <label htmlFor="station_longitude">
+                                                경도
+                                            </label>
+                                            <input
+                                                type={'text'}
+                                                value={createData.longitude}
+                                                id="station_longitude"
+                                                onChange={(
+                                                    e: React.ChangeEvent<HTMLInputElement>
+                                                ) =>
+                                                    setCreateData((prev) => ({
+                                                        ...prev,
+                                                        longitude:
+                                                            e.target.value,
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                        <div className="map">
+                                            <div
+                                                id="station_map"
+                                                className="map"
+                                                ref={stationMapElement}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '250px',
+                                                }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </>
+                        )}
 
-                        <section className="drone">
-                            <div className="header">
-                                <span>DRONE</span>
-                            </div>
+                        {isStep === 2 && (
+                            <section className="drone">
+                                <div className="header">
+                                    <span>&lt;드론&gt;</span>
+                                </div>
 
-                            <div className="drone_content">
-                                <div className="item">
-                                    <label htmlFor="drone_name">드론명</label>
-                                    <input
-                                        type={'text'}
-                                        value={createData.drone.name}
-                                        id="drone_name"
-                                        onChange={(
-                                            e: React.ChangeEvent<HTMLInputElement>
-                                        ) =>
-                                            setCreateData((prev) => ({
-                                                ...prev,
-                                                drone: {
-                                                    ...prev.drone,
-                                                    name: e.target.value,
-                                                },
-                                            }))
-                                        }
-                                    />
+                                <div className="drone_content">
+                                    <div className="item">
+                                        <label htmlFor="drone_name">
+                                            드론명
+                                        </label>
+                                        <input
+                                            type={'text'}
+                                            value={createData.drone.name}
+                                            id="drone_name"
+                                            onChange={(
+                                                e: React.ChangeEvent<HTMLInputElement>
+                                            ) =>
+                                                setCreateData((prev) => ({
+                                                    ...prev,
+                                                    drone: {
+                                                        ...prev.drone,
+                                                        name: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                    <div className="item">
+                                        <label htmlFor="drone_latitude">
+                                            드론위도
+                                        </label>
+                                        <input
+                                            type={'text'}
+                                            value={createData.drone.latitude}
+                                            id="drone_latitude"
+                                            onChange={(
+                                                e: React.ChangeEvent<HTMLInputElement>
+                                            ) =>
+                                                setCreateData((prev) => ({
+                                                    ...prev,
+                                                    drone: {
+                                                        ...prev.drone,
+                                                        latitude:
+                                                            e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                    <div className="item">
+                                        <label htmlFor="drone_longitude">
+                                            드론경도
+                                        </label>
+                                        <input
+                                            type={'text'}
+                                            value={createData.drone.longitude}
+                                            id="drone_longitude"
+                                            onChange={(
+                                                e: React.ChangeEvent<HTMLInputElement>
+                                            ) =>
+                                                setCreateData((prev) => ({
+                                                    ...prev,
+                                                    drone: {
+                                                        ...prev.drone,
+                                                        longitude:
+                                                            e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                    <div className="map">
+                                        <div
+                                            id="drone_map"
+                                            className="map"
+                                            ref={droneMapElement}
+                                            style={{
+                                                width: '100%',
+                                                height: '250px',
+                                            }}
+                                        ></div>
+                                    </div>
                                 </div>
-                                <div className="item">
-                                    <label htmlFor="drone_latitude">
-                                        드론위도
-                                    </label>
-                                    <input
-                                        type={'text'}
-                                        value={createData.drone.latitude}
-                                        id="drone_latitude"
-                                        onChange={(
-                                            e: React.ChangeEvent<HTMLInputElement>
-                                        ) =>
-                                            setCreateData((prev) => ({
-                                                ...prev,
-                                                drone: {
-                                                    ...prev.drone,
-                                                    latitude: e.target.value,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="item">
-                                    <label htmlFor="drone_longitude">
-                                        드론경도
-                                    </label>
-                                    <input
-                                        type={'text'}
-                                        value={createData.drone.longitude}
-                                        id="drone_longitude"
-                                        onChange={(
-                                            e: React.ChangeEvent<HTMLInputElement>
-                                        ) =>
-                                            setCreateData((prev) => ({
-                                                ...prev,
-                                                drone: {
-                                                    ...prev.drone,
-                                                    longitude: e.target.value,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="map">
-                                    <div
-                                        id="drone_map"
-                                        className="map"
-                                        ref={droneMapElement}
-                                        style={{
-                                            width: '100%',
-                                            height: '200px',
-                                        }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </section>
+                            </section>
+                        )}
                     </div>
 
                     <div className="content_btn">
-                        <Button type={'button'} onClick={resetToggleStation}>
-                            취소
-                        </Button>
-                        <Button type={'button'} onClick={createStation}>
-                            생성
-                        </Button>
+                        {isStep === 1 && (
+                            <>
+                                <Button
+                                    type={'button'}
+                                    onClick={resetToggleStation}
+                                >
+                                    취소
+                                </Button>
+                                <Button
+                                    type={'button'}
+                                    onClick={() => setIsStep(2)}
+                                >
+                                    다음
+                                </Button>
+                            </>
+                        )}
+                        {isStep === 2 && (
+                            <>
+                                <Button
+                                    type={'button'}
+                                    onClick={() => {
+                                        setCreateData((prevData) => ({
+                                            ...prevData,
+                                            latitude: '0',
+                                            longitude: '0',
+                                        }))
+
+                                        setIsStep(1)
+                                    }}
+                                >
+                                    이전
+                                </Button>
+                                <Button type={'button'} onClick={createStation}>
+                                    생성
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </article>
             </NewStationWrap>

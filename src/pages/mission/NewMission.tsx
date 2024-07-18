@@ -13,7 +13,7 @@ const NewMissionWrap = styled.article`
     transform: translate(-50%, -50%);
     min-width: 400px;
     padding: 1.8rem 1.6rem;
-    background-color: ${theme.color.black};
+    background-color: rgb(31, 30, 37);
     border-radius: 5px;
     box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.3);
     color: ${theme.color.white};
