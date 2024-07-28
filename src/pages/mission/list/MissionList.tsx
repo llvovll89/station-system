@@ -9,7 +9,7 @@ import DeleteIcon from '../../../assets/image/icon/ico_trash(dark).png'
 import DeleteWhiteIcon from '../../../assets/image/icon/ico_trash.png'
 import UpdateIcon from '../../../assets/image/icon/ico_edit02(dark).png'
 import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit02.png'
-import { getMissions, updeateMission } from '../../../util/requestHttp'
+import { getMissions } from '../../../util/requestHttp'
 import { MISSION } from '../../../constant/http'
 
 interface MissionListProps {
@@ -66,8 +66,10 @@ export const MissionList = ({
         toggleMission()
     }
 
-    const updateModal = (e: React.MouseEvent) => {
+    const updateModal = (e: React.MouseEvent, mission: MissionDto) => {
         e.stopPropagation()
+
+        getInfoMission(mission)
         setIsUpdateMission((prev) => !prev)
     }
 
@@ -252,6 +254,21 @@ export const MissionList = ({
         }
     }
 
+    const updeateMission = async (infoMission: MissionDto) => {
+        try {
+            const { seq } = infoMission
+            const response = await axios.put(`${MISSION}/${seq}`, infoMission, {
+                withCredentials: true,
+            })
+
+            console.log(response.data)
+            setIsUpdateMission((prev) => !prev)
+            setIsHttpRequest((prev) => !prev)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     const formatDateString = (dateString: any) => {
         return dateString.replace('T', ' ')
     }
@@ -321,7 +338,11 @@ export const MissionList = ({
                                     </p>
 
                                     <div className="content_actios">
-                                        <button onClick={(e) => updateModal(e)}>
+                                        <button
+                                            onClick={(e) =>
+                                                updateModal(e, mission)
+                                            }
+                                        >
                                             {selectMission?.seq ===
                                             mission.seq ? (
                                                 <img

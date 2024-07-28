@@ -9,7 +9,6 @@ import { Schedule } from '../schedule/Schedule'
 import { StationDto } from '../../dto/Station'
 import { STATION } from '../../constant/http'
 import { DarkMode } from '../../components/Darkmode'
-import { RunningSchedule } from './RunningSchedule'
 import { getSchedule } from '../../util/requestHttp'
 import axios from 'axios'
 import DroneImage from '../../assets/image/icon/ico_airplane(w).png'
@@ -308,7 +307,12 @@ export const Main = () => {
                 />
             )}
 
-            {isRunningSchedule && <RunningSchedule />}
+            {isRunningSchedule && (
+                <article className="running_schedule">
+                    <h1>스케줄 진행 중...</h1>
+                    <div className="running_content"></div>
+                </article>
+            )}
 
             <DarkMode />
             <MapButton />

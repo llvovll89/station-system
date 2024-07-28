@@ -11,6 +11,17 @@ export const MainWrap = styled.section`
         height: 100vh;
     }
 
+    & .running_schedule {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        border-radius: 5px;
+        padding: 0.7rem 1.25rem;
+        background-color: ${theme.color.black};
+        color: ${theme.color.primary};
+        transform: translateX(-50%);
+    }
+
     & .delete_marker {
         background-color: ${theme.color.subBlack};
         color: ${theme.color.white};

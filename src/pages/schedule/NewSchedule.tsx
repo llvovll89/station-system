@@ -100,7 +100,7 @@ const NewSchduleWrqp = styled.section`
             display: flex;
             flex-direction: column;
             gap: 0.35rem;
-            padding: 0.5rem;
+            padding: 0.5 1rem;
 
             & ul {
                 display: flex;
@@ -111,7 +111,7 @@ const NewSchduleWrqp = styled.section`
             & .station_content {
                 padding: 1rem 0.75rem;  
                 border-radius: 5px;
-                background-color: ${theme.color.green};
+                background-color: rgb(31, 30, 37);
 
                 &:hover {
                     color: ${theme.color.primary};
@@ -155,7 +155,7 @@ const NewSchduleWrqp = styled.section`
                     display: flex;
                     flex-direction: column;
                     gap: 0.25rem;
-                    background-color: ${theme.color.green};
+                    background-color: rgb(31, 30, 37);
 
                     &:hover {
                         color: ${theme.color.primary};
@@ -285,7 +285,7 @@ export const NewSchdule = ({
             }
         }
 
-        fetchInfoMission()
+        createData.missionSeq !== 0 && fetchInfoMission()
     }, [createData.missionSeq])
 
     useEffect(() => {
@@ -355,7 +355,7 @@ export const NewSchdule = ({
                     </div>
 
                     <div className="mission">
-                        <span className="title">&lt;미션리스트&gt;</span>
+                        <span className="title">&lt;미션&gt;</span>
                         <ul>
                             {missions.length > 0 &&
                                 missions.map((mission) => (

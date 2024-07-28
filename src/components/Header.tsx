@@ -11,7 +11,7 @@ import { useDarkMode } from '../hooks/useDarkmode'
 const HeaderWrap = styled.header<{ isDarkMode: boolean }>`
     width: 90px;
     height: 100vh;
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -44,6 +44,7 @@ const HeaderWrap = styled.header<{ isDarkMode: boolean }>`
         & li {
             width: 100%;
             text-align: center;
+            font-size: 14px;
 
             &.active {
                 background-color: ${theme.color.primary};

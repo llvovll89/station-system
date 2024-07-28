@@ -2,7 +2,7 @@ import { styled } from 'styled-components'
 import theme from '../../../styles/theme'
 
 export const StationWrap = styled.section`
-    width: 350px;
+    width: 400px;
     height: 100vh;
     position: absolute;
     left: 90px;

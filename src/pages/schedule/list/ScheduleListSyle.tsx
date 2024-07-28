@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import theme from '../../../styles/theme'
 
 export const ScheduleListWrap = styled.section`
-    width: 350px;
+    width: 400px;
     height: 100vh;
     position: absolute;
     left: 90px;
@@ -35,7 +35,7 @@ export const ScheduleListWrap = styled.section`
     }
 
     & .container {
-        padding: 0.8rem;
+        padding: 0.8rem 1rem;
         font-size: 14px;
 
         & .schedule_list {
