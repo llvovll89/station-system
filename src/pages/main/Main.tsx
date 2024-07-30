@@ -14,6 +14,7 @@ import { getSchedule } from '../../util/requestHttp'
 import axios from 'axios'
 import DroneImage from '../../assets/image/icon/ico_airplane(w).png'
 import { MapButton } from '../../components/MapButton'
+import {CesiumMap} from "../3dmap/CesiumMap.tsx";
 
 export const Main = () => {
     const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none)
@@ -29,6 +30,8 @@ export const Main = () => {
     const waylines = useRef<naver.maps.Polyline | null>(null)
     const markers = useRef<naver.maps.Marker[]>([])
     const polygon = useRef<naver.maps.Polygon | null>(null)
+
+    const [is3DMapType, setIs3DMapType] = useState<boolean>(true);
 
     useEffect(() => {
         if (!mapElement.current || !naver) return
@@ -88,7 +91,9 @@ export const Main = () => {
 
     const getStation = async () => {
         try {
-            const response = await axios.get(STATION, { withCredentials: true })
+            const response = await axios.get(STATION, {
+                withCredentials: true
+            })
             const data = await response.data
 
             if (response.status === 200) {
@@ -282,6 +287,7 @@ export const Main = () => {
             />
 
             <div id="map" className="map" ref={mapElement}></div>
+            <CesiumMap isVisibleCesiumMap={is3DMapType} stations={stations}/>
 
             {activeType === ActiveType.mission && (
                 <Mission
@@ -311,7 +317,7 @@ export const Main = () => {
             {isRunningSchedule && <RunningSchedule />}
 
             <DarkMode />
-            <MapButton />
+            <MapButton setIs3DMapType={setIs3DMapType}/>
         </MainWrap>
     )
 }

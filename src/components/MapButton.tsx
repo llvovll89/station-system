@@ -2,38 +2,40 @@ import styled from 'styled-components'
 import theme from '../styles/theme'
 import cesiumLogoIcon from '../assets/image/icon/Cesium_logo_only.png'
 import naverMapIcon from '../assets/image/icon/naver map.png'
-import { Button } from './button/Button'
-import { useState } from 'react'
+import {Button} from './button/Button'
+import {useState} from 'react'
 
 const MapButtonWrap = styled.article`
-    position: absolute;
-    bottom: 82px;
-    right: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
+  position: absolute;
+  bottom: 82px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  border-radius: 5px;
+  overflow: hidden;
+
+  & button {
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.26);
+    width: 52px;
+    height: 52px;
     border-radius: 5px;
-    overflow: hidden;
+    background-color: ${theme.color.black};
+    color: ${theme.color.white};
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    & button {
-        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.26);
-        width: 52px;
-        height: 52px;
-        border-radius: 5px;
-        background-color: ${theme.color.black};
-        color: ${theme.color.white};
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        &.active {
-            background-color: ${theme.color.primary};
-        }
+    &.active {
+      background-color: ${theme.color.primary};
     }
+  }
 `
-
-export const MapButton = () => {
+interface MapButtonProps {
+    setIs3DMapType: (is3DMapType: boolean) => void
+}
+export const MapButton = ({setIs3DMapType}: MapButtonProps) => {
     const [isSelectMap, setIsSelectMap] = useState<{
         isSelect3d: boolean
         isSelectNaver: boolean
@@ -68,6 +70,8 @@ export const MapButton = () => {
                 isSelectNaver: !prev.isSelectNaver,
             }))
         }
+
+        setIs3DMapType(type === '3d');
     }
 
     return (
@@ -80,7 +84,7 @@ export const MapButton = () => {
                 <img
                     src={cesiumLogoIcon}
                     alt="3dtext"
-                    style={{ width: '32px', height: '32px' }}
+                    style={{width: '32px', height: '32px'}}
                 />
             </Button>
             <Button
@@ -93,7 +97,7 @@ export const MapButton = () => {
                 <img
                     src={naverMapIcon}
                     alt="naver map"
-                    style={{ width: '32px', height: '32px' }}
+                    style={{width: '32px', height: '32px'}}
                 />
             </Button>
         </MapButtonWrap>
