@@ -18,8 +18,9 @@ export const MainWrap = styled.section`
         border-radius: 5px;
         padding: 0.7rem 1.25rem;
         background-color: ${theme.color.black};
-        color: ${theme.color.primary};
+        color: ${theme.color.white};
         transform: translateX(-50%);
+        box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.33);
     }
 
     & .delete_marker {
@@ -113,16 +114,17 @@ export const MainWrap = styled.section`
     }
 
     & .wayline_marker {
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: ${theme.color.white};
-        background-color: ${theme.color.primary};
+        background-color: ${theme.color.white};
         border-radius: 50%;
-        border: 2px solid ${theme.color.subWhite};
+        border: 2px solid ${theme.color.primary};
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+        color: ${theme.color.black};
     }
 
     & .points_marker {

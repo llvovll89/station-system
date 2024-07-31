@@ -13,9 +13,15 @@ interface MissionProps {
     toggleMission: () => void
     map: naver.maps.Map | null
     setIsActive: React.Dispatch<React.SetStateAction<string>>
+    isActive: string
 }
 
-export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
+export const Mission = ({
+    toggleMission,
+    map,
+    setIsActive,
+    isActive,
+}: MissionProps) => {
     const [isCreateMission, setIsCreateMission] = useState(false)
     const [isHttpRequest, setIsHttpRequest] = useState(false)
     const [isRunningMission, setIsRunningMission] = useState({
@@ -41,6 +47,24 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
 
     const toggleCreateMission = () => {
         setIsCreateMission((prev) => !prev)
+    }
+
+    const initMissionData = () => {
+        setMissionData({
+            name: '',
+            type: 0,
+            seq: 0,
+            mainPoint: {
+                latitude: 0,
+                longitude: 0,
+                height: 100,
+            },
+            points: [],
+            ways: [],
+            transverseRedundancy: 70,
+            longitudinalRedundancy: 70,
+            angle: 36,
+        })
     }
 
     // const [activeMission, setActiveMission] = useState<
@@ -69,6 +93,8 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                 setIsHttpRequest={setIsHttpRequest}
                 isHttpRequest={isHttpRequest}
                 setIsActive={setIsActive}
+                initMissionData={initMissionData}
+                isActive={isActive}
             />
 
             {isCreateMission && (
@@ -90,6 +116,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                     missionData={missionData}
                     setIsHttpRequest={setIsHttpRequest}
                     setIsCreateMission={setIsCreateMission}
+                    initMissionData={initMissionData}
                 />
             )}
 
@@ -101,6 +128,7 @@ export const Mission = ({ toggleMission, map, setIsActive }: MissionProps) => {
                     setIsHttpRequest={setIsHttpRequest}
                     setIsRunningMission={setIsRunningMission}
                     setMissionData={setMissionData}
+                    initMissionData={initMissionData}
                 />
             )}
         </MissionWrap>

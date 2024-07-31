@@ -284,6 +284,7 @@ export const Main = () => {
 
             {activeType === ActiveType.mission && (
                 <Mission
+                    isActive={isActive}
                     setIsActive={setIsActive}
                     toggleMission={() => toggleActive(ActiveType.mission)}
                     map={map}

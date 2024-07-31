@@ -122,6 +122,10 @@ const NewSchduleWrqp = styled.section`
                     color: ${theme.color.white};
                 }
 
+                &.running {
+                    opacity: 0.6;
+                }
+
                 & .station_items {
                     display: flex;
                     justify-content: space-between;
@@ -326,19 +330,31 @@ export const NewSchdule = ({
                             {stations.length > 0 &&
                                 stations.map((station, index) => (
                                     <li
-                                        className={
+                                        className={`station_content ${
                                             createData.stationSeq ===
                                             station?.seq
-                                                ? 'station_content active'
-                                                : 'station_content'
-                                        }
-                                        onClick={() =>
-                                            setCreateData({
-                                                ...createData,
-                                                stationSeq:
-                                                    station?.seq as number,
-                                            })
-                                        }
+                                                ? 'active'
+                                                : ''
+                                        } ${
+                                            station.status === 1
+                                                ? 'running'
+                                                : ''
+                                        }`}
+                                        onClick={() => {
+                                            if (station.status === 1) {
+                                                alert(
+                                                    '현재 진행중인 스테이션 입니다.'
+                                                )
+
+                                                return
+                                            } else {
+                                                setCreateData({
+                                                    ...createData,
+                                                    stationSeq:
+                                                        station?.seq as number,
+                                                })
+                                            }
+                                        }}
                                         key={station.seq}
                                     >
                                         <div className="station_items">

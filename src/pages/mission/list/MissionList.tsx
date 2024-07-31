@@ -5,16 +5,17 @@ import { MissionDto } from '../../../dto/MissionDto'
 import { MissionListWrap } from './MissionListStyle'
 import axios from 'axios'
 
-import DeleteIcon from '../../../assets/image/icon/ico_trash(dark).png'
-import DeleteWhiteIcon from '../../../assets/image/icon/ico_trash.png'
-import UpdateIcon from '../../../assets/image/icon/ico_edit02(dark).png'
-import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit02.png'
+import DeleteIcon from '../../../assets/image/icon/ico_trash(w).png'
+import DeleteWhiteIcon from '../../../assets/image/icon/ico_edit(w).png'
+import UpdateIcon from '../../../assets/image/icon/ico_edit(w).png'
+import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit(w).png'
 import { getMissions } from '../../../util/requestHttp'
 import { MISSION } from '../../../constant/http'
 
 interface MissionListProps {
     toggleMission: () => void
     map: naver.maps.Map | null
+    isActive: string
     setIsActive: React.Dispatch<React.SetStateAction<string>>
     isCreateMission: boolean
     isHttpRequest: boolean
@@ -25,6 +26,7 @@ interface MissionListProps {
         grid: boolean
         isStart: boolean
     }
+    initMissionData: () => void
 }
 
 export const MissionList = ({
@@ -35,6 +37,8 @@ export const MissionList = ({
     isHttpRequest,
     setIsHttpRequest,
     toggleCreateMission,
+    initMissionData,
+    isActive,
 }: MissionListProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
     const [selectMission, setSelectMission] = useState<null | MissionDto>(null)
@@ -64,6 +68,7 @@ export const MissionList = ({
         clearMapElements()
         setIsActive('')
         toggleMission()
+        initMissionData()
     }
 
     const updateModal = (e: React.MouseEvent, mission: MissionDto) => {
@@ -304,6 +309,11 @@ export const MissionList = ({
             clearMapElements()
         }
     }, [])
+
+    useEffect(() => {
+        clearMapElements()
+        initMissionData()
+    }, [isActive])
 
     return (
         <MissionListWrap>

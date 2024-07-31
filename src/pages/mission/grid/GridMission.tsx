@@ -28,6 +28,7 @@ interface GridMissionProps {
         isStart: boolean
     }
     setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>
+    initMissionData: () => void
 }
 
 export const GridMission = ({
@@ -37,6 +38,7 @@ export const GridMission = ({
     setMissionData,
     setIsRunningMission,
     setIsHttpRequest,
+    initMissionData,
 }: GridMissionProps) => {
     const [markers, setMarkers] = useState<naver.maps.Marker[]>([])
     const [mainPoints, setMainPoints] = useState<naver.maps.LatLng[]>([])
@@ -60,24 +62,6 @@ export const GridMission = ({
     const dragMarkerRef = useRef<naver.maps.Marker | null>(null)
     const mainPointMarker: naver.maps.Marker[] = []
     const mainPoint: naver.maps.LatLng[] = []
-
-    const clearMissionData = () => {
-        setMissionData({
-            name: '',
-            type: 0,
-            seq: 0,
-            mainPoint: {
-                latitude: 0,
-                longitude: 0,
-                height: 100,
-            },
-            points: [],
-            ways: [],
-            transverseRedundancy: 70,
-            longitudinalRedundancy: 70,
-            angle: 36,
-        })
-    }
 
     const createGridMission = () => {
         let gridMissionListener: any = null
@@ -474,7 +458,7 @@ export const GridMission = ({
 
     const resetGridMission = () => {
         clearMap()
-        clearMissionData()
+        initMissionData()
         setMarkers([])
         setMainPoints([])
         setAreaSize(null)
@@ -539,7 +523,7 @@ export const GridMission = ({
 
             {isRunningMission.grid && isOptions && (
                 <GridMissionOptions
-                    resetGridMission={resetGridMission}
+                    initMissionData={initMissionData}
                     areaOptions={areaOptions}
                     setAreaOptions={setAreaOptions}
                     setMissionData={setMissionData}
