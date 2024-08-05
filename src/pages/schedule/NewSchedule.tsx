@@ -100,7 +100,7 @@ const NewSchduleWrqp = styled.section`
             display: flex;
             flex-direction: column;
             gap: 0.35rem;
-            padding: 0.5rem;
+            padding: 0.5 1rem;
 
             & ul {
                 display: flex;
@@ -111,7 +111,7 @@ const NewSchduleWrqp = styled.section`
             & .station_content {
                 padding: 1rem 0.75rem;  
                 border-radius: 5px;
-                background-color: ${theme.color.green};
+                background-color: rgb(31, 30, 37);
 
                 &:hover {
                     color: ${theme.color.primary};
@@ -120,6 +120,10 @@ const NewSchduleWrqp = styled.section`
                 &.active {
                     background-color: ${theme.color.primary};
                     color: ${theme.color.white};
+                }
+
+                &.running {
+                    opacity: 0.6;
                 }
 
                 & .station_items {
@@ -155,7 +159,7 @@ const NewSchduleWrqp = styled.section`
                     display: flex;
                     flex-direction: column;
                     gap: 0.25rem;
-                    background-color: ${theme.color.green};
+                    background-color: rgb(31, 30, 37);
 
                     &:hover {
                         color: ${theme.color.primary};
@@ -285,7 +289,7 @@ export const NewSchdule = ({
             }
         }
 
-        fetchInfoMission()
+        createData.missionSeq !== 0 && fetchInfoMission()
     }, [createData.missionSeq])
 
     useEffect(() => {
@@ -326,19 +330,31 @@ export const NewSchdule = ({
                             {stations.length > 0 &&
                                 stations.map((station, index) => (
                                     <li
-                                        className={
+                                        className={`station_content ${
                                             createData.stationSeq ===
                                             station?.seq
-                                                ? 'station_content active'
-                                                : 'station_content'
-                                        }
-                                        onClick={() =>
-                                            setCreateData({
-                                                ...createData,
-                                                stationSeq:
-                                                    station?.seq as number,
-                                            })
-                                        }
+                                                ? 'active'
+                                                : ''
+                                        } ${
+                                            station.status === 1
+                                                ? 'running'
+                                                : ''
+                                        }`}
+                                        onClick={() => {
+                                            if (station.status === 1) {
+                                                alert(
+                                                    '현재 진행중인 스테이션 입니다.'
+                                                )
+
+                                                return
+                                            } else {
+                                                setCreateData({
+                                                    ...createData,
+                                                    stationSeq:
+                                                        station?.seq as number,
+                                                })
+                                            }
+                                        }}
                                         key={station.seq}
                                     >
                                         <div className="station_items">
@@ -355,7 +371,7 @@ export const NewSchdule = ({
                     </div>
 
                     <div className="mission">
-                        <span className="title">&lt;미션리스트&gt;</span>
+                        <span className="title">&lt;미션&gt;</span>
                         <ul>
                             {missions.length > 0 &&
                                 missions.map((mission) => (

@@ -5,16 +5,17 @@ import { MissionDto } from '../../../dto/MissionDto'
 import { MissionListWrap } from './MissionListStyle'
 import axios from 'axios'
 
-import DeleteIcon from '../../../assets/image/icon/ico_trash(dark).png'
-import DeleteWhiteIcon from '../../../assets/image/icon/ico_trash.png'
-import UpdateIcon from '../../../assets/image/icon/ico_edit02(dark).png'
-import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit02.png'
-import { getMissions, updeateMission } from '../../../util/requestHttp'
+import DeleteIcon from '../../../assets/image/icon/ico_trash(w).png'
+import DeleteWhiteIcon from '../../../assets/image/icon/ico_edit(w).png'
+import UpdateIcon from '../../../assets/image/icon/ico_edit(w).png'
+import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit(w).png'
+import { getMissions } from '../../../util/requestHttp'
 import { MISSION } from '../../../constant/http'
 
 interface MissionListProps {
     toggleMission: () => void
     map: naver.maps.Map | null
+    isActive: string
     setIsActive: React.Dispatch<React.SetStateAction<string>>
     isCreateMission: boolean
     isHttpRequest: boolean
@@ -25,6 +26,7 @@ interface MissionListProps {
         grid: boolean
         isStart: boolean
     }
+    initMissionData: () => void
 }
 
 export const MissionList = ({
@@ -35,6 +37,8 @@ export const MissionList = ({
     isHttpRequest,
     setIsHttpRequest,
     toggleCreateMission,
+    initMissionData,
+    isActive,
 }: MissionListProps) => {
     const [missions, setMissions] = useState<MissionDto[]>([])
     const [selectMission, setSelectMission] = useState<null | MissionDto>(null)
@@ -64,10 +68,13 @@ export const MissionList = ({
         clearMapElements()
         setIsActive('')
         toggleMission()
+        initMissionData()
     }
 
-    const updateModal = (e: React.MouseEvent) => {
+    const updateModal = (e: React.MouseEvent, mission: MissionDto) => {
         e.stopPropagation()
+
+        getInfoMission(mission)
         setIsUpdateMission((prev) => !prev)
     }
 
@@ -252,6 +259,21 @@ export const MissionList = ({
         }
     }
 
+    const updeateMission = async (infoMission: MissionDto) => {
+        try {
+            const { seq } = infoMission
+            const response = await axios.put(`${MISSION}/${seq}`, infoMission, {
+                withCredentials: true,
+            })
+
+            console.log(response.data)
+            setIsUpdateMission((prev) => !prev)
+            setIsHttpRequest((prev) => !prev)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     const formatDateString = (dateString: any) => {
         return dateString.replace('T', ' ')
     }
@@ -288,6 +310,11 @@ export const MissionList = ({
         }
     }, [])
 
+    useEffect(() => {
+        clearMapElements()
+        initMissionData()
+    }, [isActive])
+
     return (
         <MissionListWrap>
             <header>
@@ -321,7 +348,11 @@ export const MissionList = ({
                                     </p>
 
                                     <div className="content_actios">
-                                        <button onClick={(e) => updateModal(e)}>
+                                        <button
+                                            onClick={(e) =>
+                                                updateModal(e, mission)
+                                            }
+                                        >
                                             {selectMission?.seq ===
                                             mission.seq ? (
                                                 <img

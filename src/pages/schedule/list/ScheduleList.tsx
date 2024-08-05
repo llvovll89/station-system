@@ -6,9 +6,9 @@ import { SCHEDULE } from '../../../constant/http'
 import { useEffect, useState } from 'react'
 import { SchduleDto } from '../../../dto/ScheduleDto'
 import { getSchedule } from '../../../util/requestHttp'
-import DeleteIcon from '../../../assets/image/icon/ico_trash(dark).png'
+import DeleteIcon from '../../../assets/image/icon/ico_trash(w).png'
 import DeleteWhiteIcon from '../../../assets/image/icon/ico_trash.png'
-import UpdateIcon from '../../../assets/image/icon/ico_edit02(dark).png'
+import UpdateIcon from '../../../assets/image/icon/ico_edit(w).png'
 import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit02.png'
 
 interface ScheduleListProps {

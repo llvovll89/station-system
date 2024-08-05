@@ -255,8 +255,8 @@ export const NewStation = ({
     const createStation = async () => {
         if (
             createData.name === '' ||
-            createData.latitude === '' ||
-            createData.longitude === ''
+            createData.latitude === '0' ||
+            createData.longitude === '0'
         ) {
             alert('스테이션 정보를 입력해 주세요.')
             return
@@ -264,14 +264,12 @@ export const NewStation = ({
 
         if (
             createData.drone.name === '' ||
-            createData.drone.latitude === '' ||
-            createData.drone.longitude === ''
+            createData.drone.latitude === '0' ||
+            createData.drone.longitude === '0'
         ) {
             alert('드론 정보를 입력해 주세요.')
             return
         }
-
-        console.log('create station:', createData)
 
         try {
             const params = {
@@ -285,7 +283,6 @@ export const NewStation = ({
                 },
             }
 
-            console.log(params)
             const response = await axios.post(STATION, params, {
                 withCredentials: true,
             })
@@ -315,14 +312,22 @@ export const NewStation = ({
         toggleCreateStation()
         setCreateData({
             name: '',
-            latitude: '',
-            longitude: '',
+            latitude: '0',
+            longitude: '0',
             drone: {
                 name: '',
-                latitude: '',
-                longitude: '',
+                latitude: '0',
+                longitude: '0',
             },
         })
+    }
+
+    const nextStep = () => {
+        if (createData.latitude !== '0' && createData.longitude !== '0') {
+            setIsStep(2)
+        } else {
+            alert('위 / 경도 값을 지도에서 선택 해주세요!')
+        }
     }
 
     useEffect(() => {
@@ -550,10 +555,7 @@ export const NewStation = ({
                                 >
                                     취소
                                 </Button>
-                                <Button
-                                    type={'button'}
-                                    onClick={() => setIsStep(2)}
-                                >
+                                <Button type={'button'} onClick={nextStep}>
                                     다음
                                 </Button>
                             </>

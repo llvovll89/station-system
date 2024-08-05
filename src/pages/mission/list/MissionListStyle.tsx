@@ -2,7 +2,7 @@ import { styled } from 'styled-components'
 import theme from '../../../styles/theme'
 
 export const MissionListWrap = styled.section`
-    width: 350px;
+    width: 400px;
     height: 100vh;
     position: absolute;
     left: 90px;
@@ -14,12 +14,11 @@ export const MissionListWrap = styled.section`
         align-items: center;
         justify-content: space-between;
         color: ${theme.color.white};
-        border-bottom: 1px solid rgba(255, 255, 255, 0.33);
         padding: 0 12px;
+        margin-bottom: 3px;
 
         .header_btn {
             display: flex;
-            gap: 4px;
             align-items: center;
 
             & button {
@@ -29,7 +28,7 @@ export const MissionListWrap = styled.section`
     }
 
     & .container {
-        padding: 0.8rem;
+        padding: 0.8rem 1rem;
 
         & .content {
             display: flex;
@@ -37,15 +36,17 @@ export const MissionListWrap = styled.section`
             gap: 0.8rem;
 
             & .mission {
-                background-color: ${theme.color.white};
                 padding: 0.5rem 0.7rem;
                 border-radius: 5px;
                 cursor: pointer;
                 transition: all 0.3s ease-in-out;
-                box-shadow: rgba(255, 255, 255, 0.22);
+                color: ${theme.color.white};
+                box-shadow: rgba(0, 0, 0, 0.22);
+                background-color: rgb(31 30 37);
+                border: 1px solid rgba(255, 255, 255, 0.22);
 
                 &.active {
-                    background-color: ${theme.color.primary};
+                    border: 1px solid ${theme.color.primary};
                     color: ${theme.color.white};
 
                     & .content,
@@ -66,10 +67,7 @@ export const MissionListWrap = styled.section`
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-
-                    & .mission_name {
-                        color: ${theme.color.black};
-                    }
+                    padding: 0;
 
                     & .content_actios {
                         display: flex;
@@ -99,8 +97,7 @@ export const MissionListWrap = styled.section`
                     display: flex;
                     flex-direction: column;
                     gap: 0.3rem;
-                    font-size: 12px;
-                    color: ${theme.color.black};
+                    font-size: 14px;
 
                     & .mission_type {
                         display: flex;
@@ -108,7 +105,7 @@ export const MissionListWrap = styled.section`
                         gap: 0.35rem;
 
                         & span {
-                            font-size: 12px;
+                            font-size: 14px;
                             &:first-child {
                                 color: rgba(140, 140, 140, 1);
                             }
@@ -125,7 +122,7 @@ export const MissionListWrap = styled.section`
                             gap: 0.25rem;
 
                             span {
-                                font-size: 12px;
+                                font-size: 14px;
 
                                 &:first-child {
                                     color: rgba(140, 140, 140, 1);
@@ -155,6 +152,7 @@ export const MissionListWrap = styled.section`
 
         header {
             color: ${theme.color.black};
+            padding: 0;
 
             & .header_title {
                 display: flex;
@@ -210,7 +208,7 @@ export const MissionListWrap = styled.section`
             }
 
             & .mission_type {
-                font-size: 12px;
+                font-size: 14px;
             }
 
             & .ways {
@@ -234,7 +232,7 @@ export const MissionListWrap = styled.section`
                 flex-direction: column;
 
                 span {
-                    font-size: 12px;
+                    font-size: 14px;
                 }
             }
 

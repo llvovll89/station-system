@@ -11,14 +11,26 @@ export const MainWrap = styled.section`
         height: 100vh;
     }
 
-  & .delete_marker {
-    background-color: ${theme.color.subBlack};
-    color: ${theme.color.white};
-    padding: 0.3rem 0.75rem;
-    font-size: 12px;
-    border-radius: 5px;
-    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
-  }
+    & .running_schedule {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        border-radius: 5px;
+        padding: 0.7rem 1.25rem;
+        background-color: ${theme.color.black};
+        color: ${theme.color.white};
+        transform: translateX(-50%);
+        box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.33);
+    }
+
+    & .delete_marker {
+        background-color: ${theme.color.subBlack};
+        color: ${theme.color.white};
+        padding: 0.3rem 0.75rem;
+        font-size: 12px;
+        border-radius: 5px;
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+    }
 
   & .marker {
     width: 24px;
@@ -101,18 +113,19 @@ export const MainWrap = styled.section`
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
   }
 
-  & .wayline_marker {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: ${theme.color.white};
-    background-color: ${theme.color.primary};
-    border-radius: 50%;
-    border: 2px solid ${theme.color.subWhite};
-    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
-  }
+    & .wayline_marker {
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: ${theme.color.white};
+        background-color: ${theme.color.white};
+        border-radius: 50%;
+        border: 2px solid ${theme.color.primary};
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+        color: ${theme.color.black};
+    }
 
   & .points_marker {
     width: 26px;

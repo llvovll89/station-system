@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import theme from '../../../styles/theme'
 
 export const ScheduleListWrap = styled.section`
-    width: 350px;
+    width: 400px;
     height: 100vh;
     position: absolute;
     left: 90px;
@@ -35,7 +35,7 @@ export const ScheduleListWrap = styled.section`
     }
 
     & .container {
-        padding: 0.8rem;
+        padding: 0.8rem 1rem;
         font-size: 14px;
 
         & .schedule_list {
@@ -48,10 +48,11 @@ export const ScheduleListWrap = styled.section`
                 flex-direction: column;
                 gap: 0.35rem;
                 border-radius: 5px;
-                background-color: ${theme.color.white};
-                color: #231f20;
                 padding: 0.5rem 0.75rem;
-                box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.22);
+                color: ${theme.color.white};
+                box-shadow: rgba(0, 0, 0, 0.22);
+                background-color: rgb(31 30 37);
+                border: 1px solid rgba(255, 255, 255, 0.22);
                 cursor: pointer;
                 font-size: 14px;
                 transition: all 0.3s ease-in-out;
@@ -64,7 +65,7 @@ export const ScheduleListWrap = styled.section`
                 }
 
                 &.active {
-                    background-color: #2772f0;
+                    border: 1px solid ${theme.color.primary};
                     color: ${theme.color.white};
 
                     & svg {

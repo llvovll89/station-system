@@ -70,7 +70,7 @@ interface GridMissionOptionsProps {
     submitGridMission: () => void
     missionData: MissionDto
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
-    resetGridMission: () => void
+    initMissionData: () => void
 }
 
 export const GridMissionOptions = ({
@@ -79,7 +79,7 @@ export const GridMissionOptions = ({
     submitGridMission,
     missionData,
     setMissionData,
-    resetGridMission,
+    initMissionData,
 }: GridMissionOptionsProps) => {
     return (
         <GridMissionOptionsWrap>
@@ -172,7 +172,7 @@ export const GridMissionOptions = ({
             <div className="btns">
                 <Button
                     type="button"
-                    onClick={resetGridMission}
+                    onClick={initMissionData}
                     className="reset_btn"
                 >
                     <span>초기화</span>

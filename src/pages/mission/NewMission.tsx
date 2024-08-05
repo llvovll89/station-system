@@ -139,6 +139,14 @@ export const NewMission = ({
     }
 
     const createMission = () => {
+        if (
+            missionData.name === '' ||
+            (!isRunningMission.waypoint && !isRunningMission.grid)
+        ) {
+            alert('미션 이름 / 및 타입을 지정 해주세요!')
+            return
+        }
+
         setIsRunningMission(
             (prev: { waypoint: boolean; grid: boolean; isStart: boolean }) => ({
                 ...prev,

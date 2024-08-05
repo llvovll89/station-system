@@ -2,7 +2,7 @@ import { styled } from 'styled-components'
 import theme from '../../../styles/theme'
 
 export const StationWrap = styled.section`
-    width: 350px;
+    width: 400px;
     height: 100vh;
     position: absolute;
     left: 90px;
@@ -38,7 +38,6 @@ export const StationWrap = styled.section`
         padding: 0.8rem 1rem;
 
         .content {
-            background-color: ${theme.color.white};
             padding: 0.5rem 0.7rem;
             display: flex;
             flex-direction: column;
@@ -46,7 +45,10 @@ export const StationWrap = styled.section`
             border-radius: 4px;
             transition: all 0.3s ease-in-out;
             cursor: pointer;
-            box-shadow: rgba(255, 255, 255, 0.22);
+            color: ${theme.color.white};
+            box-shadow: rgba(0, 0, 0, 0.22);
+            background-color: rgb(31 30 37);
+            border: 1px solid rgba(255, 255, 255, 0.22);
 
             & h1 {
                 font-size: 16px;
@@ -57,7 +59,7 @@ export const StationWrap = styled.section`
             }
 
             &.selected {
-                background-color: ${theme.color.primary};
+                border: 1px solid ${theme.color.primary};
                 color: ${theme.color.white};
 
                 & span {
