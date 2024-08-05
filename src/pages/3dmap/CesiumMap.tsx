@@ -84,8 +84,11 @@ export const CesiumMap = (props: any) => {
                         };
 
                         const droneEntity = cesiumViewer.entities.add({
-                            position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height),
-                            point: {pixelSize: 30, color: Cesium.Color.BLUE_BITS}
+                            position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height + 200),
+                            model: {
+                                uri: `http://${location.host}/model/drone-m30-240517.glb`,
+                                scale: 50
+                            },
                         });
 
                         stations[i].droneEntity = droneEntity;

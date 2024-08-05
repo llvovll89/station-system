@@ -31,7 +31,7 @@ export const Main = () => {
     const markers = useRef<naver.maps.Marker[]>([])
     const polygon = useRef<naver.maps.Polygon | null>(null)
 
-    const [is3DMapType, setIs3DMapType] = useState<boolean>(true);
+    const [is3DMapType, setIs3DMapType] = useState<boolean>(false);
 
     useEffect(() => {
         if (!mapElement.current || !naver) return
