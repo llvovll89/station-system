@@ -8,11 +8,13 @@ export const CesiumMapWrap = styled.section`
     top: 0px;
     left: 0px;
     visibility: hidden;
-    
+    display: none;
+
     &.visible {
       visibility: visible;
+      display: block;
     }
-    
+
     & #cesiumContainer {
       width: 100%;
       height: 100%;

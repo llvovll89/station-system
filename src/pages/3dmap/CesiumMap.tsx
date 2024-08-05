@@ -8,7 +8,7 @@ export const CesiumMap = (props: any) => {
     const [stations, setStations] = useState<any[]>([]);
     let isCreatedCesiumMap = false;
 
-    useEffect(() => {
+    useEffect( () => {
         if (!mapElement.current || isCreatedCesiumMap) {
             return
         }
@@ -26,6 +26,19 @@ export const CesiumMap = (props: any) => {
                 pitch: Cesium.Math.toRadians(-15.0),
             }
         });
+
+        (async () => {
+            viewer.scene.primitives.add(
+                await Cesium.Cesium3DTileset.fromIonAssetId(96188),
+            );
+
+            viewer.scene.primitives.add(
+                await Cesium.Cesium3DTileset.fromIonAssetId(2275207),
+            );
+        })();
+
+
+
 
         isCreatedCesiumMap = true;
         setCesiumViewer(viewer);
