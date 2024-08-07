@@ -1,5 +1,5 @@
-import styled from 'styled-components'
-import theme from '../../styles/theme'
+import styled from "styled-components";
+import theme from "../../styles/theme";
 
 export const MainWrap = styled.section`
     position: relative;
@@ -21,6 +21,21 @@ export const MainWrap = styled.section`
         color: ${theme.color.white};
         transform: translateX(-50%);
         box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.33);
+
+        & .running_content {
+            & article {
+                displaty: flex;
+                flex-direction: column;
+                gap: 12px;
+                font-size: 14px;
+
+                & div {
+                    display: flex;
+                    gap: 6px;
+                    align-items: center;
+                }
+            }
+        }
     }
 
     & .delete_marker {
@@ -114,17 +129,22 @@ export const MainWrap = styled.section`
     }
 
     & .wayline_marker {
-        width: 22px;
-        height: 22px;
+        width: 24px;
+        height: 24px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: ${theme.color.white};
         background-color: ${theme.color.white};
         border-radius: 50%;
-        border: 2px solid ${theme.color.primary};
+        border: 3px solid ${theme.color.primary};
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
         color: ${theme.color.black};
+
+        & span {
+            font-size: 12px;
+            font-weight: bold;
+        }
     }
 
     & .points_marker {
@@ -164,6 +184,7 @@ export const MainWrap = styled.section`
         border: 3px solid ${theme.color.green};
         background-color: #231f20;
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.33);
+        z-index: 100;
 
         & span {
             color: ${theme.color.white};
@@ -188,4 +209,4 @@ export const MainWrap = styled.section`
         width: 100vw;
         height: 100vh;
     }
-`
+`;

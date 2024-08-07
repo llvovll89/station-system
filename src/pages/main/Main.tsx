@@ -1,242 +1,249 @@
-import { useEffect, useRef, useState } from 'react'
-import { Mission } from '../mission/Mission'
-import { ActiveType } from '../../constant/type'
-import { useNavigate } from 'react-router-dom'
-import { MainWrap } from './MainStyle'
-import { Header } from '../../components/Header'
-import { Station } from '../station/Station'
-import { Schedule } from '../schedule/Schedule'
-import { StationDto } from '../../dto/Station'
-import { STATION } from '../../constant/http'
-import { DarkMode } from '../../components/Darkmode'
-import { getSchedule } from '../../util/requestHttp'
-import axios from 'axios'
-import DroneImage from '../../assets/image/icon/ico_airplane(w).png'
-import { MapButton } from '../../components/MapButton'
+import { useEffect, useRef, useState } from "react";
+import { Mission } from "../mission/Mission";
+import { ActiveType } from "../../constant/type";
+import { useNavigate } from "react-router-dom";
+import { MainWrap } from "./MainStyle";
+import { Header } from "../../components/Header";
+import { Station } from "../station/Station";
+import { Schedule } from "../schedule/Schedule";
+import { Drone, StationDto } from "../../dto/Station";
+import { RUNNING_STATION } from "../../constant/http";
+import { DarkMode } from "../../components/Darkmode";
+import { MapButton } from "../../components/MapButton";
+import DroneImage from "../../assets/image/icon/ico_airplane(w).png";
+import api from "../../api/api";
+import { MissionDto } from "../../dto/MissionDto";
+
+interface RunningMission {
+    currentMission: MissionDto;
+    drone: Drone;
+    status: number;
+    latitude: number;
+    longitude: number;
+    seq: number;
+    name: string;
+    createAt: string;
+}
 
 export const Main = () => {
-    const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none)
-    const [map, setMap] = useState<naver.maps.Map | null>(null)
-    const [stations, setStations] = useState<StationDto[]>([])
-    const [isActive, setIsActive] = useState('')
-    const [isRunningSchedule, setIsRunningSchedule] = useState(false)
+    const [activeType, setIsActiveType] = useState<ActiveType>(ActiveType.none);
+    const [map, setMap] = useState<naver.maps.Map | null>(null);
+    const [stations, setStations] = useState<StationDto[]>([]);
+    const [isActive, setIsActive] = useState("");
+    const [isRunningSchedule, setIsRunningSchedule] = useState(false);
+    const [runningSchedule, setRunningSchedule] = useState<RunningMission[]>(
+        [],
+    );
 
-    const dockMarkers = useRef<naver.maps.Marker[]>([])
-    const droneMarkers = useRef<naver.maps.Marker[]>([])
-    const mapElement = useRef(null)
+    const dockMarkers = useRef<naver.maps.Marker[]>([]);
+    const droneMarkers = useRef<naver.maps.Marker[]>([]);
+    const mapElement = useRef(null);
 
-    const waylines = useRef<naver.maps.Polyline | null>(null)
-    const markers = useRef<naver.maps.Marker[]>([])
-    const polygon = useRef<naver.maps.Polygon | null>(null)
+    const waylines = useRef<naver.maps.Polyline | null>(null);
+    const markers = useRef<naver.maps.Marker[]>([]);
+    const polygon = useRef<naver.maps.Polygon | null>(null);
 
     useEffect(() => {
-        if (!mapElement.current || !naver) return
+        if (!mapElement.current || !naver) return;
 
-        const location = new naver.maps.LatLng(35.8774, 128.6107)
+        const location = new naver.maps.LatLng(35.8774, 128.6107);
         const mapOptions = {
             center: location,
             zoom: 17,
             zoomControl: false,
             mapDataControl: false,
             scaleControl: false,
-        }
+            mapTypeId: naver.maps.MapTypeId.HYBRID,
+        };
 
-        setMap(new naver.maps.Map(mapElement.current, mapOptions))
+        setMap(new naver.maps.Map(mapElement.current, mapOptions));
         // getWeather()
-    }, [])
+    }, []);
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const toggleActive = (type: ActiveType) => {
-        setIsActiveType((prev) => (prev === type ? ActiveType.none : type))
-    }
+        setIsActiveType((prev) => (prev === type ? ActiveType.none : type));
+    };
 
     const resetOverlay = () => {
-        // 기존 폴리라인과 마커 삭제
         if (waylines.current) {
-            waylines.current.setMap(null)
-            waylines.current = null
+            waylines.current.setMap(null);
+            waylines.current = null;
         }
 
         if (polygon.current) {
-            polygon.current.setMap(null)
-            polygon.current = null
+            polygon.current.setMap(null);
+            polygon.current = null;
         }
 
-        markers.current.forEach((marker) => marker.setMap(null))
-        markers.current = []
-    }
-
-    const createWayline = (data: any) => {
-        const path =
-            data &&
-            data.data.ways.map(
-                (p: { latitude: number; longitude: number }) =>
-                    new naver.maps.LatLng(p.latitude, p.longitude)
-            )
-
-        waylines.current = new naver.maps.Polyline({
-            map: map ? map : undefined,
-            path: path,
-            strokeColor: '#2E8B57',
-            strokeOpacity: 1,
-            strokeWeight: 4,
-            strokeStyle: 'solid',
-        })
-    }
+        markers.current.forEach((marker) => marker.setMap(null));
+        markers.current = [];
+    };
 
     const getStation = async () => {
         try {
-            const response = await axios.get(STATION, { withCredentials: true })
-            const data = await response.data
+            const response = await api.get("/station");
+            const data = await response.data;
 
             if (response.status === 200) {
-                setStations(data)
-
-                clearMarkers(dockMarkers.current)
-                clearMarkers(droneMarkers.current)
+                setStations(data);
+                clearMarkers(dockMarkers.current);
+                clearMarkers(droneMarkers.current);
 
                 data.forEach(
                     (station: {
-                        latitude: number
-                        longitude: number
-                        status: number
+                        latitude: number;
+                        longitude: number;
+                        status: number;
                         drone: {
-                            name: string
-                            latitude: number
-                            longitude: number
-                        }
+                            name: string;
+                            latitude: number;
+                            longitude: number;
+                        };
+                        name: string;
                     }) => {
                         const params = {
                             latitude: station.latitude,
                             longitude: station.longitude,
                             status: station.status,
                             drone: station.drone,
+                            name: station.name,
+                        };
+
+                        setDockMarker(params);
+                    },
+                );
+
+                runningMission();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const runningMission = async () => {
+        try {
+            const response = await api.get(RUNNING_STATION);
+            const data = await response.data;
+            console.log("runningMissoin:", data.length);
+
+            if (data.length > 0) {
+                resetOverlay();
+                setIsRunningSchedule(true);
+                setRunningSchedule(data);
+
+                data.forEach(
+                    (item: {
+                        currentMission: {
+                            points: { latitude: number; longitude: number }[];
+                            ways: {
+                                latitude: number;
+                                longitude: number;
+                                height: number;
+                            }[];
+                            type: number;
+                        };
+                    }) => {
+                        if (item.currentMission.type === 1) {
+                            polygon.current = new naver.maps.Polygon({
+                                map: map ? map : undefined,
+                                paths: item.currentMission.points.map(
+                                    (point) =>
+                                        new naver.maps.LatLng(
+                                            point.latitude,
+                                            point.longitude,
+                                        ),
+                                ) as any,
+                                strokeColor: "#0080DE",
+                                strokeOpacity: 1,
+                                strokeWeight: 4,
+                                fillColor: "#0080DE",
+                                fillOpacity: 0.1,
+                                strokeStyle: "solid",
+                            });
                         }
 
-                        setDockMarker(params)
-                    }
-                )
-
-                const hasRunning = data.some(
-                    (station: StationDto) => station.status === 1
-                )
-                setIsRunningSchedule(hasRunning)
-                hasRunning && getSchedule()
-
-                if (hasRunning) {
-                    const data = JSON.parse(
-                        sessionStorage.getItem('missionInfo')!
-                    )
-
-                    resetOverlay()
-
-                    if (data.data.type === 1) {
-                        polygon.current = new naver.maps.Polygon({
-                            map: map ? map : undefined,
-                            paths: data.data.points.map(
-                                (p: { latitude: number; longitude: number }) =>
-                                    new naver.maps.LatLng(
-                                        p.latitude,
-                                        p.longitude
-                                    )
-                            ),
-                            strokeColor: '#0080DE',
-                            strokeOpacity: 1,
-                            strokeWeight: 4,
-                            fillColor: '#fefefe',
-                            fillOpacity: 0.6,
-                            strokeStyle: 'solid',
-                        })
-
-                        data.data.points.forEach(
+                        item.currentMission.points.forEach(
                             (
                                 p: { latitude: number; longitude: number },
-                                index: number
+                                index,
                             ) => {
-                                console.log(index)
-
                                 markers.current.push(
                                     new naver.maps.Marker({
                                         map: map ? map : undefined,
                                         position: new naver.maps.LatLng(
                                             p.latitude,
-                                            p.longitude
+                                            p.longitude,
                                         ),
                                         icon: {
-                                            content: `<div class='wayline_marker'></div>`,
+                                            content: `<div class='wayline_marker'>
+                                                <span>${index + 1}</span>
+                                            </div>`,
                                             anchor: new naver.maps.Point(
                                                 12,
-                                                12
+                                                12,
                                             ),
                                         },
-                                    })
-                                )
-                            }
-                        )
-                    } else {
-                        data.data.points.forEach(
-                            (
-                                p: { latitude: number; longitude: number },
-                                index: number
-                            ) => {
-                                const marker = new naver.maps.Marker({
-                                    map: map ? map : undefined,
-                                    position: new naver.maps.LatLng(
-                                        p.latitude,
-                                        p.longitude
+                                    }),
+                                );
+                            },
+                        );
+
+                        waylines.current = new naver.maps.Polyline({
+                            map: map ? map : undefined,
+                            path: item.currentMission.ways.map(
+                                (way) =>
+                                    new naver.maps.LatLng(
+                                        way.latitude,
+                                        way.longitude,
                                     ),
-                                    icon: {
-                                        content: `<div class='wayline_marker'>${index === 0 ? 'S' : index === data.data.points.length - 1 ? 'E' : ''}</div>`,
-                                        anchor: new naver.maps.Point(12, 12),
-                                    },
-                                })
-
-                                markers.current.push(marker)
-                            }
-                        )
-                    }
-
-                    createWayline(data)
-                } else {
-                    resetOverlay()
-                    sessionStorage.removeItem('missionInfo')
-                    setIsRunningSchedule(false)
-                }
+                            ),
+                            strokeColor: "rgb(55, 114, 240)",
+                            strokeOpacity: 1,
+                            strokeWeight: 4,
+                            strokeStyle: "solid",
+                        });
+                    },
+                );
+            } else {
+                resetOverlay();
+                setIsRunningSchedule(false);
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
     const setDockMarker = (params: {
-        latitude: number
-        longitude: number
-        status: number
+        latitude: number;
+        longitude: number;
+        status: number;
         drone: {
-            name: string
-            latitude: number
-            longitude: number
-        }
+            name: string;
+            latitude: number;
+            longitude: number;
+        };
     }) => {
-        const { latitude, longitude, status } = params
+        const { latitude, longitude, status } = params;
 
         if (status === 1) {
             const drone = new naver.maps.Marker({
                 map: map ? map : undefined,
                 position: new naver.maps.LatLng(
                     params.drone.latitude,
-                    params.drone.longitude
+                    params.drone.longitude,
                 ),
                 icon: {
                     content: `<div class='drone_marker'>
                         <img src=${DroneImage} alt='drone_image' />
-                    </div>`,
+                        </div>`,
                     anchor: new naver.maps.Point(16, 16),
                 },
-            })
+                zIndex: 10,
+            });
 
-            droneMarkers.current.push(drone)
+            droneMarkers.current.push(drone);
         }
 
         const marker = new naver.maps.Marker({
@@ -246,29 +253,28 @@ export const Main = () => {
                 content: `<div class='dock_marker'><span>🚍</span></div>`,
                 anchor: new naver.maps.Point(18, 18),
             },
-        })
+        });
 
-        dockMarkers.current.push(marker)
-    }
+        dockMarkers.current.push(marker);
+    };
 
     const clearMarkers = (markers: naver.maps.Marker[]) => {
-        markers.forEach((marker) => marker.setMap(null))
-        markers.length = 0
-    }
+        markers.forEach((marker) => marker.setMap(null));
+        markers.length = 0;
+    };
 
     useEffect(() => {
-        !localStorage.getItem('user') && navigate('/')
-    }, [])
+        !localStorage.getItem("user") && navigate("/");
+    }, []);
 
     useEffect(() => {
-        if (!map) return
+        if (!map) return;
 
         const httpRequestInterval = setInterval(() => {
-            getStation()
-        }, 2000)
-
-        return () => clearInterval(httpRequestInterval)
-    }, [map])
+            getStation();
+        }, 2000);
+        return () => clearInterval(httpRequestInterval);
+    }, [map]);
 
     return (
         <MainWrap>
@@ -311,12 +317,28 @@ export const Main = () => {
             {isRunningSchedule && (
                 <article className="running_schedule">
                     <h1>스케줄 진행 중...</h1>
-                    <div className="running_content"></div>
+                    <div className="running_content">
+                        <span>
+                            진행 중인 미션 수 : {runningSchedule.length}
+                        </span>
+
+                        <article>
+                            {runningSchedule.map((item, index) => (
+                                <div key={index}>
+                                    <span>Station: {item.name}</span>
+                                    <span>Drone: {item.drone.name}</span>
+                                    <span>
+                                        Mission: {item.currentMission.name}
+                                    </span>
+                                </div>
+                            ))}
+                        </article>
+                    </div>
                 </article>
             )}
 
             <DarkMode />
             <MapButton />
         </MainWrap>
-    )
-}
+    );
+};

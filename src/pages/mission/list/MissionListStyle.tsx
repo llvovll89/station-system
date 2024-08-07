@@ -1,5 +1,5 @@
-import { styled } from 'styled-components'
-import theme from '../../../styles/theme'
+import { styled } from "styled-components";
+import theme from "../../../styles/theme";
 
 export const MissionListWrap = styled.section`
     width: 400px;
@@ -16,6 +16,7 @@ export const MissionListWrap = styled.section`
         color: ${theme.color.white};
         padding: 0 12px;
         margin-bottom: 3px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 
         .header_btn {
             display: flex;
@@ -34,6 +35,23 @@ export const MissionListWrap = styled.section`
             display: flex;
             flex-direction: column;
             gap: 0.8rem;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            &::-webkit-scrollbar-track {
+                background: rgba(16, 33, 22, 0.1);
+            }
+
+            &::-webkit-scrollbar-thumb {
+                height: 30%;
+                background: #333131;
+                opacity: 0.5;
+                border-radius: 4px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: rgba(41, 45, 45, 0.1);
+            }
 
             & .mission {
                 padding: 0.5rem 0.7rem;
@@ -44,6 +62,23 @@ export const MissionListWrap = styled.section`
                 box-shadow: rgba(0, 0, 0, 0.22);
                 background-color: rgb(31 30 37);
                 border: 1px solid rgba(255, 255, 255, 0.22);
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+
+                & .mission_header {
+                    border-bottom: none;
+                    margin-bottom: 0;
+                }
+
+                &:hover {
+                    border: 1px solid ${theme.color.primary};
+                    transfrom: scale(1.05);
+                }
+
+                & .date {
+                    gap: 0.25rem;
+                }
 
                 &.active {
                     border: 1px solid ${theme.color.primary};
@@ -74,9 +109,7 @@ export const MissionListWrap = styled.section`
                         align-items: center;
 
                         & button {
-                            width: 36px;
-                            height: 24px;
-
+                            width: 30px;
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -250,7 +283,7 @@ export const MissionListWrap = styled.section`
         background-color: ${theme.color.black};
         min-width: 360px;
         color: ${theme.color.white};
-        left: 400px;
+        left: 420px;
         bottom: 16px;
         border-radius: 5px;
         box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.33);
@@ -275,4 +308,4 @@ export const MissionListWrap = styled.section`
             }
         }
     }
-`
+`;

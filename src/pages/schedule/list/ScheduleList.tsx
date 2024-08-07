@@ -1,23 +1,24 @@
-import { IoClose, IoCreateOutline } from 'react-icons/io5'
-import { ScheduleListWrap } from './ScheduleListSyle'
-import { Button } from '../../../components/button/Button'
-import axios from 'axios'
-import { SCHEDULE } from '../../../constant/http'
-import { useEffect, useState } from 'react'
-import { SchduleDto } from '../../../dto/ScheduleDto'
-import { getSchedule } from '../../../util/requestHttp'
-import DeleteIcon from '../../../assets/image/icon/ico_trash(w).png'
-import DeleteWhiteIcon from '../../../assets/image/icon/ico_trash.png'
-import UpdateIcon from '../../../assets/image/icon/ico_edit(w).png'
-import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit02.png'
+import { IoClose, IoCreateOutline } from "react-icons/io5";
+import { ScheduleListWrap } from "./ScheduleListSyle";
+import { Button } from "../../../components/button/Button";
+import axios from "axios";
+import { SCHEDULE } from "../../../constant/http";
+import { useEffect, useState } from "react";
+import { SchduleDto } from "../../../dto/ScheduleDto";
+import { getSchedule } from "../../../util/requestHttp";
+import DeleteIcon from "../../../assets/image/icon/ico_trash(w).png";
+import DeleteWhiteIcon from "../../../assets/image/icon/ico_trash.png";
+import UpdateIcon from "../../../assets/image/icon/ico_edit(w).png";
+import UpdateWhiteIcon from "../../../assets/image/icon/ico_edit02.png";
+import { Schedule } from "../../../constant/type";
 
 interface ScheduleListProps {
-    toggleSchedule: () => void
-    toggleCreateSchedule: () => void
-    setIsActive: React.Dispatch<React.SetStateAction<string>>
-    isHttpRequest: boolean
-    setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>
-    isRunningSchedule: boolean
+    toggleSchedule: () => void;
+    toggleCreateSchedule: () => void;
+    setIsActive: React.Dispatch<React.SetStateAction<string>>;
+    isHttpRequest: boolean;
+    setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>;
+    isRunningSchedule: boolean;
 }
 
 export const ScheduleList = ({
@@ -28,66 +29,77 @@ export const ScheduleList = ({
     setIsHttpRequest,
     isRunningSchedule,
 }: ScheduleListProps) => {
-    const [schedules, setSchedules] = useState<SchduleDto[]>([])
+    const [schedules, setSchedules] = useState<SchduleDto[]>([]);
     const [selectSchedule, setSelectSchedule] = useState<SchduleDto | null>(
-        null
-    )
+        null,
+    );
 
     const toggleActiveSchedule = () => {
-        toggleSchedule()
-        setIsActive('')
-    }
+        toggleSchedule();
+        setIsActive("");
+    };
 
-    const updateSchedule = async (schedule: SchduleDto) => {
+    const updateSchedule = async (
+        schedule: SchduleDto,
+        e: React.MouseEvent,
+    ) => {
+        e.stopPropagation();
+
         try {
-            const response = await axios.post(`${SCHEDULE}/${schedule.seq}`)
-            const data = await response.data
+            const response = await axios.post(`${SCHEDULE}/${schedule.seq}`);
+            const data = await response.data;
 
-            console.log(data)
-            setIsHttpRequest((prev) => !prev)
+            console.log(data);
+            setIsHttpRequest((prev) => !prev);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
     const deleteSchdule = async (schedule: SchduleDto) => {
-        const requestDelete = confirm('정말 삭제 하시겠습니까?')
+        const requestDelete = confirm("정말 삭제 하시겠습니까?");
         if (requestDelete) {
             {
                 try {
                     const response = await axios.delete(
-                        `${SCHEDULE}/${schedule.seq}`
-                    )
-                    const data = await response.data
+                        `${SCHEDULE}/${schedule.seq}`,
+                    );
+                    const data = await response.data;
 
-                    console.log(data)
-                    setIsHttpRequest((prev) => !prev)
+                    console.log(data);
+                    setIsHttpRequest((prev) => !prev);
                 } catch (error) {
-                    console.log(error)
+                    console.log(error);
                 }
             }
         } else {
-            return
+            return;
         }
-    }
+    };
 
     const selectScheduleItem = (schedule: SchduleDto) => {
         if (selectSchedule) {
-            setSelectSchedule(null)
+            setSelectSchedule(null);
         }
 
-        console.log(schedule)
-        setSelectSchedule(schedule)
-    }
+        console.log(schedule);
+        setSelectSchedule(schedule);
+    };
 
     useEffect(() => {
         const fetchSchedules = async () => {
-            const data = await getSchedule()
-            setSchedules(data)
-        }
+            const data: Schedule[] = await getSchedule();
+            const sortedData = data.sort(
+                (a, b) =>
+                    new Date(b.startedAt).getTime() -
+                    new Date(a.startedAt).getTime(),
+            );
 
-        fetchSchedules()
-    }, [isHttpRequest, isRunningSchedule])
+            setSchedules(sortedData);
+        };
+
+        fetchSchedules();
+    }, [isHttpRequest, isRunningSchedule]);
 
     return (
         <ScheduleListWrap>
@@ -95,13 +107,13 @@ export const ScheduleList = ({
                 <h1>스케줄</h1>
 
                 <div className="content_btn">
-                    <Button type={'button'} onClick={toggleCreateSchedule}>
+                    <Button type={"button"} onClick={toggleCreateSchedule}>
                         <IoCreateOutline
-                            style={{ width: '24PX', height: '24px' }}
+                            style={{ width: "24PX", height: "24px" }}
                         />
                     </Button>
-                    <Button type={'button'} onClick={toggleActiveSchedule}>
-                        <IoClose style={{ width: '24PX', height: '24px' }} />
+                    <Button type={"button"} onClick={toggleActiveSchedule}>
+                        <IoClose style={{ width: "24PX", height: "24px" }} />
                     </Button>
                 </div>
             </header>
@@ -111,7 +123,7 @@ export const ScheduleList = ({
                     {schedules.length > 0 &&
                         schedules.map((schedule) => (
                             <li
-                                className={`schedule ${selectSchedule?.seq === schedule.seq ? 'active' : ''}`}
+                                className={`schedule ${selectSchedule?.seq === schedule.seq ? "active" : ""}`}
                                 key={schedule.seq}
                                 onClick={() => selectScheduleItem(schedule)}
                             >
@@ -121,8 +133,8 @@ export const ScheduleList = ({
                                     </span>
                                     <div className="btn_box">
                                         <button
-                                            onClick={() =>
-                                                updateSchedule(schedule)
+                                            onClick={(e) =>
+                                                updateSchedule(schedule, e)
                                             }
                                         >
                                             {selectSchedule?.seq ===
@@ -131,8 +143,8 @@ export const ScheduleList = ({
                                                     src={UpdateWhiteIcon}
                                                     alt="update"
                                                     style={{
-                                                        width: '16px',
-                                                        height: '16px',
+                                                        width: "16px",
+                                                        height: "16px",
                                                     }}
                                                 />
                                             ) : (
@@ -140,8 +152,8 @@ export const ScheduleList = ({
                                                     src={UpdateIcon}
                                                     alt="update"
                                                     style={{
-                                                        width: '16px',
-                                                        height: '16px',
+                                                        width: "16px",
+                                                        height: "16px",
                                                     }}
                                                 />
                                             )}
@@ -157,8 +169,8 @@ export const ScheduleList = ({
                                                     src={DeleteWhiteIcon}
                                                     alt="delete"
                                                     style={{
-                                                        width: '20px',
-                                                        height: '20px',
+                                                        width: "20px",
+                                                        height: "20px",
                                                     }}
                                                 />
                                             ) : (
@@ -166,8 +178,8 @@ export const ScheduleList = ({
                                                     src={DeleteIcon}
                                                     alt="delete"
                                                     style={{
-                                                        width: '20px',
-                                                        height: '20px',
+                                                        width: "20px",
+                                                        height: "20px",
                                                     }}
                                                 />
                                             )}
@@ -177,12 +189,12 @@ export const ScheduleList = ({
 
                                 <div className="scheudule_content">
                                     <span>
-                                        상태:{' '}
+                                        상태:{" "}
                                         {schedule.status === 0
-                                            ? '진행중'
+                                            ? "진행중"
                                             : schedule.status === 1
-                                              ? 'failed'
-                                              : '비행완료'}
+                                              ? "failed"
+                                              : "비행완료"}
                                     </span>
                                     <span>
                                         스테이션: {schedule.station.name}
@@ -192,10 +204,10 @@ export const ScheduleList = ({
                                 <div className="schedule_date">
                                     <span className="gray">createdAt:</span>
                                     <span>
-                                        {schedule.startedAt.split('T')[0] +
-                                            ' ' +
+                                        {schedule.startedAt.split("T")[0] +
+                                            " " +
                                             schedule.startedAt
-                                                .split('T')[1]
+                                                .split("T")[1]
                                                 .slice(0, 5)}
                                     </span>
                                 </div>
@@ -204,5 +216,5 @@ export const ScheduleList = ({
                 </ul>
             </article>
         </ScheduleListWrap>
-    )
-}
+    );
+};

@@ -1,8 +1,8 @@
-import styled from 'styled-components'
-import { AreaOptions } from '../../../constant/type'
-import theme from '../../../styles/theme'
-import { Button } from '../../../components/button/Button'
-import { MissionDto } from '../../../dto/MissionDto'
+import styled from "styled-components";
+import { AreaOptions } from "../../../constant/type";
+import theme from "../../../styles/theme";
+import { Button } from "../../../components/button/Button";
+import { MissionDto } from "../../../dto/MissionDto";
 
 const GridMissionOptionsWrap = styled.section`
     min-width: 400px;
@@ -62,15 +62,16 @@ const GridMissionOptionsWrap = styled.section`
             border-radius: 5px;
         }
     }
-`
+`;
 
 interface GridMissionOptionsProps {
-    areaOptions: AreaOptions
-    setAreaOptions: React.Dispatch<React.SetStateAction<AreaOptions>>
-    submitGridMission: () => void
-    missionData: MissionDto
-    setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>
-    initMissionData: () => void
+    areaOptions: AreaOptions;
+    setAreaOptions: React.Dispatch<React.SetStateAction<AreaOptions>>;
+    submitGridMission: () => void;
+    missionData: MissionDto;
+    setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>;
+    initMissionData: () => void;
+    resetGridMission: () => void;
 }
 
 export const GridMissionOptions = ({
@@ -80,6 +81,7 @@ export const GridMissionOptions = ({
     missionData,
     setMissionData,
     initMissionData,
+    resetGridMission,
 }: GridMissionOptionsProps) => {
     return (
         <GridMissionOptionsWrap>
@@ -110,8 +112,8 @@ export const GridMissionOptions = ({
                                 angle: Number(e.target.value),
                             }))
                         }
-                        min={'0'}
-                        max={'360'}
+                        min={"0"}
+                        max={"360"}
                     />
                 </div>
                 <div>
@@ -127,8 +129,8 @@ export const GridMissionOptions = ({
                             }))
                         }
                         type="range"
-                        min={'10'}
-                        max={'90'}
+                        min={"10"}
+                        max={"90"}
                         id="longitudinalRedundancy"
                     />
                 </div>
@@ -145,8 +147,8 @@ export const GridMissionOptions = ({
                             }))
                         }
                         type="range"
-                        min={'10'}
-                        max={'90'}
+                        min={"10"}
+                        max={"90"}
                         id="transverseRedundancy"
                     />
                 </div>
@@ -162,8 +164,8 @@ export const GridMissionOptions = ({
                                 droneAltitude: Number(e.target.value),
                             })
                         }
-                        min={'50'}
-                        max={'500'}
+                        min={"50"}
+                        max={"500"}
                         type="range"
                         id="altitude"
                     />
@@ -172,7 +174,10 @@ export const GridMissionOptions = ({
             <div className="btns">
                 <Button
                     type="button"
-                    onClick={initMissionData}
+                    onClick={() => {
+                        initMissionData();
+                        resetGridMission();
+                    }}
                     className="reset_btn"
                 >
                     <span>초기화</span>
@@ -187,5 +192,5 @@ export const GridMissionOptions = ({
                 </Button>
             </div>
         </GridMissionOptionsWrap>
-    )
-}
+    );
+};

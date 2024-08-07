@@ -1,11 +1,11 @@
-import styled from 'styled-components'
-import theme from '../../styles/theme'
-import { Button } from '../../components/button/Button'
-import { IoClose } from 'react-icons/io5'
-import { useEffect, useRef, useState } from 'react'
-import { CreateStation } from '../../constant/type'
-import { STATION } from '../../constant/http'
-import axios from 'axios'
+import styled from "styled-components";
+import theme from "../../styles/theme";
+import { Button } from "../../components/button/Button";
+import { IoClose } from "react-icons/io5";
+import { useEffect, useRef, useState } from "react";
+import { CreateStation } from "../../constant/type";
+import { STATION } from "../../constant/http";
+import axios from "axios";
 
 const NewStationWrap = styled.section`
     position: absolute;
@@ -22,6 +22,11 @@ const NewStationWrap = styled.section`
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
     z-index: 50;
     color: ${theme.color.white};
+
+    #station_map,
+    #drone_map {
+        box-shadow: 0px 2px 5px rgba(255, 255, 255, 0.12);
+    }
 
     & header {
         display: flex;
@@ -139,11 +144,11 @@ const NewStationWrap = styled.section`
             }
         }
     }
-`
+`;
 
 interface NewStationProps {
-    toggleCreateStation: () => void
-    setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>
+    toggleCreateStation: () => void;
+    setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const NewStation = ({
@@ -151,43 +156,43 @@ export const NewStation = ({
     setIsHttpRequest,
 }: NewStationProps) => {
     const [createData, setCreateData] = useState<CreateStation>({
-        name: 'Untitle Station',
-        latitude: '0',
-        longitude: '0',
+        name: "Untitle Station",
+        latitude: "0",
+        longitude: "0",
         drone: {
-            name: 'm30t',
-            latitude: '0',
-            longitude: '0',
+            name: "m30t",
+            latitude: "0",
+            longitude: "0",
         },
-    })
+    });
 
-    const [stationMap, setStationMap] = useState<naver.maps.Map | null>(null)
-    const [droneMap, setDroneMap] = useState<naver.maps.Map | null>(null)
-    const [isStep, setIsStep] = useState(1)
+    const [stationMap, setStationMap] = useState<naver.maps.Map | null>(null);
+    const [droneMap, setDroneMap] = useState<naver.maps.Map | null>(null);
+    const [isStep, setIsStep] = useState(1);
     const [overlays, setOverlays] = useState<{
-        stationMarker: naver.maps.Marker | null
-        droneMarker: naver.maps.Marker | null
+        stationMarker: naver.maps.Marker | null;
+        droneMarker: naver.maps.Marker | null;
     }>({
         stationMarker: null,
         droneMarker: null,
-    })
+    });
 
-    const stationMapElement = useRef(null)
-    const droneMapElement = useRef(null)
+    const stationMapElement = useRef(null);
+    const droneMapElement = useRef(null);
 
     const stationSetCoords = (stationMap: naver.maps.Map | null) => {
-        if (!stationMap) return
-        let newStationMarker: naver.maps.Marker | null = null
+        if (!stationMap) return;
+        let newStationMarker: naver.maps.Marker | null = null;
 
-        naver.maps.Event.addListener(stationMap, 'click', (e) => {
-            const { _lat, _lng } = e.coord
+        naver.maps.Event.addListener(stationMap, "click", (e) => {
+            const { _lat, _lng } = e.coord;
 
-            console.log(_lat, _lng)
-            console.log(stationMap, droneMap)
+            console.log(_lat, _lng);
+            console.log(stationMap, droneMap);
 
             if (newStationMarker) {
-                newStationMarker.setMap(null)
-                newStationMarker = null
+                newStationMarker.setMap(null);
+                newStationMarker = null;
             }
 
             newStationMarker = new naver.maps.Marker({
@@ -197,34 +202,34 @@ export const NewStation = ({
                     content: `<div class='dock_marker'><span>🚍</span></div>`,
                     anchor: new naver.maps.Point(18, 18),
                 },
-            })
+            });
 
             setOverlays({
                 ...overlays,
                 stationMarker: newStationMarker,
-            })
+            });
 
             setCreateData((station) => ({
                 ...station,
                 latitude: String(_lat),
                 longitude: String(_lng),
-            }))
-        })
-    }
+            }));
+        });
+    };
 
     const droneSetCoords = (droneMap: naver.maps.Map | null) => {
-        if (!droneMap) return
-        let newDroneMarker: naver.maps.Marker | null = null
+        if (!droneMap) return;
+        let newDroneMarker: naver.maps.Marker | null = null;
 
-        naver.maps.Event.addListener(droneMap, 'click', (e) => {
-            const { _lat, _lng } = e.coord
+        naver.maps.Event.addListener(droneMap, "click", (e) => {
+            const { _lat, _lng } = e.coord;
 
-            console.log(_lat, _lng)
-            console.log(stationMap, droneMap)
+            console.log(_lat, _lng);
+            console.log(stationMap, droneMap);
 
             if (newDroneMarker) {
-                newDroneMarker.setMap(null)
-                newDroneMarker = null
+                newDroneMarker.setMap(null);
+                newDroneMarker = null;
             }
 
             newDroneMarker = new naver.maps.Marker({
@@ -234,12 +239,12 @@ export const NewStation = ({
                     content: `<div class='drone_marker'><span>🛸</span></div>`,
                     anchor: new naver.maps.Point(16, 16),
                 },
-            })
+            });
 
             setOverlays((prevOverlays) => ({
                 ...prevOverlays,
                 droneMarker: newDroneMarker,
-            }))
+            }));
 
             setCreateData((data) => ({
                 ...data,
@@ -248,27 +253,27 @@ export const NewStation = ({
                     latitude: String(_lat),
                     longitude: String(_lng),
                 },
-            }))
-        })
-    }
+            }));
+        });
+    };
 
     const createStation = async () => {
         if (
-            createData.name === '' ||
-            createData.latitude === '0' ||
-            createData.longitude === '0'
+            createData.name === "" ||
+            createData.latitude === "0" ||
+            createData.longitude === "0"
         ) {
-            alert('스테이션 정보를 입력해 주세요.')
-            return
+            alert("스테이션 정보를 입력해 주세요.");
+            return;
         }
 
         if (
-            createData.drone.name === '' ||
-            createData.drone.latitude === '0' ||
-            createData.drone.longitude === '0'
+            createData.drone.name === "" ||
+            createData.drone.latitude === "0" ||
+            createData.drone.longitude === "0"
         ) {
-            alert('드론 정보를 입력해 주세요.')
-            return
+            alert("드론 정보를 입력해 주세요.");
+            return;
         }
 
         try {
@@ -281,96 +286,96 @@ export const NewStation = ({
                     latitude: Number(createData.drone.latitude),
                     longitude: Number(createData.drone.longitude),
                 },
-            }
+            };
 
             const response = await axios.post(STATION, params, {
                 withCredentials: true,
-            })
-            const data = await response.data
-            console.log(data)
+            });
+            const data = await response.data;
+            console.log(data);
 
             if (overlays.droneMarker) {
-                overlays.droneMarker.setMap(null)
+                overlays.droneMarker.setMap(null);
             }
 
             if (overlays.droneMarker) {
-                overlays.droneMarker.setMap(null)
+                overlays.droneMarker.setMap(null);
             }
 
             setOverlays({
                 stationMarker: null,
                 droneMarker: null,
-            })
-            setIsHttpRequest((prev) => !prev)
-            resetToggleStation()
+            });
+            setIsHttpRequest((prev) => !prev);
+            resetToggleStation();
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
-    }
+    };
 
     const resetToggleStation = () => {
-        toggleCreateStation()
+        toggleCreateStation();
         setCreateData({
-            name: '',
-            latitude: '0',
-            longitude: '0',
+            name: "",
+            latitude: "0",
+            longitude: "0",
             drone: {
-                name: '',
-                latitude: '0',
-                longitude: '0',
+                name: "",
+                latitude: "0",
+                longitude: "0",
             },
-        })
-    }
+        });
+    };
 
     const nextStep = () => {
-        if (createData.latitude !== '0' && createData.longitude !== '0') {
-            setIsStep(2)
+        if (createData.latitude !== "0" && createData.longitude !== "0") {
+            setIsStep(2);
         } else {
-            alert('위 / 경도 값을 지도에서 선택 해주세요!')
+            alert("위 / 경도 값을 지도에서 선택 해주세요!");
         }
-    }
+    };
 
     useEffect(() => {
         if (isStep === 1 && stationMapElement.current) {
-            const location = new naver.maps.LatLng(35.8774, 128.6107)
+            const location = new naver.maps.LatLng(35.8774, 128.6107);
             const mapOptions = {
                 center: location,
                 zoom: 17,
                 zoomControl: false,
                 mapDataControl: false,
                 scaleControl: false,
-            }
+            };
 
             const map = new naver.maps.Map(
                 stationMapElement.current,
-                mapOptions
-            )
-            setStationMap(map)
-            stationSetCoords(map)
+                mapOptions,
+            );
+            setStationMap(map);
+            stationSetCoords(map);
         }
 
         if (isStep === 2 && droneMapElement.current) {
-            const location = new naver.maps.LatLng(35.8774, 128.6107)
+            const location = new naver.maps.LatLng(35.8774, 128.6107);
             const mapOptions = {
                 center: location,
                 zoom: 17,
                 zoomControl: false,
                 mapDataControl: false,
                 scaleControl: false,
-            }
+            };
 
-            const map = new naver.maps.Map(droneMapElement.current, mapOptions)
-            setDroneMap(map)
-            droneSetCoords(map)
+            const map = new naver.maps.Map(droneMapElement.current, mapOptions);
+            setDroneMap(map);
+            droneSetCoords(map);
         }
-    }, [isStep])
+    }, [isStep]);
 
     return (
         <>
             <NewStationWrap>
                 <header>
                     <h1>스테이션 추가</h1>
-                    <Button type={'button'} onClick={toggleCreateStation}>
+                    <Button type={"button"} onClick={toggleCreateStation}>
                         <IoClose />
                     </Button>
                 </header>
@@ -384,12 +389,12 @@ export const NewStation = ({
                                         스테이션명
                                     </label>
                                     <input
-                                        type={'text'}
+                                        type={"text"}
                                         value={createData.name}
                                         autoComplete="off"
                                         id="create_name"
                                         onChange={(
-                                            e: React.ChangeEvent<HTMLInputElement>
+                                            e: React.ChangeEvent<HTMLInputElement>,
                                         ) =>
                                             setCreateData((prev) => ({
                                                 ...prev,
@@ -409,11 +414,11 @@ export const NewStation = ({
                                                 위도
                                             </label>
                                             <input
-                                                type={'text'}
+                                                type={"text"}
                                                 value={createData.latitude}
                                                 id="station_latitude"
                                                 onChange={(
-                                                    e: React.ChangeEvent<HTMLInputElement>
+                                                    e: React.ChangeEvent<HTMLInputElement>,
                                                 ) =>
                                                     setCreateData((prev) => ({
                                                         ...prev,
@@ -428,11 +433,11 @@ export const NewStation = ({
                                                 경도
                                             </label>
                                             <input
-                                                type={'text'}
+                                                type={"text"}
                                                 value={createData.longitude}
                                                 id="station_longitude"
                                                 onChange={(
-                                                    e: React.ChangeEvent<HTMLInputElement>
+                                                    e: React.ChangeEvent<HTMLInputElement>,
                                                 ) =>
                                                     setCreateData((prev) => ({
                                                         ...prev,
@@ -448,8 +453,8 @@ export const NewStation = ({
                                                 className="map"
                                                 ref={stationMapElement}
                                                 style={{
-                                                    width: '100%',
-                                                    height: '250px',
+                                                    width: "100%",
+                                                    height: "250px",
                                                 }}
                                             ></div>
                                         </div>
@@ -470,11 +475,11 @@ export const NewStation = ({
                                             드론명
                                         </label>
                                         <input
-                                            type={'text'}
+                                            type={"text"}
                                             value={createData.drone.name}
                                             id="drone_name"
                                             onChange={(
-                                                e: React.ChangeEvent<HTMLInputElement>
+                                                e: React.ChangeEvent<HTMLInputElement>,
                                             ) =>
                                                 setCreateData((prev) => ({
                                                     ...prev,
@@ -491,11 +496,11 @@ export const NewStation = ({
                                             드론위도
                                         </label>
                                         <input
-                                            type={'text'}
+                                            type={"text"}
                                             value={createData.drone.latitude}
                                             id="drone_latitude"
                                             onChange={(
-                                                e: React.ChangeEvent<HTMLInputElement>
+                                                e: React.ChangeEvent<HTMLInputElement>,
                                             ) =>
                                                 setCreateData((prev) => ({
                                                     ...prev,
@@ -513,11 +518,11 @@ export const NewStation = ({
                                             드론경도
                                         </label>
                                         <input
-                                            type={'text'}
+                                            type={"text"}
                                             value={createData.drone.longitude}
                                             id="drone_longitude"
                                             onChange={(
-                                                e: React.ChangeEvent<HTMLInputElement>
+                                                e: React.ChangeEvent<HTMLInputElement>,
                                             ) =>
                                                 setCreateData((prev) => ({
                                                     ...prev,
@@ -536,8 +541,8 @@ export const NewStation = ({
                                             className="map"
                                             ref={droneMapElement}
                                             style={{
-                                                width: '100%',
-                                                height: '250px',
+                                                width: "100%",
+                                                height: "250px",
                                             }}
                                         ></div>
                                     </div>
@@ -550,12 +555,12 @@ export const NewStation = ({
                         {isStep === 1 && (
                             <>
                                 <Button
-                                    type={'button'}
+                                    type={"button"}
                                     onClick={resetToggleStation}
                                 >
                                     취소
                                 </Button>
-                                <Button type={'button'} onClick={nextStep}>
+                                <Button type={"button"} onClick={nextStep}>
                                     다음
                                 </Button>
                             </>
@@ -563,20 +568,20 @@ export const NewStation = ({
                         {isStep === 2 && (
                             <>
                                 <Button
-                                    type={'button'}
+                                    type={"button"}
                                     onClick={() => {
                                         setCreateData((prevData) => ({
                                             ...prevData,
-                                            latitude: '0',
-                                            longitude: '0',
-                                        }))
+                                            latitude: "0",
+                                            longitude: "0",
+                                        }));
 
-                                        setIsStep(1)
+                                        setIsStep(1);
                                     }}
                                 >
                                     이전
                                 </Button>
-                                <Button type={'button'} onClick={createStation}>
+                                <Button type={"button"} onClick={createStation}>
                                     생성
                                 </Button>
                             </>
@@ -587,5 +592,5 @@ export const NewStation = ({
 
             <div className="global_wrap"></div>
         </>
-    )
-}
+    );
+};

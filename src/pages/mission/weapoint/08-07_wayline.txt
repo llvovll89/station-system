@@ -37,21 +37,11 @@ export const WaypPointMission = ({
     const [wayLines, setWayLines] = useState<naver.maps.LatLng[]>([]);
     const [isRunning, setIsRunning] = useState(false);
     const [distance, setDistance] = useState(0);
-    const [overlays, setOverlays] = useState({
-        wayLine: null as naver.maps.Polyline | null,
-        guideLine: null as naver.maps.Polyline | null,
-        mainiPoints: [] as naver.maps.LatLng[],
-        markers: [] as naver.maps.Marker[],
-    });
 
     let pointsMarkers: naver.maps.Marker[] = [];
     let polyLine: naver.maps.Polyline | null = null;
     let guideLine: naver.maps.Polyline | null = null;
     let mainPoint: naver.maps.LatLng[] = [];
-
-    let createGuideLineListener: any = null;
-    let setWayPointListener: any = null;
-    let endWayPointMissionListener: any = null;
 
     const resetData = () => {
         if (isRunning) {
@@ -59,20 +49,21 @@ export const WaypPointMission = ({
             return;
         }
 
-        overlays.wayLine && overlays.wayLine.setMap(null);
-        overlays.guideLine && overlays.guideLine.setMap(null);
-        overlays.markers.forEach((m) => m.setMap(null));
+        if (pointsMarkers.length > 0) {
+            pointsMarkers.forEach((m) => m.setMap(null));
+            pointsMarkers = [];
+        }
 
-        setOverlays({
-            wayLine: null,
-            guideLine: null,
-            mainiPoints: [],
-            markers: [],
-        });
+        if (polyLine) {
+            polyLine.setMap(null);
+            polyLine = null;
+        }
 
-        pointsMarkers = [];
-        polyLine = null;
-        guideLine = null;
+        if (guideLine) {
+            guideLine.setMap(null);
+            guideLine = null;
+        }
+
         mainPoint = [];
 
         setWayLines([]);
@@ -96,7 +87,7 @@ export const WaypPointMission = ({
             setIsRunning(true);
 
             const waypoints: naver.maps.LatLng[] = [];
-            setWayPointListener = naver.maps.Event.addListener(
+            const setWayPoint = naver.maps.Event.addListener(
                 map,
                 "click",
                 (e: { coord: naver.maps.LatLng }) => {
@@ -111,12 +102,6 @@ export const WaypPointMission = ({
                     });
 
                     mainPoint.push(e.coord);
-
-                    setOverlays((prev) => ({
-                        ...prev,
-                        wayLine: polyLine,
-                        mainiPoints: [...prev.mainiPoints, e.coord],
-                    }));
                     setWayLines((prev) => [...prev, e.coord]);
 
                     setMissionData((prev) => ({
@@ -155,15 +140,11 @@ export const WaypPointMission = ({
                     });
 
                     pointsMarkers.push(marker);
-                    setOverlays((prev) => ({
-                        ...prev,
-                        markers: [...prev.markers, marker],
-                    }));
                     dragResize(pointsMarkers, marker);
                     setDistance(polyLine.getDistance());
                     deletePoint(marker, pointsMarkers);
 
-                    createGuideLineListener = naver.maps.Event.addListener(
+                    const createGuideLine = naver.maps.Event.addListener(
                         map,
                         "mousemove",
                         (e: { coord: naver.maps.LatLng }) => {
@@ -185,39 +166,24 @@ export const WaypPointMission = ({
                                 strokeStyle: [4, 4],
                                 strokeOpacity: 0.7,
                             });
-
-                            setOverlays((prev) => ({
-                                ...prev,
-                                guideLine: guideLine,
-                            }));
-
-                            console.log("guideLine move");
                         },
                     );
 
-                    endWayPointMissionListener = naver.maps.Event.addListener(
+                    const endWayPointMission = naver.maps.Event.addListener(
                         pointsMarkers[pointsMarkers.length - 1],
                         "click",
                         () => {
-                            overlays.guideLine &&
-                                overlays.guideLine.setMap(null);
+                            if (guideLine) {
+                                guideLine.setMap(null);
+                                guideLine = null;
+                            }
 
-                            guideLine?.setMap(null);
-                            guideLine = null;
-
-                            console.log("click");
-
-                            naver.maps.Event.removeListener(
-                                createGuideLineListener,
-                            );
-                            naver.maps.Event.removeListener(
-                                setWayPointListener,
-                            );
-                            naver.maps.Event.removeListener(
-                                endWayPointMissionListener,
-                            );
-
+                            naver.maps.Event.removeListener(createGuideLine);
+                            naver.maps.Event.removeListener(setWayPoint);
                             setIsRunning(false);
+                            console.log("createGuideLine", createGuideLine);
+
+                            naver.maps.Event.removeListener(endWayPointMission);
                         },
                     );
                 },
@@ -245,8 +211,15 @@ export const WaypPointMission = ({
 
                 if (index !== -1) {
                     marker.setMap(null);
+                    // mainPointsRef.current.splice(index, 1);
                     mainPoint.splice(index, 1);
                     wayLines.splice(index, 1);
+
+                    // if (polylineRef.current) {
+                    //     polylineRef.current.setPath(mainPointsRef.current);
+                    //     setDistance(polylineRef.current.getDistance());
+                    // }
+
                     polyLine?.setPath(mainPoint);
                     if (polyLine) setDistance(polyLine.getDistance());
 
@@ -271,7 +244,7 @@ export const WaypPointMission = ({
         markers: naver.maps.Marker[],
         marker: naver.maps.Marker,
     ) => {
-        naver.maps.Event.addListener(
+        const resizeEvent = naver.maps.Event.addListener(
             marker,
             "drag",
             (e: { coord: naver.maps.LatLng }) => {
@@ -283,8 +256,10 @@ export const WaypPointMission = ({
                         polyLine.setMap(null);
                     }
 
+                    // 주요 포인트 업데이트
                     mainPoint[index] = e.coord;
 
+                    // 새 폴리라인 생성
                     polyLine = new naver.maps.Polyline({
                         map: map ? map : undefined,
                         path: mainPoint,
@@ -292,6 +267,9 @@ export const WaypPointMission = ({
                         strokeOpacity: 1,
                         strokeWeight: 5,
                     });
+
+                    // polyLine?.setPath(mainPoint);
+                    // if (polyLine) setDistance(polyLine.getDistance());
 
                     setMissionData((prev) => {
                         const updatedPoints = [...prev.points];
@@ -315,6 +293,8 @@ export const WaypPointMission = ({
                         };
                     });
                 }
+
+                console.log(resizeEvent);
             },
         );
     };
