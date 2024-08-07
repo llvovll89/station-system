@@ -1,19 +1,19 @@
-import { MissionWrap } from './MissionStyle'
+import { MissionWrap } from "./MissionStyle";
 // import { Button } from '../../components/button/Button'
 // import { VscGitPullRequestCreate } from 'react-icons/vsc'
-import { WaypPointMission } from './weapoint/WayPointMission'
-import { GridMission } from './grid/GridMission'
-import { MissionList } from './list/MissionList'
-import { useState } from 'react'
-import { MissionDto } from '../../dto/MissionDto'
-import { NewMission } from './NewMission'
+import { WaypPointMission } from "./weapoint/WayPointMission";
+import { GridMission } from "./grid/GridMission";
+import { MissionList } from "./list/MissionList";
+import { useState } from "react";
+import { MissionDto } from "../../dto/MissionDto";
+import { NewMission } from "./NewMission";
 // import { MissionType } from '../../constant/type'
 
 interface MissionProps {
-    toggleMission: () => void
-    map: naver.maps.Map | null
-    setIsActive: React.Dispatch<React.SetStateAction<string>>
-    isActive: string
+    toggleMission: () => void;
+    map: naver.maps.Map | null;
+    setIsActive: React.Dispatch<React.SetStateAction<string>>;
+    isActive: string;
 }
 
 export const Mission = ({
@@ -22,15 +22,15 @@ export const Mission = ({
     setIsActive,
     isActive,
 }: MissionProps) => {
-    const [isCreateMission, setIsCreateMission] = useState(false)
-    const [isHttpRequest, setIsHttpRequest] = useState(false)
+    const [isCreateMission, setIsCreateMission] = useState(false);
+    const [isHttpRequest, setIsHttpRequest] = useState(false);
     const [isRunningMission, setIsRunningMission] = useState({
         waypoint: false,
         grid: false,
         isStart: false,
-    })
+    });
     const [missionData, setMissionData] = useState<MissionDto>({
-        name: '',
+        name: "",
         type: 0,
         seq: 0,
         mainPoint: {
@@ -43,15 +43,15 @@ export const Mission = ({
         transverseRedundancy: 70,
         longitudinalRedundancy: 70,
         angle: 36,
-    })
+    });
 
     const toggleCreateMission = () => {
-        setIsCreateMission((prev) => !prev)
-    }
+        setIsCreateMission((prev) => !prev);
+    };
 
     const initMissionData = () => {
         setMissionData({
-            name: '',
+            name: "",
             type: 0,
             seq: 0,
             mainPoint: {
@@ -64,8 +64,8 @@ export const Mission = ({
             transverseRedundancy: 70,
             longitudinalRedundancy: 70,
             angle: 36,
-        })
-    }
+        });
+    };
 
     // const [activeMission, setActiveMission] = useState<
     //     null | 'waypoint' | 'grid'
@@ -132,5 +132,5 @@ export const Mission = ({
                 />
             )}
         </MissionWrap>
-    )
-}
+    );
+};

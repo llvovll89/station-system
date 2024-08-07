@@ -1,32 +1,30 @@
-import { Button } from '../../../components/button/Button'
-import { IoClose, IoCreateOutline } from 'react-icons/io5'
-import { useEffect, useState } from 'react'
-import { MissionDto } from '../../../dto/MissionDto'
-import { MissionListWrap } from './MissionListStyle'
-import axios from 'axios'
+import { Button } from "../../../components/button/Button";
+import { IoClose, IoCreateOutline } from "react-icons/io5";
+import { useEffect, useState } from "react";
+import { MissionDto } from "../../../dto/MissionDto";
+import { MissionListWrap } from "./MissionListStyle";
+import axios from "axios";
 
-import DeleteIcon from '../../../assets/image/icon/ico_trash(w).png'
-import DeleteWhiteIcon from '../../../assets/image/icon/ico_edit(w).png'
-import UpdateIcon from '../../../assets/image/icon/ico_edit(w).png'
-import UpdateWhiteIcon from '../../../assets/image/icon/ico_edit(w).png'
-import { getMissions } from '../../../util/requestHttp'
-import { MISSION } from '../../../constant/http'
+import DeleteIcon from "../../../assets/image/icon/ico_trash(w).png";
+import UpdateIcon from "../../../assets/image/icon/ico_edit(w).png";
+import { getMissions } from "../../../util/requestHttp";
+import { MISSION } from "../../../constant/http";
 
 interface MissionListProps {
-    toggleMission: () => void
-    map: naver.maps.Map | null
-    isActive: string
-    setIsActive: React.Dispatch<React.SetStateAction<string>>
-    isCreateMission: boolean
-    isHttpRequest: boolean
-    setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>
-    toggleCreateMission: () => void
+    toggleMission: () => void;
+    map: naver.maps.Map | null;
+    isActive: string;
+    setIsActive: React.Dispatch<React.SetStateAction<string>>;
+    isCreateMission: boolean;
+    isHttpRequest: boolean;
+    setIsHttpRequest: React.Dispatch<React.SetStateAction<boolean>>;
+    toggleCreateMission: () => void;
     isRunningMission: {
-        waypoint: boolean
-        grid: boolean
-        isStart: boolean
-    }
-    initMissionData: () => void
+        waypoint: boolean;
+        grid: boolean;
+        isStart: boolean;
+    };
+    initMissionData: () => void;
 }
 
 export const MissionList = ({
@@ -40,84 +38,84 @@ export const MissionList = ({
     initMissionData,
     isActive,
 }: MissionListProps) => {
-    const [missions, setMissions] = useState<MissionDto[]>([])
-    const [selectMission, setSelectMission] = useState<null | MissionDto>(null)
+    const [missions, setMissions] = useState<MissionDto[]>([]);
+    const [selectMission, setSelectMission] = useState<null | MissionDto>(null);
     const [overlayData, setOverlayData] = useState({
-        distance: '',
-        areaSize: '',
-    })
-    const [isUpdateMission, setIsUpdateMission] = useState(false)
-    const [isSelectInfo, setIsSelectInfo] = useState(false)
-    const [currentMapElements, setCurrentMapElements] = useState<any[]>([])
+        distance: "",
+        areaSize: "",
+    });
+    const [isUpdateMission, setIsUpdateMission] = useState(false);
+    const [isSelectInfo, setIsSelectInfo] = useState(false);
+    const [currentMapElements, setCurrentMapElements] = useState<any[]>([]);
     const [infoMission, setInfoMission] = useState<MissionDto>({
         seq: 0,
-        name: '',
+        name: "",
         type: 0,
         mainPoint: {
             latitude: 0,
             longitude: 0,
             height: 100,
         },
-        createdAt: '',
-        updatedAt: '',
+        createdAt: "",
+        updatedAt: "",
         points: [],
         ways: [],
-    })
+    });
 
     const closeMissionList = () => {
-        clearMapElements()
-        setIsActive('')
-        toggleMission()
-        initMissionData()
-    }
+        clearMapElements();
+        setIsActive("");
+        toggleMission();
+        initMissionData();
+    };
 
     const updateModal = (e: React.MouseEvent, mission: MissionDto) => {
-        e.stopPropagation()
+        e.stopPropagation();
 
-        getInfoMission(mission)
-        setIsUpdateMission((prev) => !prev)
-    }
+        getInfoMission(mission);
+        setIsUpdateMission((prev) => !prev);
+    };
 
     const clearMapElements = () => {
         currentMapElements.forEach((element) => {
-            console.log('element', element)
-            element.setMap(null)
-        })
+            console.log("element", element);
+            element.setMap(null);
+        });
 
         setCurrentMapElements((prev) => {
-            prev.forEach((el) => el.setMap(null))
-            return []
-        })
+            prev.forEach((el) => el.setMap(null));
+            return [];
+        });
 
         setOverlayData({
             ...overlayData,
-            distance: '',
-            areaSize: '',
-        })
-    }
+            distance: "",
+            areaSize: "",
+        });
+    };
 
     const getInfoMission = async (mission: MissionDto) => {
         if (selectMission && mission.seq === selectMission.seq) {
-            setSelectMission(null)
-            setIsSelectInfo(false)
-            clearMapElements()
+            setSelectMission(null);
+            setIsSelectInfo(false);
+            clearMapElements();
 
             if (isUpdateMission) {
-                setIsUpdateMission(false)
+                setIsUpdateMission(false);
             }
         } else {
             if (isUpdateMission) {
-                setIsUpdateMission(false)
+                setIsUpdateMission(false);
             }
 
-            setSelectMission(mission)
+            setSelectMission(mission);
 
             try {
-                const { seq } = mission
+                const { seq } = mission;
                 const response = await axios.get(`${MISSION}/${seq}`, {
                     withCredentials: true,
-                })
-                const data = await response.data
+                });
+                const data = await response.data;
 
                 setInfoMission({
                     ...infoMission,
@@ -131,34 +129,34 @@ export const MissionList = ({
                     longitudinalRedundancy: data.longitudinalRedundancy,
                     points: data.points,
                     ways: data.ways,
-                })
+                });
 
-                setIsSelectInfo(true)
+                setIsSelectInfo(true);
             } catch (err) {
-                console.log(err)
+                console.log(err);
             }
         }
-    }
+    };
 
     const setInfoDataForMap = () => {
-        clearMapElements()
+        clearMapElements();
 
         if (infoMission.type === 0) {
             const polyline = new naver.maps.Polyline({
                 map: map ? map : undefined,
                 path: infoMission.ways.map(
-                    (p) => new naver.maps.LatLng(p.latitude, p.longitude)
+                    (p) => new naver.maps.LatLng(p.latitude, p.longitude),
                 ),
-                strokeColor: '#2eb573',
+                strokeColor: "#2eb573",
                 strokeOpacity: 1,
                 strokeWeight: 4,
-                strokeStyle: 'solid',
-            })
+                strokeStyle: "solid",
+            });
 
             setOverlayData({
                 ...overlayData,
                 distance: polyline.getDistance().toFixed(2),
-            })
+            });
 
             const markers = infoMission.ways.map(
                 (p, index) =>
@@ -166,154 +164,150 @@ export const MissionList = ({
                         map: map ? map : undefined,
                         position: new naver.maps.LatLng(
                             p.latitude,
-                            p.longitude
+                            p.longitude,
                         ),
                         icon: {
                             content: `<div class='wayline_marker'>${index + 1}</div>`,
                             anchor: new naver.maps.Point(12, 12),
                         },
-                    })
-            )
+                    }),
+            );
 
-            map && map.fitBounds(polyline.getBounds())
-            setCurrentMapElements([polyline, ...markers])
-            console.log(polyline)
+            map && map.fitBounds(polyline.getBounds());
+            setCurrentMapElements([polyline, ...markers]);
         } else {
-            const mainPoints: naver.maps.Marker[] = []
+            const mainPoints: naver.maps.Marker[] = [];
             infoMission.points.forEach((p) => {
                 mainPoints.push(
                     new naver.maps.Marker({
                         map: map ? map : undefined,
                         position: new naver.maps.LatLng(
                             p.latitude,
-                            p.longitude
+                            p.longitude,
                         ),
                         icon: {
                             content: `<div class='wayline_marker'></div>`,
                             anchor: new naver.maps.Point(12, 12),
                         },
-                    })
-                )
-            })
-
-            console.log('mainPoints', mainPoints)
-            console.log('points', infoMission.points)
+                    }),
+                );
+            });
 
             const polygon = new naver.maps.Polygon({
                 map: map ? map : undefined,
                 paths: [
                     infoMission.points.map(
-                        (p) => new naver.maps.LatLng(p.latitude, p.longitude)
+                        (p) => new naver.maps.LatLng(p.latitude, p.longitude),
                     ),
                 ],
-                strokeColor: '#0080DE',
+                strokeColor: "#0080DE",
                 strokeOpacity: 1,
                 strokeWeight: 4,
-                fillColor: '#fefefe',
-                fillOpacity: 0.6,
-            })
+                fillColor: "#0080DE",
+                fillOpacity: 0.1,
+            });
 
             const polyline = new naver.maps.Polyline({
                 map: map ? map : undefined,
                 path: infoMission.ways.map(
-                    (p) => new naver.maps.LatLng(p.latitude, p.longitude)
+                    (p) => new naver.maps.LatLng(p.latitude, p.longitude),
                 ),
-                strokeColor: '#2eb573',
+                strokeColor: "#2eb573",
                 strokeOpacity: 1,
                 strokeWeight: 4,
-                strokeStyle: 'solid',
-            })
+                strokeStyle: "solid",
+            });
 
             setOverlayData({
                 ...overlayData,
                 areaSize: polygon.getAreaSize().toFixed(2),
                 distance: polyline.getDistance().toFixed(2),
-            })
+            });
 
-            map && map.fitBounds(polygon.getBounds())
+            map && map.fitBounds(polygon.getBounds());
 
-            console.log(polygon, polyline)
-            setCurrentMapElements([...mainPoints, polygon, polyline])
+            console.log(polygon, polyline);
+            setCurrentMapElements([...mainPoints, polygon, polyline]);
         }
-    }
+    };
 
     const deleteMission = async (mission: MissionDto, e: React.MouseEvent) => {
-        e.stopPropagation()
-        const deleteAlert = confirm('정말 삭제 하시겠습니까?')
+        e.stopPropagation();
+        const deleteAlert = confirm("정말 삭제 하시겠습니까?");
 
         if (deleteAlert) {
             try {
-                const { seq } = mission
+                const { seq } = mission;
                 const response = await axios.delete(`${MISSION}/${seq}`, {
                     withCredentials: true,
-                })
-                const data = await response.data
-                console.log(data)
-                clearMapElements()
-                setIsHttpRequest((prev) => !prev)
+                });
+                const data = await response.data;
+                console.log(data);
+                clearMapElements();
+                setIsHttpRequest((prev) => !prev);
             } catch (err) {
-                console.log(err)
+                console.log(err);
             }
         } else {
-            return
+            return;
         }
-    }
+    };
 
     const updeateMission = async (infoMission: MissionDto) => {
         try {
-            const { seq } = infoMission
+            const { seq } = infoMission;
             const response = await axios.put(`${MISSION}/${seq}`, infoMission, {
                 withCredentials: true,
-            })
+            });
 
-            console.log(response.data)
-            setIsUpdateMission((prev) => !prev)
-            setIsHttpRequest((prev) => !prev)
+            console.log(response.data);
+            setIsUpdateMission((prev) => !prev);
+            setIsHttpRequest((prev) => !prev);
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
-    }
+    };
 
     const formatDateString = (dateString: any) => {
-        return dateString.replace('T', ' ')
-    }
+        return dateString.replace("T", " ");
+    };
 
     useEffect(() => {
         const fetchMissions = async () => {
-            const data = await getMissions()
-            setMissions(data)
-            setIsHttpRequest(false)
-        }
+            const data = await getMissions();
+            setMissions(data);
+            setIsHttpRequest(false);
+        };
 
-        fetchMissions()
-    }, [isHttpRequest])
+        fetchMissions();
+    }, [isHttpRequest]);
 
     useEffect(() => {
         if (isSelectInfo) {
-            setInfoDataForMap()
+            setInfoDataForMap();
         }
-    }, [infoMission])
+    }, [infoMission]);
 
     useEffect(() => {
         if (isCreateMission) {
-            clearMapElements()
-            setIsUpdateMission(false)
-            setIsSelectInfo(false)
-            setSelectMission(null)
+            clearMapElements();
+            setIsUpdateMission(false);
+            setIsSelectInfo(false);
+            setSelectMission(null);
         }
-    }, [isCreateMission])
+    }, [isCreateMission]);
 
     useEffect(() => {
         return () => {
-            console.log('unmount missionList')
-            clearMapElements()
-        }
-    }, [])
+            console.log("unmount missionList");
+            clearMapElements();
+        };
+    }, []);
 
     useEffect(() => {
-        clearMapElements()
-        initMissionData()
-    }, [isActive])
+        clearMapElements();
+        initMissionData();
+    }, [isActive]);
 
     return (
         <MissionListWrap>
@@ -321,14 +315,14 @@ export const MissionList = ({
                 <h1>미션</h1>
 
                 <div className="header_btn">
-                    <Button type={'button'} onClick={toggleCreateMission}>
+                    <Button type={"button"} onClick={toggleCreateMission}>
                         <IoCreateOutline
-                            style={{ width: '24PX', height: '24px' }}
+                            style={{ width: "24PX", height: "24px" }}
                         />
                     </Button>
 
-                    <Button type={'button'} onClick={closeMissionList}>
-                        <IoClose style={{ width: '24px', height: '24px' }} />
+                    <Button type={"button"} onClick={closeMissionList}>
+                        <IoClose style={{ width: "24px", height: "24px" }} />
                     </Button>
                 </div>
             </header>
@@ -338,11 +332,11 @@ export const MissionList = ({
                     {missions.length > 0 &&
                         missions.map((mission) => (
                             <ul
-                                className={`mission ${selectMission && selectMission.seq === mission.seq ? 'active' : ''}`}
+                                className={`mission ${selectMission && selectMission.seq === mission.seq ? "active" : ""}`}
                                 key={mission.seq}
                                 onClick={() => getInfoMission(mission)}
                             >
-                                <header>
+                                <header className="mission_header">
                                     <p className="mission_name">
                                         {mission.name}
                                     </p>
@@ -353,52 +347,28 @@ export const MissionList = ({
                                                 updateModal(e, mission)
                                             }
                                         >
-                                            {selectMission?.seq ===
-                                            mission.seq ? (
-                                                <img
-                                                    src={UpdateWhiteIcon}
-                                                    alt="update"
-                                                    style={{
-                                                        width: '16px',
-                                                        height: '16px',
-                                                    }}
-                                                />
-                                            ) : (
-                                                <img
-                                                    src={UpdateIcon}
-                                                    alt="update"
-                                                    style={{
-                                                        width: '16px',
-                                                        height: '16px',
-                                                    }}
-                                                />
-                                            )}
+                                            <img
+                                                src={UpdateIcon}
+                                                alt="update"
+                                                style={{
+                                                    width: "16px",
+                                                    height: "16px",
+                                                }}
+                                            />
                                         </button>
                                         <button
                                             onClick={(e) =>
                                                 deleteMission(mission, e)
                                             }
                                         >
-                                            {selectMission?.seq ===
-                                            mission.seq ? (
-                                                <img
-                                                    src={DeleteWhiteIcon}
-                                                    alt="update"
-                                                    style={{
-                                                        width: '20px',
-                                                        height: '20xp',
-                                                    }}
-                                                />
-                                            ) : (
-                                                <img
-                                                    src={DeleteIcon}
-                                                    alt="update"
-                                                    style={{
-                                                        width: '20px',
-                                                        height: '20xp',
-                                                    }}
-                                                />
-                                            )}
+                                            <img
+                                                src={DeleteIcon}
+                                                alt="update"
+                                                style={{
+                                                    width: "20px",
+                                                    height: "20xp",
+                                                }}
+                                            />
                                         </button>
                                     </div>
                                 </header>
@@ -408,8 +378,8 @@ export const MissionList = ({
                                         <span>타입</span>
                                         <span>
                                             {mission.type === 0
-                                                ? '웨이포인트'
-                                                : '그리드'}
+                                                ? "웨이포인트"
+                                                : "그리드"}
                                         </span>
                                     </div>
 
@@ -418,7 +388,7 @@ export const MissionList = ({
                                             <span>createdAt: </span>
                                             <span>
                                                 {formatDateString(
-                                                    mission.createdAt
+                                                    mission.createdAt,
                                                 )}
                                             </span>
                                         </div>
@@ -426,7 +396,7 @@ export const MissionList = ({
                                             <span>updatedAt: </span>
                                             <span>
                                                 {formatDateString(
-                                                    mission.updatedAt
+                                                    mission.updatedAt,
                                                 )}
                                             </span>
                                         </div>
@@ -445,8 +415,8 @@ export const MissionList = ({
                             <span className="mission_type">
                                 (
                                 {infoMission.type === 0
-                                    ? '웨이포인트'
-                                    : '그리드'}
+                                    ? "웨이포인트"
+                                    : "그리드"}
                                 )
                             </span>
                         </div>
@@ -544,5 +514,5 @@ export const MissionList = ({
                 </article>
             )}
         </MissionListWrap>
-    )
-}
+    );
+};

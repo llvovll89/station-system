@@ -1,6 +1,6 @@
-import { createGlobalStyle } from 'styled-components'
-import PretendardRegular from '../assets/fonts/Pretendard-Regular.woff2'
-import reset from 'styled-reset'
+import { createGlobalStyle } from "styled-components";
+import PretendardRegular from "../assets/fonts/Pretendard-Regular.woff2";
+import reset from "styled-reset";
 
 export const GlobalStyles = createGlobalStyle`
     ${reset}
@@ -67,10 +67,32 @@ export const GlobalStyles = createGlobalStyle`
         }
     }
 
+    section, div, article, ul {
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(16, 33, 22, 0.1);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #333131;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(41, 45, 45, 0.5);
+    }
+  }
+
     input, button, textarea, select {
         outline: none;
         border: none;
         background-color: transparent;
     }
     
-`
+    button {
+        cursor: pointer;
+    }
+`;

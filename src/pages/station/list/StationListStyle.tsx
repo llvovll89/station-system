@@ -1,5 +1,5 @@
-import { styled } from 'styled-components'
-import theme from '../../../styles/theme'
+import { styled } from "styled-components";
+import theme from "../../../styles/theme";
 
 export const StationWrap = styled.section`
     width: 400px;
@@ -37,6 +37,20 @@ export const StationWrap = styled.section`
         gap: 0.8rem;
         padding: 0.8rem 1rem;
 
+        &::-webkit-scrollbar-track {
+            background: rgba(16, 33, 22, 0.1);
+        }
+
+        &::-webkit-scrollbar-thumb {
+            height: 30%;
+            background: #333131;
+            opacity: 0.5;
+            border-radius: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(41, 45, 45, 0.1);
+        }
+
         .content {
             padding: 0.5rem 0.7rem;
             display: flex;
@@ -49,6 +63,11 @@ export const StationWrap = styled.section`
             box-shadow: rgba(0, 0, 0, 0.22);
             background-color: rgb(31 30 37);
             border: 1px solid rgba(255, 255, 255, 0.22);
+
+            &:hover {
+                border: 1px solid ${theme.color.primary};
+                transfrom: scale(1.05);
+            }
 
             & h1 {
                 font-size: 16px;
@@ -130,4 +149,4 @@ export const StationWrap = styled.section`
             }
         }
     }
-`
+`;

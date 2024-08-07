@@ -1,5 +1,5 @@
-import styled from 'styled-components'
-import theme from '../../../styles/theme'
+import styled from "styled-components";
+import theme from "../../../styles/theme";
 
 export const ScheduleListWrap = styled.section`
     width: 400px;
@@ -42,6 +42,9 @@ export const ScheduleListWrap = styled.section`
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            overflow-x: hidden;
 
             & .schedule {
                 display: flex;
@@ -57,6 +60,11 @@ export const ScheduleListWrap = styled.section`
                 font-size: 14px;
                 transition: all 0.3s ease-in-out;
 
+                &:hover {
+                    border: 1px solid ${theme.color.primary};
+                    transfrom: scale(1.05);
+                }
+
                 & span {
                     font-size: 14px;
                     &.title {
@@ -66,7 +74,6 @@ export const ScheduleListWrap = styled.section`
 
                 &.active {
                     border: 1px solid ${theme.color.primary};
-                    color: ${theme.color.white};
 
                     & svg {
                         & svg {
@@ -82,13 +89,13 @@ export const ScheduleListWrap = styled.section`
 
                     & .btn_box {
                         display: flex;
-                        gap: 0.5rem;
                         align-items: center;
 
                         & button {
                             display: flex;
                             align-items: center;
                             justify-content: center;
+                            width: 30px;
 
                             & svg {
                                 color: #231f20;
@@ -117,4 +124,4 @@ export const ScheduleListWrap = styled.section`
             }
         }
     }
-`
+`;

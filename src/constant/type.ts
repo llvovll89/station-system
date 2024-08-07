@@ -1,3 +1,5 @@
+import { StationDto } from "../dto/Station";
+
 export enum MissionType {
     wayline = 0,
     region = 1,
@@ -11,60 +13,69 @@ export enum ActiveType {
 }
 
 export interface MissionOverlay {
-    polygon: naver.maps.Polygon | null
-    polyline: naver.maps.Polyline | null
+    polygon: naver.maps.Polygon | null;
+    polyline: naver.maps.Polyline | null;
 }
 
 export interface AreaOptions {
-    droneAltitude: number
-    speed: number
-    angle: number
-    droneAngle: number
-    longitudinalRedundancy: number
-    transverseRedundancy: number
-    photoWidthRatio: number
-    photoHeightRatio: number
+    droneAltitude: number;
+    speed: number;
+    angle: number;
+    droneAngle: number;
+    longitudinalRedundancy: number;
+    transverseRedundancy: number;
+    photoWidthRatio: number;
+    photoHeightRatio: number;
 }
 
 export interface OverlayType {
-    startMarker?: naver.maps.Marker | null
-    endMarker?: naver.maps.Marker | null
-    takeoffPolyLine?: naver.maps.Polyline | null
-    wayLine?: naver.maps.Polyline
-    polygon?: naver.maps.Polygon | null
-    guideLine?: naver.maps.Polyline | null
+    startMarker?: naver.maps.Marker | null;
+    endMarker?: naver.maps.Marker | null;
+    takeoffPolyLine?: naver.maps.Polyline | null;
+    wayLine?: naver.maps.Polyline;
+    polygon?: naver.maps.Polygon | null;
+    guideLine?: naver.maps.Polyline | null;
 }
 
 export enum StationStatus {
-    idle = '대기중',
-    active = '실행중',
-    error = '에러발생',
+    idle = "대기중",
+    active = "실행중",
+    error = "에러발생",
 }
 
 export interface Point {
-    latitude: number
-    longitude: number
-    height: number
+    latitude: number;
+    longitude: number;
+    height: number;
 }
 
 export interface MissionStateItem {
-    mainPoints: naver.maps.LatLng[]
-    distance: number
-    areaSize: number
+    mainPoints: naver.maps.LatLng[];
+    distance: number;
+    areaSize: number;
 }
 
 export interface CreateStation {
-    name: string
-    latitude: string
-    longitude: string
+    name: string;
+    latitude: string;
+    longitude: string;
     drone: {
-        name: string
-        latitude: string
-        longitude: string
-    }
+        name: string;
+        latitude: string;
+        longitude: string;
+    };
 }
 
 export interface DarkModeContextType {
-    isDarkMode: boolean
-    toggleDarkMode: () => void
+    isDarkMode: boolean;
+    toggleDarkMode: () => void;
+}
+
+export interface Schedule {
+    completedAt: string;
+    name: string;
+    seq: number;
+    startedAt: string;
+    status: number;
+    station: StationDto;
 }
