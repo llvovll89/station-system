@@ -1,5 +1,4 @@
-// import { useEffect, useRef, useState } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../../../components/button/Button";
 import { MISSION } from "../../../constant/http";
 import { MissionDto } from "../../../dto/MissionDto";
@@ -38,16 +37,13 @@ export const WaypPointMission = ({
     const [wayLines, setWayLines] = useState<naver.maps.LatLng[]>([]);
     const [isRunning, setIsRunning] = useState(false);
     const [distance, setDistance] = useState(0);
+    const [markers, setMarkers] = useState([] as naver.maps.Marker[]);
 
-    let pointsMarkers: naver.maps.Marker[] = [];
-    let polyLine: naver.maps.Polyline | null = null;
-    let guideLine: naver.maps.Polyline | null = null;
-    let mainPoint: naver.maps.LatLng[] = [];
-
+    let pointMarkers = [] as naver.maps.Marker[];
     // const pointMarkers = useRef<naver.maps.Marker[]>([]);
-    // const polylineRef = useRef<naver.maps.Polyline | null>(null);
+    const polylineRef = useRef<naver.maps.Polyline | null>(null);
     // const guideLineRef = useRef<naver.maps.Polyline | null>(null);
-    // const mainPointsRef = useRef<naver.maps.LatLng[]>([]);
+    const mainPointsRef = useRef<naver.maps.LatLng[]>([]);
 
     const resetData = () => {
         if (isRunning) {
@@ -55,41 +51,21 @@ export const WaypPointMission = ({
             return;
         }
 
-        if (pointsMarkers.length > 0) {
-            pointsMarkers.forEach((m) => m.setMap(null));
-            pointsMarkers = [];
+        // 모든 마커 제거
+        markers.forEach((marker) => {
+            marker.setMap(null);
+        });
+        setMarkers([]);
+        pointMarkers = [];
+
+        // 모든 포인트 초기화
+        mainPointsRef.current = [];
+
+        // 폴리라인 제거
+        if (polylineRef.current) {
+            polylineRef.current.setMap(null);
+            polylineRef.current = null;
         }
-
-        if (polyLine) {
-            polyLine.setMap(null);
-            polyLine = null;
-        }
-
-        if (guideLine) {
-            guideLine.setMap(null);
-            guideLine = null;
-        }
-
-        if (mainPoint.length > 0) mainPoint = [];
-
-        // // 모든 마커 제거
-        // pointMarkers.current.forEach((marker) => marker.setMap(null));
-        // pointMarkers.current = [];
-
-        // // 모든 포인트 초기화
-        // mainPointsRef.current = [];
-
-        // // 폴리라인 제거
-        // if (polylineRef.current) {
-        //     polylineRef.current.setMap(null);
-        //     polylineRef.current = null;
-        // }
-
-        // // 가이드라인 제거
-        // if (guideLineRef.current) {
-        //     guideLineRef.current.setMap(null);
-        //     guideLineRef.current = null;
-        // }
 
         setWayLines([]);
         setDistance(0);
@@ -110,6 +86,7 @@ export const WaypPointMission = ({
             });
             setIsRunning(true);
             const waypoints: naver.maps.LatLng[] = [];
+            let guideLine: naver.maps.Polyline | null = null;
 
             const setWayPoint = naver.maps.Event.addListener(
                 map,
@@ -117,28 +94,21 @@ export const WaypPointMission = ({
                 (e: { coord: naver.maps.LatLng }) => {
                     waypoints.push(e.coord);
 
-                    // if (!polylineRef.current) {
-                    //     polylineRef.current = new naver.maps.Polyline({
-                    //         map: map ? map : undefined,
-                    //         path: waypoints,
-                    //         strokeColor: "#0CF395",
-                    //         strokeOpacity: 1,
-                    //         strokeWeight: 5,
-                    //     });
-                    // } else {
-                    //     polylineRef.current.setPath(waypoints);
-                    // }
+                    console.log(111);
 
-                    polyLine = new naver.maps.Polyline({
-                        map: map ? map : undefined,
-                        path: waypoints,
-                        strokeColor: "#0CF395",
-                        strokeOpacity: 1,
-                        strokeWeight: 5,
-                    });
+                    if (!polylineRef.current) {
+                        polylineRef.current = new naver.maps.Polyline({
+                            map: map ? map : undefined,
+                            path: waypoints,
+                            strokeColor: "#0CF395",
+                            strokeOpacity: 1,
+                            strokeWeight: 5,
+                        });
+                    } else {
+                        polylineRef.current.setPath(waypoints);
+                    }
 
-                    // mainPointsRef.current.push(e.coord);
-                    mainPoint.push(e.coord);
+                    mainPointsRef.current.push(e.coord);
                     setWayLines((prev) => [...prev, e.coord]);
 
                     setMissionData((prev) => ({
@@ -171,44 +141,30 @@ export const WaypPointMission = ({
                         position: e.coord,
                         draggable: true,
                         icon: {
-                            // content: `<div class='wayline_marker'>${mainPointsRef.current.length}</div>`,
-                            content: `<div class='wayline_marker'>${mainPoint.length}</div>`,
+                            content: `<div class='wayline_marker'>${mainPointsRef.current.length}</div>`,
                             anchor: new naver.maps.Point(12, 12),
                         },
                     });
 
                     // pointMarkers.current.push(marker);
-                    // dragResize(pointMarkers.current, marker);
-                    // setDistance(polylineRef.current.getDistance());
-                    // deletePoint(marker, pointMarkers.current);
-
-                    pointsMarkers.push(marker);
-                    dragResize(pointsMarkers, marker);
-                    setDistance(polyLine.getDistance());
-                    deletePoint(marker, pointsMarkers);
+                    pointMarkers.push(marker);
+                    setMarkers((prev) => [...prev, marker]);
+                    dragResize(pointMarkers, marker);
+                    setDistance(polylineRef.current.getDistance());
+                    deletePoint(marker, pointMarkers);
 
                     const createGuideLine = naver.maps.Event.addListener(
                         map,
                         "mousemove",
                         (e: { coord: naver.maps.LatLng }) => {
-                            // if (guideLineRef.current) {
-                            //     guideLineRef.current.setMap(null);
-                            //     guideLineRef.current = null;
-                            // }
-
-                            // const lastLatLng =
-                            //     pointMarkers.current[
-                            //         pointMarkers.current.length - 1
-                            //     ].getPosition();
-
                             if (guideLine) {
                                 guideLine.setMap(null);
                                 guideLine = null;
                             }
 
                             const lastLatLng =
-                                pointsMarkers[
-                                    pointsMarkers.length - 1
+                                pointMarkers[
+                                    pointMarkers.length - 1
                                 ].getPosition();
 
                             guideLine = new naver.maps.Polyline({
@@ -220,51 +176,24 @@ export const WaypPointMission = ({
                                 strokeOpacity: 0.7,
                             });
 
-                            // guideLineRef.current = new naver.maps.Polyline({
-                            //     map: map ? map : undefined,
-                            //     path: [lastLatLng, e.coord],
-                            //     strokeColor: "#ff005e",
-                            //     strokeWeight: 4,
-                            //     strokeStyle: [4, 4],
-                            //     strokeOpacity: 0.7,
-                            // });
+                            console.log("mousemove");
                         },
-                    );
-                    console.log(
-                        "마지막 마커",
-                        pointsMarkers[pointsMarkers.length - 1],
                     );
 
                     const endWayPointMission = naver.maps.Event.addListener(
-                        // pointMarkers.current[pointMarkers.current.length - 1],
-                        pointsMarkers[pointsMarkers.length - 1],
+                        pointMarkers[pointMarkers.length - 1],
                         "click",
                         () => {
-                            console.log("마지막 클릭");
-                            // if (mainPointsRef.current.length > 0) {
-                            //     if (guideLineRef.current) {
-                            //         guideLineRef.current.setMap(null);
-                            //         guideLineRef.current = null;
-                            //     }
-
-                            //     naver.maps.Event.removeListener(
-                            //         endWayPointMission,
-                            //     );
-                            //     naver.maps.Event.removeListener(setWayPoint);
-                            //     naver.maps.Event.removeListener(
-                            //         createGuideLine,
-                            //     );
-
-                            //     setIsRunning(false);
-                            // }
-                            guideLine?.setMap(null);
-                            guideLine = null;
-
-                            naver.maps.Event.removeListener(createGuideLine);
                             naver.maps.Event.removeListener(setWayPoint);
-                            setIsRunning(false);
+                                naver.maps.Event.removeListener(createGuideLine);
+                                naver.maps.Event.removeListener(endWayPointMission);
 
-                            naver.maps.Event.removeListener(endWayPointMission);
+                                setIsRunning(false);
+
+                                if (guideLine) {
+                                    guideLine.setMap(null);
+                                    guideLine = null;
+                                }
                         },
                     );
                 },
@@ -292,17 +221,13 @@ export const WaypPointMission = ({
 
                 if (index !== -1) {
                     marker.setMap(null);
-                    // mainPointsRef.current.splice(index, 1);
-                    mainPoint.splice(index, 1);
+                    mainPointsRef.current.splice(index, 1);
                     wayLines.splice(index, 1);
 
-                    // if (polylineRef.current) {
-                    //     polylineRef.current.setPath(mainPointsRef.current);
-                    //     setDistance(polylineRef.current.getDistance());
-                    // }
-
-                    polyLine?.setPath(mainPoint);
-                    if (polyLine) setDistance(polyLine.getDistance());
+                    if (polylineRef.current) {
+                        polylineRef.current.setPath(mainPointsRef.current);
+                        setDistance(polylineRef.current.getDistance());
+                    }
 
                     marekrs.forEach((marker, i) => {
                         marker.setIcon({
@@ -331,15 +256,11 @@ export const WaypPointMission = ({
             (e: { coord: naver.maps.LatLng }) => {
                 const index = markers.indexOf(marker);
                 if (index !== -1) {
-                    // mainPointsRef.current[index] = e.coord;
-                    mainPoint[index] = e.coord;
-                    // if (polylineRef.current) {
-                    //     polylineRef.current.setPath(mainPointsRef.current);
-                    //     setDistance(polylineRef.current.getDistance());
-                    // }
-
-                    polyLine?.setPath(mainPoint);
-                    if (polyLine) setDistance(polyLine.getDistance());
+                    mainPointsRef.current[index] = e.coord;
+                    if (polylineRef.current) {
+                        polylineRef.current.setPath(mainPointsRef.current);
+                        setDistance(polylineRef.current.getDistance());
+                    }
 
                     setMissionData((prev) => {
                         const updatedPoints = [...prev.points];
@@ -379,7 +300,6 @@ export const WaypPointMission = ({
             try {
                 const response = await api.post(MISSION, missionData);
                 console.log("미션생성:", response);
-                resetData();
                 setIsHttpRequest((prev) => (prev = !prev));
                 setIsRunningMission((prevMission) => ({
                     ...prevMission,
@@ -387,6 +307,7 @@ export const WaypPointMission = ({
                     isStart: false,
                 }));
 
+                resetData();
                 alert("웨이포인트 미션 생성 완료!");
             } catch (err) {
                 console.log(err);
@@ -399,16 +320,8 @@ export const WaypPointMission = ({
     };
 
     useEffect(() => {
-        resetData();
-    }, []);
-
-    useEffect(() => {
         createWayPointMission();
     }, [isRunningMission.waypoint]);
-
-    // useEffect(() => {
-    //     initMissionData();
-    // }, [pointMarkers.current, polylineRef.current, guideLineRef.current]);
 
     return (
         <>
@@ -416,10 +329,7 @@ export const WaypPointMission = ({
                 <div className="waypoint_content">
                     <div className="content">
                         <div className="overlay_info">
-                            <span>
-                                {/* 웨이포인트: {mainPointsRef.current.length} */}
-                                웨이포인트: {wayLines.length}
-                            </span>
+                            <span>웨이포인트: {wayLines.length}</span>
                             <span>총 거리: {distance.toFixed(2)}m</span>
                         </div>
 

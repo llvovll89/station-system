@@ -13,9 +13,8 @@ import { MapButton } from "../../components/MapButton";
 import DroneImage from "../../assets/image/icon/ico_airplane(w).png";
 import api from "../../api/api";
 import { MissionDto } from "../../dto/MissionDto";
-import {CesiumMap} from "../3dmap/CesiumMap.tsx";
-import axios from 'axios'
-        
+import { CesiumMap } from "../3dmap/CesiumMap.tsx";
+
 interface RunningMission {
     currentMission: MissionDto;
     drone: Drone;
@@ -58,6 +57,9 @@ export const Main = () => {
             mapDataControl: false,
             scaleControl: false,
             mapTypeId: naver.maps.MapTypeId.HYBRID,
+            background: "#181818",
+            tileTransition: false,
+            disableKineticPan: false,
         };
 
         setMap(new naver.maps.Map(mapElement.current, mapOptions));
@@ -291,7 +293,7 @@ export const Main = () => {
             />
 
             <div id="map" className="map" ref={mapElement}></div>
-            <CesiumMap isVisibleCesiumMap={is3DMapType} stations={stations}/>
+            <CesiumMap isVisibleCesiumMap={is3DMapType} stations={stations} />
 
             {activeType === ActiveType.mission && (
                 <Mission
@@ -343,7 +345,7 @@ export const Main = () => {
             )}
 
             <DarkMode />
-            <MapButton setIs3DMapType={setIs3DMapType}/>
+            <MapButton setIs3DMapType={setIs3DMapType} />
         </MainWrap>
     );
 };

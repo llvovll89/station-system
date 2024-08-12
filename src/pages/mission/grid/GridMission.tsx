@@ -41,9 +41,9 @@ export const GridMission = ({
     initMissionData,
 }: GridMissionProps) => {
     const [markers, setMarkers] = useState<naver.maps.Marker[]>([]);
-    const [mainPoints, setMainPoints] = useState<naver.maps.LatLng[]>([]);
     const [areaSize, setAreaSize] = useState<string | null>(null);
     const [isOptions, setIsOptions] = useState(false);
+    const [isRunning, setIsRunning] = useState(false);
     const [areaOptions, setAreaOptions] = useState<AreaOptions>({
         droneAltitude: 100,
         speed: 5,
@@ -63,11 +63,24 @@ export const GridMission = ({
     const mainPointMarker: naver.maps.Marker[] = [];
     const mainPoint: naver.maps.LatLng[] = [];
 
+    const endMission = () => {
+        setIsOptions(false);
+        clearMap();
+        initMissionData();
+        setMarkers([]);
+        setAreaSize(null);
+        setIsRunningMission((prevMission) => ({
+            ...prevMission,
+            grid: false,
+            isStart: false,
+        }));
+    }
+
     const createGridMission = () => {
         let gridMissionListener: any = null;
 
         if (isRunningMission.grid) {
-            console.log("grid");
+            setIsRunning(true);
 
             polygonRef.current = new naver.maps.Polygon({
                 map: map ? map : undefined,
@@ -75,8 +88,8 @@ export const GridMission = ({
                 strokeColor: "#0080DE",
                 strokeOpacity: 1,
                 strokeWeight: 4,
-                fillColor: "#fefefe",
-                fillOpacity: 0.6,
+                fillColor: "#09f",
+                fillOpacity: 0.1,
                 strokeStyle: "solid",
             });
 
@@ -85,7 +98,6 @@ export const GridMission = ({
                 "click",
                 (e: { coord: naver.maps.LatLng }) => {
                     mainPoint.push(e.coord);
-                    setMainPoints((prev) => [...prev, e.coord]);
                     setMissionData((prev) => ({
                         ...prev,
                         type: 1,
@@ -110,7 +122,8 @@ export const GridMission = ({
                         draggable: true,
                         clickable: true,
                         icon: {
-                            content: `<div class='wayline_marker'>${mainPoint.length}</div>`,
+                            content: `<div class='wayline_marker'>
+                            <span>${mainPoint.length}</span></div>`,
                             anchor: new naver.maps.Point(12, 12),
                         },
                     });
@@ -148,6 +161,7 @@ export const GridMission = ({
 
                                 gridMissionListener = null;
                                 setIsOptions((prev) => !prev);
+                                setIsRunning(false);
                             },
                         );
                     }
@@ -449,6 +463,7 @@ export const GridMission = ({
                 }));
 
                 resetGridMission();
+                alert("그리드 미션 생성 완료!");
             } catch (err) {
                 console.log(err);
             }
@@ -458,11 +473,24 @@ export const GridMission = ({
     };
 
     const resetGridMission = () => {
-        clearMap();
-        initMissionData();
-        setMarkers([]);
-        setMainPoints([]);
-        setAreaSize(null);
+        if(isRunning) {
+            alert("마지막 포인트 클릭 후 다시 초기화 해주세요!")
+        } else {
+            setIsOptions(false);
+            clearMap();
+            initMissionData();
+            setMarkers([]);
+            setAreaSize(null);
+            createGridMission();
+        }
+    };
+
+    const clearMap = () => {
+        markers.forEach((marker) => marker.setMap(null));
+        if (mainPointsRef.current.length > 0) {
+            mainPointsRef.current.forEach((m) => m.setMap(null));
+            mainPointsRef.current = [];
+        }
 
         if (polygonRef.current) {
             polygonRef.current.setMap(null);
@@ -479,28 +507,14 @@ export const GridMission = ({
             guideLineRef.current = null;
         }
 
-        createGridMission();
-    };
-
-    const clearMap = () => {
-        markers.forEach((marker) => marker.setMap(null));
-        if (polygonRef.current) polygonRef.current.setMap(null);
-        if (wayLineRef.current) wayLineRef.current.setMap(null);
-        if (mainPointsRef.current.length > 0) {
-            mainPointsRef.current.forEach((m) => m.setMap(null));
-            mainPointsRef.current = [];
-        }
-
-        polygonRef.current = null;
         setMissionData({
             ...missionData,
             name: "",
             points: [],
             ways: [],
         });
+
         setMarkers([]);
-        setMainPoints([]);
-        console.log(mainPoints);
     };
 
     useEffect(() => {
@@ -533,6 +547,7 @@ export const GridMission = ({
                     missionData={missionData}
                     submitGridMission={submitGridMission}
                     resetGridMission={resetGridMission}
+                    endMission={endMission}
                 />
             )}
         </>

@@ -8,9 +8,8 @@ const GridMissionOptionsWrap = styled.section`
     min-width: 400px;
     padding: 1rem;
     position: absolute;
-    top: 16px;
-    left: 460px;
-    transform: translateX(-460xp);
+    top: 4px;
+    left: 500px;
     background-color: ${(props) => props.theme.color.subBlack};
     color: ${(props) => props.theme.color.white};
     border-radius: 5px;
@@ -53,11 +52,17 @@ const GridMissionOptionsWrap = styled.section`
 
     & .btns {
         display: flex;
-        justify-content: space-between;
-        gap: 0.35rem;
+        gap: 4px;
+        flex-direction: column;
 
-        & .submit,
-        & .reset_btn {
+        & .top {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        & button {
+            width: 100%;    
             background-color: ${theme.color.primary};
             border-radius: 5px;
         }
@@ -72,10 +77,12 @@ interface GridMissionOptionsProps {
     setMissionData: React.Dispatch<React.SetStateAction<MissionDto>>;
     initMissionData: () => void;
     resetGridMission: () => void;
+    endMission: () => void;
 }
 
 export const GridMissionOptions = ({
     areaOptions,
+    endMission,
     setAreaOptions,
     submitGridMission,
     missionData,
@@ -172,23 +179,28 @@ export const GridMissionOptions = ({
                 </div>
             </div>
             <div className="btns">
-                <Button
-                    type="button"
-                    onClick={() => {
-                        initMissionData();
-                        resetGridMission();
-                    }}
-                    className="reset_btn"
-                >
-                    <span>초기화</span>
-                </Button>
+                <div className="top">
+                    <Button
+                        type="button"
+                        onClick={() => {
+                            initMissionData();
+                            resetGridMission();
+                        }}
+                        className="reset_btn"
+                    >
+                        <span>초기화</span>
+                    </Button>
 
-                <Button
-                    className="submit"
-                    onClick={submitGridMission}
-                    type="button"
-                >
-                    <span>저장하기</span>
+                    <Button
+                        className="submit"
+                        onClick={submitGridMission}
+                        type="button"
+                    >
+                        <span>저장하기</span>
+                    </Button>
+                </div>
+                <Button className="end_btn" onClick={endMission} type="button">
+                    생성종료
                 </Button>
             </div>
         </GridMissionOptionsWrap>

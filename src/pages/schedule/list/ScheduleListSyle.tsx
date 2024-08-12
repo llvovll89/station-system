@@ -108,6 +108,10 @@ export const ScheduleListWrap = styled.section`
                     display: flex;
                     gap: 0.5rem;
                     flex-direction: column;
+
+                    & .running {
+                        color: ${theme.color.primary};
+                    }
                 }
 
                 & .schedule_date {

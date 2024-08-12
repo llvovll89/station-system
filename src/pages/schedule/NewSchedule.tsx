@@ -10,6 +10,7 @@ import { MissionDto } from '../../dto/MissionDto'
 
 const NewSchduleWrqp = styled.section`
     position: absolute;
+    max-height: 90vh;
     min-width: 500px;
     left: 50%;
     top: 50%;
@@ -106,6 +107,10 @@ const NewSchduleWrqp = styled.section`
                 display: flex;
                 flex-direction: column;
                 gap: 0.5rem;
+
+                max-height: 243px;
+                overflow-y: auto;
+                overflow-x: hidden;
             }
 
             & .station_content {
@@ -151,6 +156,9 @@ const NewSchduleWrqp = styled.section`
                 flex-direction: column;
                 gap: 0.5rem;
                 padding: 0.5rem;
+                max-height: 243px;
+                overflow-y: auto;
+                overflow-x: hidden;
 
                 & li {
                     cursor: pointer;
@@ -325,7 +333,7 @@ export const NewSchdule = ({
                         />
                     </div>
                     <div className="station">
-                        <span className="title">&lt;스테이션&gt;</span>
+                        <span className="title">Station</span>
                         <ul>
                             {stations.length > 0 &&
                                 stations.map((station, index) => (
@@ -371,7 +379,7 @@ export const NewSchdule = ({
                     </div>
 
                     <div className="mission">
-                        <span className="title">&lt;미션&gt;</span>
+                        <span className="title">Mission</span>
                         <ul>
                             {missions.length > 0 &&
                                 missions.map((mission) => (
