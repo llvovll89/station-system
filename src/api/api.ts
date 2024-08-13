@@ -26,6 +26,7 @@ api.interceptors.response.use(
         // 401 에러 발생 시 로그인 페이지로 리디렉션
 
         if (error.response && error.response.status === 401) {
+            alert("로그인이 만료되어 로그인 페이지로 돌아갑니다.");
             localStorage.removeItem("user");
             window.location.href = "http://station-simulator.dev-kits.store/";
         }

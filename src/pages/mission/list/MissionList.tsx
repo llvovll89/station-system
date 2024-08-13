@@ -167,7 +167,9 @@ export const MissionList = ({
                             p.longitude,
                         ),
                         icon: {
-                            content: `<div class='wayline_marker'>${index + 1}</div>`,
+                            content: `<div class='wayline_marker'>
+                                <span>${index + 1}</span>
+                            </div>`,
                             anchor: new naver.maps.Point(12, 12),
                         },
                     }),
@@ -177,7 +179,7 @@ export const MissionList = ({
             setCurrentMapElements([polyline, ...markers]);
         } else {
             const mainPoints: naver.maps.Marker[] = [];
-            infoMission.points.forEach((p) => {
+            infoMission.points.forEach((p, index) => {
                 mainPoints.push(
                     new naver.maps.Marker({
                         map: map ? map : undefined,
@@ -186,7 +188,9 @@ export const MissionList = ({
                             p.longitude,
                         ),
                         icon: {
-                            content: `<div class='wayline_marker'></div>`,
+                            content: `<div class='wayline_marker'>
+                                <span>${index + 1}</span>
+                            </div>`,
                             anchor: new naver.maps.Point(12, 12),
                         },
                     }),
@@ -203,7 +207,7 @@ export const MissionList = ({
                 strokeColor: "#0080DE",
                 strokeOpacity: 1,
                 strokeWeight: 4,
-                fillColor: "#0080DE",
+                fillColor: "#09f",
                 fillOpacity: 0.1,
             });
 
@@ -212,7 +216,7 @@ export const MissionList = ({
                 path: infoMission.ways.map(
                     (p) => new naver.maps.LatLng(p.latitude, p.longitude),
                 ),
-                strokeColor: "#2eb573",
+                strokeColor: "#ff005e",
                 strokeOpacity: 1,
                 strokeWeight: 4,
                 strokeStyle: "solid",

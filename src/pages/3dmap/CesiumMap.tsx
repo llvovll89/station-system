@@ -75,11 +75,12 @@ export const CesiumMap = (props: any) => {
                     };
 
                     if (foundDroneIndex == -1) {
+                        const modelPath = `${import.meta.env.BASE_URL}model/drone-m30-240517.glb`;
                         const droneEntity = cesiumViewer.entities.add({
                             position: Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height),
                             model: {
-                                uri: `http://${location.host}/model/drone-m30-240517.glb`,
-                                scale: 50
+                                uri: modelPath,
+                                scale: 50,
                             },
                         });
                         setDroneModels(prevState => [...prevState, {
@@ -87,7 +88,7 @@ export const CesiumMap = (props: any) => {
                             entity: droneEntity
                         }])
                     } else {
-                        droneModels[foundDroneIndex].entity.position = Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height)
+                        (droneModels[foundDroneIndex].entity as any).position = Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height)
                     }
                 } else {
                     if (foundDroneIndex != -1) {

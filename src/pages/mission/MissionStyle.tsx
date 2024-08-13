@@ -1,5 +1,5 @@
-import styled from 'styled-components'
-import theme from '../../styles/theme'
+import styled from "styled-components";
+import theme from "../../styles/theme";
 
 export const MissionWrap = styled.section`
     & .create_btn {
@@ -45,7 +45,7 @@ export const MissionWrap = styled.section`
         top: 16px;
         left: 50%;
         transform: translateX(-50%);
-        padding: 1.5rem;
+        padding: 1rem;
         background-color: ${theme.color.subBlack};
         border-radius: 5px;
         color: ${theme.color.white};
@@ -86,6 +86,7 @@ export const MissionWrap = styled.section`
 
         & .btn_box {
             display: flex;
+            flex-direction: column;
             gap: 4px;
 
             & button {
@@ -95,8 +96,22 @@ export const MissionWrap = styled.section`
             & .submit_btn {
                 background-color: ${theme.color.primary};
                 min-width: 100px;
+                width: 100%;
                 border-radius: 5px;
+            }
+
+            & .end_btn {
+                background-color: ${theme.color.primary};
+                width: 100%;
+                border-radius: 5px;
+            }
+
+            & .top {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 4px;
             }
         }
     }
-`
+`;

@@ -188,7 +188,13 @@ export const ScheduleList = ({
                                 </div>
 
                                 <div className="scheudule_content">
-                                    <span>
+                                    <span
+                                        className={
+                                            schedule.status === 0
+                                                ? "running"
+                                                : ""
+                                        }
+                                    >
                                         상태:{" "}
                                         {schedule.status === 0
                                             ? "진행중"

@@ -1,8 +1,8 @@
-import styled from 'styled-components'
-import theme from '../../styles/theme'
+import styled from "styled-components";
+import theme from "../../styles/theme";
 
 export const JoinWrap = styled.section`
-    width: 100vw;
+    width: 100%;
     min-height: 100vh;
     position: relative;
     color: ${theme.color.black};
@@ -13,11 +13,11 @@ export const JoinWrap = styled.section`
 
     & .title {
         & h1 {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 2.5vw, 2rem);
             font-weight: 700;
             letter-spacing: -0.055rem;
             color: ${theme.color.primary};
-            font-family: 'GangwonEduPowerExtraBoldA', 'Pretendard', sans-serif;
+            font-family: "GangwonEduPowerExtraBoldA", "Pretendard", sans-serif;
         }
     }
 
@@ -89,7 +89,8 @@ export const JoinWrap = styled.section`
                         background-color: rgba(255, 255, 255, 0.13);
                         transition: all 0.15s ease-in-out;
                         padding-left: 38px;
-                        height: 50px;
+                        height: clamp(42px, 1vw, 50px);
+
                         border-radius: 6px;
 
                         &:hover {
@@ -121,4 +122,12 @@ export const JoinWrap = styled.section`
             }
         }
     }
-`
+
+    @media screen and (max-width: 768px) {
+        & .content {
+            & section {
+                width: 95vw;
+            }
+        }
+    }
+`;
