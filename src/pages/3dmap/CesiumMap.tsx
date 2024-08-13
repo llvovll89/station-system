@@ -1,14 +1,18 @@
 import {useEffect, useRef, useState} from "react";
 import {CesiumMapWrap} from "./CesiumMapStyle.ts";
+import {MarkableModel} from "./interface/MarkableModel.ts";
 
 declare const Cesium: any;
 export const CesiumMap = (props: any) => {
     const [cesiumViewer, setCesiumViewer] = useState<any>(null);
     const mapElement = useRef(null)
-    const [stations, setStations] = useState<any[]>([]);
+    const [stationModels, setStationModels] = useState<MarkableModel[]>([]);
+    const [droneModels, setDroneModels] = useState<MarkableModel[]>([]);
+    const DEFAULT_HEIGHT = 100;
+
     let isCreatedCesiumMap = false;
 
-    useEffect( () => {
+    useEffect(() => {
         if (!mapElement.current || isCreatedCesiumMap) {
             return
         }
@@ -37,94 +41,63 @@ export const CesiumMap = (props: any) => {
             );
         })();
 
-
-
-
         isCreatedCesiumMap = true;
         setCesiumViewer(viewer);
     }, [mapElement]);
 
     useEffect(() => {
         for (let i = 0; i < props.stations.length; i++) {
-            const foundIndex = stations.findIndex(station => station.data.seq == props.stations[i].seq);
+            const foundIndex = stationModels.findIndex(station => station.seq == props.stations[i].seq);
+            const dataPoint = {
+                longitude: props.stations[i].longitude,
+                latitude: props.stations[i].latitude,
+                height: DEFAULT_HEIGHT
+            };
 
             if (foundIndex == -1) {
-                setStations(prevState => [...prevState, {
-                    data: props.stations[i],
-                    entity: null,
-                    droneEntity: null
+                const pointEntity = cesiumViewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height),
+                    point: {pixelSize: 50, color: Cesium.Color.RED}
+                });
+
+                setStationModels(prevState => [...prevState, {
+                    seq: props.stations[i].seq,
+                    entity: pointEntity
                 }]);
             } else {
-                const newStations = [...stations];
+                const foundDroneIndex = droneModels.findIndex(drone => drone.seq == props.stations[i].drone.seq);
 
-                newStations.splice(foundIndex, 1, {
-                    data: props.stations[i],
-                    entity: stations[foundIndex].entity,
-                    droneEntity: stations[foundIndex].droneEntity
-                })
-
-                setStations(newStations)
-            }
-        }
-    }, [props.stations])
-
-    useEffect(() => {
-        if (cesiumViewer) {
-            for (let i = 0; i < stations.length; i++) {
-                if (stations[i].entity == null) {
-                    const dataPoint = {
-                        longitude: stations[i].data.longitude,
-                        latitude: stations[i].data.latitude,
-                        height: 100
+                if (props.stations[i].status == 1) {
+                    const dronePoint = {
+                        longitude: props.stations[i].drone.longitude,
+                        latitude: props.stations[i].drone.latitude,
+                        height: props.stations[i].drone.height + DEFAULT_HEIGHT
                     };
 
-                    const pointEntity = cesiumViewer.entities.add({
-                        position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height),
-                        point: {pixelSize: 40, color: Cesium.Color.RED}
-                    });
-
-                    stations[i].entity = pointEntity
-                    setStations(stations);
-                }
-
-
-                if (stations[i].droneEntity == null) {
-                    if (stations[i].data.status == 1) {
-                        const dataPoint = {
-                            longitude: stations[i].data.drone.longitude,
-                            latitude: stations[i].data.drone.latitude,
-                            height: 130
-                        };
-
+                    if (foundDroneIndex == -1) {
                         const droneEntity = cesiumViewer.entities.add({
-                            position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height + 200),
+                            position: Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height),
                             model: {
                                 uri: `http://${location.host}/model/drone-m30-240517.glb`,
                                 scale: 50
                             },
                         });
-
-                        stations[i].droneEntity = droneEntity;
-                        setStations(stations);
+                        setDroneModels(prevState => [...prevState, {
+                            seq: props.stations[i].drone.seq,
+                            entity: droneEntity
+                        }])
+                    } else {
+                        droneModels[foundDroneIndex].entity.position = Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height)
                     }
                 } else {
-                    if (stations[i].data.status == 1) {
-                        const dataPoint = {
-                            longitude: stations[i].data.drone.longitude,
-                            latitude: stations[i].data.drone.latitude,
-                            height: 130
-                        };
-                        stations[i].droneEntity.position = Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height)
-                        setStations(stations);
-                    } else {
-                        cesiumViewer.entities.remove(stations[i].droneEntity);
-                        stations[i].droneEntity = null;
-                        setStations(stations);
+                    if (foundDroneIndex != -1) {
+                        cesiumViewer.entities.remove(droneModels[foundDroneIndex].entity);
+                        setDroneModels(droneModels.filter(drone => drone.seq != droneModels[foundDroneIndex].seq))
                     }
                 }
             }
         }
-    }, [stations])
+    }, [props.stations])
 
     return (
         <CesiumMapWrap>
