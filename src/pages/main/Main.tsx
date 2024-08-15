@@ -46,6 +46,14 @@ export const Main = () => {
 
     const [is3DMapType, setIs3DMapType] = useState<boolean>(false);
 
+    // const getWeaher = async (coords) => {
+    //     try {
+    //         const response = await api.post()
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+
     useEffect(() => {
         if (!mapElement.current || !naver) return;
 

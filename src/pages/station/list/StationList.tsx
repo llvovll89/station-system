@@ -39,10 +39,10 @@ export const StationList = ({
         const coords = new naver.maps.LatLng(
             station.latitude,
             station.longitude,
-        );
-
+        ) as any;
+        
         if (map) {
-            map.morph(coords, 16);
+            map.panToBounds(new naver.maps.LatLngBounds(coords));
         }
     };
 
