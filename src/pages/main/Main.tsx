@@ -24,6 +24,10 @@ interface RunningMission {
     seq: number;
     name: string;
     createAt: string;
+    mainPoint: {
+        latitude: number;
+        longitude: number;
+    };
 }
 
 export const Main = () => {
@@ -46,14 +50,6 @@ export const Main = () => {
 
     const [is3DMapType, setIs3DMapType] = useState<boolean>(false);
 
-    // const getWeaher = async (coords) => {
-    //     try {
-    //         const response = await api.post()
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-
     useEffect(() => {
         if (!mapElement.current || !naver) return;
 
@@ -71,7 +67,6 @@ export const Main = () => {
         };
 
         setMap(new naver.maps.Map(mapElement.current, mapOptions));
-        // getWeather()
     }, []);
 
     const navigate = useNavigate();
@@ -140,7 +135,7 @@ export const Main = () => {
         try {
             const response = await api.get(RUNNING_STATION);
             const data = await response.data;
-            console.log("runningMissoin:", data.length);
+            console.log("runningMissoin:", data.length, data);
 
             if (data.length > 0) {
                 resetOverlay();
@@ -192,7 +187,7 @@ export const Main = () => {
                                         ),
                                         icon: {
                                             content: `<div class='wayline_marker'>
-                                                <span>${index + 1}</span>
+                                                ${item.currentMission.type !== 1 && <span>{index + 1}</span>}
                                             </div>`,
                                             anchor: new naver.maps.Point(
                                                 12,
@@ -340,12 +335,16 @@ export const Main = () => {
                         <article>
                             {runningSchedule.map((item, index) => (
                                 <div key={index}>
-                                    <span className="chart_number">{index + 1}</span>
-                                    <span>스테이션: {item.name}</span>
-                                    <span>드론: {item.drone.name}</span>
-                                    <span>
-                                        미션: {item.currentMission.name}
+                                    <span className="chart_number">
+                                        {index + 1}
                                     </span>
+                                    <div className="running_grid">
+                                        <span>스테이션: {item.name}</span>
+                                        <span>드론: {item.drone.name}</span>
+                                        <span>
+                                            미션: {item.currentMission.name}
+                                        </span>
+                                    </div>
                                 </div>
                             ))}
                         </article>

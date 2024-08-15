@@ -24,24 +24,35 @@ export const MainWrap = styled.section`
 
         & .running_content {
             & article {
+                margin-top: 6px;
                 displaty: flex;
                 flex-direction: column;
-                gap: 12px;
+                gap: 6px;
                 font-size: 14px;
 
                 & div {
                     display: flex;
                     gap: 6px;
-                    align-items: center;
+                    flex-direction: column;
+                    border: 1px solid rgba(255,255,255,0.16);
 
                     & .chart_number {
                         border-radius: 100%;
-                        width 20px;
-                        height: 20px;
+                        width: 26px;
+                        height: 26px;
                         border: 1px solid #FFFFFF;
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        font-size: 12px;
+                    }
+
+                    & .running_grid {
+                        display: grid;
+                        gap: 6px;
+                        align-items: center;
+                        border: 1ps solid rgba(255,255,255,0.16);
+                        grid-template-columns: 1fr 1fr;
                     }
                 }
             }
