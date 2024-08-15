@@ -262,7 +262,17 @@ export const Main = () => {
                 content: `<div class='dock_marker'><span>🚍</span></div>`,
                 anchor: new naver.maps.Point(18, 18),
             },
+            clickable: true,
         });
+
+        naver.maps.Event.addListener(marker, 'click', () => {
+            const position = new naver.maps.LatLng(
+                latitude,
+                longitude,
+            ) as any;
+
+            map && map.panToBounds(new naver.maps.LatLngBounds(position));
+        })
 
         dockMarkers.current.push(marker);
     };

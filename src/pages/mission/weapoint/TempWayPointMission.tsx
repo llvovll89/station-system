@@ -172,7 +172,7 @@ export const WaypPointMission = ({
                                 path: [lastLatLng, e.coord],
                                 strokeColor: "#ff005e",
                                 strokeWeight: 4,
-                                strokeStyle: [4, 4],
+                                // strokeStyle: [4, 4],
                                 strokeOpacity: 0.7,
                             });
 
@@ -185,15 +185,15 @@ export const WaypPointMission = ({
                         "click",
                         () => {
                             naver.maps.Event.removeListener(setWayPoint);
-                                naver.maps.Event.removeListener(createGuideLine);
-                                naver.maps.Event.removeListener(endWayPointMission);
+                            naver.maps.Event.removeListener(createGuideLine);
+                            naver.maps.Event.removeListener(endWayPointMission);
 
-                                setIsRunning(false);
+                            setIsRunning(false);
 
-                                if (guideLine) {
-                                    guideLine.setMap(null);
-                                    guideLine = null;
-                                }
+                            if (guideLine) {
+                                guideLine.setMap(null);
+                                guideLine = null;
+                            }
                         },
                     );
                 },
