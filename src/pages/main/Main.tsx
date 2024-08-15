@@ -334,7 +334,7 @@ export const Main = () => {
 
                         <article>
                             {runningSchedule.map((item, index) => (
-                                <div key={index}>
+                                <div key={index} className="running_list">
                                     <span className="chart_number">
                                         {index + 1}
                                     </span>

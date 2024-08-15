@@ -30,7 +30,7 @@ export const MainWrap = styled.section`
                 gap: 6px;
                 font-size: 14px;
 
-                & div {
+                & .running_list {
                     display: flex;
                     gap: 6px;
                     flex-direction: column;
@@ -38,8 +38,8 @@ export const MainWrap = styled.section`
 
                     & .chart_number {
                         border-radius: 100%;
-                        width: 26px;
-                        height: 26px;
+                        width: 24px;
+                        height: 24px;
                         border: 1px solid #FFFFFF;
                         display: flex;
                         align-items: center;
@@ -53,6 +53,7 @@ export const MainWrap = styled.section`
                         align-items: center;
                         border: 1ps solid rgba(255,255,255,0.16);
                         grid-template-columns: 1fr 1fr;
+                        font-size: 12px;
                     }
                 }
             }
