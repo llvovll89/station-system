@@ -24,6 +24,7 @@ export const Station = ({ toggleStation, setIsActive, map }: StationProps) => {
                 setIsActive={setIsActive}
                 isHttpRequest={isHttpRequest}
                 toggleCreateStation={toggleCreateStation}
+                setIsHttpRequest={setIsHttpRequest}
                 map={map}
             />
 

@@ -3,7 +3,6 @@ import { MISSION, SCHEDULE, STATION } from "../constant/http";
 import { MissionDto } from "../dto/MissionDto";
 import { Schedule } from "../constant/type";
 import api from "../api/api";
-import { StationDto } from "../dto/Station";
 
 export const getSchedule = async (): Promise<Schedule[]> => {
     try {
@@ -26,29 +25,6 @@ export const getStations = async () => {
         } else {
             console.log("스테이션 호출 실패");
         }
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-export const deleteStation = async (
-    station: StationDto,
-    e: React.MouseEvent,
-) => {
-    e.stopPropagation();
-
-    try {
-        const response = await api.delete(`${STATION}/${station.seq}`);
-        return response.data;
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-export const updateStation = async (station: StationDto, params: any) => {
-    try {
-        const response = await api.put(`${STATION}/${station.seq}`, params);
-        return response.data;
     } catch (error) {
         console.log(error);
     }

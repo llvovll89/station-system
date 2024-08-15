@@ -9,7 +9,7 @@ export interface StationDto {
     latitude: number
     longitude: number
     status: StationStatus
-    createdAt: Date
+    createdAt: Date | string
     drone: Drone
 }
 

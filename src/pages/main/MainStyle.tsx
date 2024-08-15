@@ -33,6 +33,16 @@ export const MainWrap = styled.section`
                     display: flex;
                     gap: 6px;
                     align-items: center;
+
+                    & .chart_number {
+                        border-radius: 100%;
+                        width 20px;
+                        height: 20px;
+                        border: 1px solid #FFFFFF;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
                 }
             }
         }
@@ -217,6 +227,78 @@ export const MainWrap = styled.section`
     }
 
     & .bg_wrap {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.32);
+        width: 100vw;
+        height: 100vh;
+    }
+
+    & .updated_station {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 400px;
+        border-radius: 5px;
+        box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.25);
+        background-color: rgb(31, 30, 37);
+        color: ${theme.color.white};
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem;
+
+        & header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            & button {
+                width: max-content;
+            }
+        }
+
+        & .input_area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            & input {
+                width: 100%;
+                padding: 0.5rem;
+                border-radius: 4px;
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                height: 40px;
+            }
+        }
+
+        & .update_sation_btns {
+            width: 100%;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            
+            & button {
+                width: 100%;
+                height: 100%;
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255,255,255,0.16);
+                
+
+                &:last-child {
+                    background-color: ${theme.color.primary};
+                    border: none;
+                }
+            }
+        }
+    }
+
+    & .station_update_wrap {
         position: absolute;
         inset: 0;
         background-color: rgba(0, 0, 0, 0.32);

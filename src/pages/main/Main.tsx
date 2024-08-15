@@ -340,10 +340,11 @@ export const Main = () => {
                         <article>
                             {runningSchedule.map((item, index) => (
                                 <div key={index}>
-                                    <span>Station: {item.name}</span>
-                                    <span>Drone: {item.drone.name}</span>
+                                    <span className="chart_number">{index + 1}</span>
+                                    <span>스테이션: {item.name}</span>
+                                    <span>드론: {item.drone.name}</span>
                                     <span>
-                                        Mission: {item.currentMission.name}
+                                        미션: {item.currentMission.name}
                                     </span>
                                 </div>
                             ))}
