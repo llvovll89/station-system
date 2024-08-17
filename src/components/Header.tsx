@@ -9,7 +9,7 @@ import { Button } from './button/Button'
 import { useDarkMode } from '../hooks/useDarkmode'
 
 const HeaderWrap = styled.header<{ isDarkMode: boolean }>`
-    width: 90px;
+    width: 76px;
     height: 100vh;
     padding: 1.5rem 0;
     display: flex;
@@ -50,6 +50,12 @@ const HeaderWrap = styled.header<{ isDarkMode: boolean }>`
                 background-color: ${theme.color.primary};
                 color: ${theme.color.white}; // 텍스트 색상 변경
             }
+
+            & button {
+                & span {
+                    font-size: 13px;
+                }
+            }
         }
     }
 
@@ -65,8 +71,8 @@ const HeaderWrap = styled.header<{ isDarkMode: boolean }>`
     }
 
     & .account {
-        width: 32px;
-        height: 32px;
+        width: 26px;
+        height: 26px;
         border-radius: 50%;
         cursor: pointer;
     }
@@ -147,7 +153,7 @@ export const Header = ({
             </ul>
 
             <button className="account" onClick={logOut}>
-                <img src={accountIcon} alt="user(w).png" />
+                <img src={accountIcon} alt="user(w).png" style={{ width: '24px', height: '24px' }} />
             </button>
         </HeaderWrap>
     )

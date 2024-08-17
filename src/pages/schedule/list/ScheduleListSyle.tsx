@@ -2,10 +2,10 @@ import styled from "styled-components";
 import theme from "../../../styles/theme";
 
 export const ScheduleListWrap = styled.section`
-    width: 400px;
+    width: 325px;
     height: 100vh;
     position: absolute;
-    left: 90px;
+    left: 76px;
     top: 0;
     background-color: rgba(0, 0, 0, 0.88);
 
@@ -66,9 +66,9 @@ export const ScheduleListWrap = styled.section`
                 }
 
                 & span {
-                    font-size: 14px;
+                    font-size: 12px;
                     &.title {
-                        font-size: 16px;
+                        font-size: 14px;
                     }
                 }
 

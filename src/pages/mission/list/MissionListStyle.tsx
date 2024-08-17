@@ -2,10 +2,10 @@ import { styled } from "styled-components";
 import theme from "../../../styles/theme";
 
 export const MissionListWrap = styled.section`
-    width: 400px;
+    width: 325px;
     height: 100vh;
     position: absolute;
-    left: 90px;
+    left: 76px;
     top: 0;
     background-color: rgba(0, 0, 0, 0.88);
 
@@ -65,6 +65,7 @@ export const MissionListWrap = styled.section`
                 display: flex;
                 flex-direction: column;
                 gap: 0.25rem;
+                font-size: 14px;
 
                 & .mission_header {
                     border-bottom: none;
@@ -138,7 +139,7 @@ export const MissionListWrap = styled.section`
                         gap: 0.35rem;
 
                         & span {
-                            font-size: 14px;
+                            font-size: 12px;
                             &:first-child {
                                 color: rgba(140, 140, 140, 1);
                             }
@@ -155,7 +156,7 @@ export const MissionListWrap = styled.section`
                             gap: 0.25rem;
 
                             span {
-                                font-size: 14px;
+                                font-size: 12px;
 
                                 &:first-child {
                                     color: rgba(140, 140, 140, 1);

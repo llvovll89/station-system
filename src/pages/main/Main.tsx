@@ -69,6 +69,23 @@ export const Main = () => {
         setMap(new naver.maps.Map(mapElement.current, mapOptions));
     }, []);
 
+    useEffect(() => {
+        if (mapElement.current && map) {
+            naver.maps.Event.addListener(map, 'idle', () => {
+                console.log('idel');
+                getWeather({ latitude: map.getCenter().x, longitude: map.getCenter().y });
+            })
+        }
+    }, [map]);
+
+    // useEffect(() => {
+    //     if (map) {
+    //         getWeather({ latitude: map.getCenter().x, longitude: map.getCenter().y });
+    //     } else {
+    //         console.log('not map');
+    //     }
+    // }, []);
+
     const navigate = useNavigate();
 
     const toggleActive = (type: ActiveType) => {
@@ -294,6 +311,21 @@ export const Main = () => {
         }, 2000);
         return () => clearInterval(httpRequestInterval);
     }, [map]);
+
+    const getWeather = async (coords: { latitude: number; longitude: number }) => {
+        console.log('coords:', coords);
+
+        try {
+            // const params = {
+            //     latitude: coords.latitude,
+            //     longitude: coords.longitude
+            // }
+            const response = await api.post(`/weather`);
+            console.log(await response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <MainWrap>

@@ -2,10 +2,10 @@ import { styled } from "styled-components";
 import theme from "../../../styles/theme";
 
 export const StationWrap = styled.section`
-    width: 400px;
+    width: 325px;
     height: 100vh;
     position: absolute;
-    left: 90px;
+    left: 76px;
     top: 0;
     background-color: rgba(0, 0, 0, 0.88);
 
@@ -63,6 +63,7 @@ export const StationWrap = styled.section`
             box-shadow: rgba(0, 0, 0, 0.22);
             background-color: rgb(31 30 37);
             border: 1px solid rgba(255, 255, 255, 0.22);
+            font-size: 14px;
 
             &:hover {
                 border: 1px solid ${theme.color.primary};
@@ -74,7 +75,7 @@ export const StationWrap = styled.section`
             }
 
             & span {
-                font-size: 14px;
+                font-size: 12px;
             }
 
             &.selected {
