@@ -79,3 +79,12 @@ export interface Schedule {
     status: number;
     station: StationDto;
 }
+
+export interface WeatherDto {
+    temperature: number;
+    windSpeed: number;
+    windDirection: number;
+    humidity: number;
+    skyCode: number;
+    rainStatus: string;
+}

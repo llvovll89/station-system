@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Mission } from "../mission/Mission";
-import { ActiveType } from "../../constant/type";
+import { ActiveType, WeatherDto } from "../../constant/type";
 import { useNavigate } from "react-router-dom";
 import { MainWrap } from "./MainStyle";
 import { Header } from "../../components/Header";
@@ -14,6 +14,7 @@ import DroneImage from "../../assets/image/icon/ico_airplane(w).png";
 import api from "../../api/api";
 import { MissionDto } from "../../dto/MissionDto";
 import { CesiumMap } from "../3dmap/CesiumMap.tsx";
+import { Weather } from "./Weather.tsx";
 
 interface RunningMission {
     currentMission: MissionDto;
@@ -35,6 +36,7 @@ export const Main = () => {
     const [map, setMap] = useState<naver.maps.Map | null>(null);
     const [stations, setStations] = useState<StationDto[]>([]);
     const [isActive, setIsActive] = useState("");
+    const [weatherData, setWeaherData] = useState<WeatherDto | null>(null);
     const [isRunningSchedule, setIsRunningSchedule] = useState(false);
     const [runningSchedule, setRunningSchedule] = useState<RunningMission[]>(
         [],
@@ -316,12 +318,21 @@ export const Main = () => {
         console.log('coords:', coords);
 
         try {
-            // const params = {
-            //     latitude: coords.latitude,
-            //     longitude: coords.longitude
-            // }
             const response = await api.post(`/weather`);
-            console.log(await response.data);
+            const data = await response.data;
+            console.log(data);
+
+            if (response.status === 200) {
+                setWeaherData((prev) => ({
+                    ...prev,
+                    temperature: data.temperature,
+                    windSpeed: data.windSpeed,
+                    windDirection: data.windDirection,
+                    humidity: data.humidity,
+                    skyCode: data.skyCode,
+                    rainStatus: data.rainStatus
+                }))
+            }
         } catch (error) {
             console.log(error);
         }
@@ -396,6 +407,10 @@ export const Main = () => {
 
             <DarkMode />
             <MapButton setIs3DMapType={setIs3DMapType} />
+
+            {map && weatherData && (
+                <Weather coords={{ latitude: map.getCenter().x, longitude: map.getCenter().y }} weatherData={weatherData} />
+            )}
         </MainWrap>
     );
 };
