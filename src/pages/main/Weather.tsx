@@ -4,7 +4,7 @@ import { WeatherDto } from "../../constant/type";
 const WeatherWrap = styled.section`
     position: absolute;
     bottom: 12px;
-    left: 325px;
+    left: 415px;
     background: ${theme.color.subPrimary};
     box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.22);
     border-radius: 5px;
@@ -13,6 +13,7 @@ const WeatherWrap = styled.section`
     flex-direction: column;
     gap: 0.75rem;
     font-size: 14px;
+    z-index: 100;
 
     & .forms {
         display: flex;
@@ -59,12 +60,12 @@ export const Weather = ({ coords, weatherData }: WeatherProps) => {
 
                 <div className="inner">
                     <span>위도</span>
-                    <span>{coords.latitude}</span>
+                    <span>{coords.longitude}</span>
                 </div>
 
                 <div className="inner">
                     <span>경도</span>
-                    <span>{coords.longitude}</span>
+                    <span>{coords.latitude}</span>
                 </div>
             </div>
 

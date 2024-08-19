@@ -1,6 +1,6 @@
-import {useEffect, useRef, useState} from "react";
-import {CesiumMapWrap} from "./CesiumMapStyle.ts";
-import {MarkableModel} from "./interface/MarkableModel.ts";
+import { useEffect, useRef, useState } from "react";
+import { CesiumMapWrap } from "./CesiumMapStyle.ts";
+import { MarkableModel } from "./interface/MarkableModel.ts";
 
 declare const Cesium: any;
 export const CesiumMap = (props: any) => {
@@ -17,7 +17,7 @@ export const CesiumMap = (props: any) => {
             return
         }
 
-        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhYjFmOWQ0YS1lY2I1LTQyOTAtOGRhYy04YWFjODM3YzJjZGMiLCJpZCI6MjMxNDQ4LCJpYXQiOjE3MjIyNjk3MTB9.BflDjz6jkdLIBJobHcgkxn1aBTZ-HU0kTqVKGAMboD4';
+        Cesium.Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_TOKEN_KEY;
 
         const viewer = new Cesium.Viewer('cesiumContainer', {
             terrain: Cesium.Terrain.fromWorldTerrain(),
@@ -57,7 +57,7 @@ export const CesiumMap = (props: any) => {
             if (foundIndex == -1) {
                 const pointEntity = cesiumViewer.entities.add({
                     position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height),
-                    point: {pixelSize: 50, color: Cesium.Color.RED}
+                    point: { pixelSize: 50, color: Cesium.Color.RED }
                 });
 
                 setStationModels(prevState => [...prevState, {

@@ -74,8 +74,8 @@ export const Main = () => {
     useEffect(() => {
         if (mapElement.current && map) {
             naver.maps.Event.addListener(map, 'idle', () => {
-                console.log('idel');
-                getWeather({ latitude: map.getCenter().x, longitude: map.getCenter().y });
+                console.log('idle');
+                getWeather({ latitude: map.getCenter().y, longitude: map.getCenter().x });
             })
         }
     }, [map]);
@@ -318,7 +318,7 @@ export const Main = () => {
         console.log('coords:', coords);
 
         try {
-            const response = await api.post(`/weather`);
+            const response = await api.get(`/weather?latitude=${coords.latitude}&longitude=${coords.longitude}`);
             const data = await response.data;
             console.log(data);
 
