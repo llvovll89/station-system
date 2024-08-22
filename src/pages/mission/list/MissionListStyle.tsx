@@ -284,8 +284,8 @@ export const MissionListWrap = styled.section`
         background-color: ${theme.color.black};
         min-width: 360px;
         color: ${theme.color.white};
-        left: 420px;
-        bottom: 16px;
+        left: 350px;
+        bottom: 12px;
         border-radius: 5px;
         box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.33);
         padding: 1rem;
@@ -306,6 +306,10 @@ export const MissionListWrap = styled.section`
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+
+                & span {
+                    font-size: 14px;
+                }
             }
         }
     }

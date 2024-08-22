@@ -41,6 +41,10 @@ export const Main = () => {
     const [runningSchedule, setRunningSchedule] = useState<RunningMission[]>(
         [],
     );
+    const [cesiumData, setCesiumData] = useState({
+        latitude: 0,
+        longitude: 0,
+    });
 
     const dockMarkers = useRef<naver.maps.Marker[]>([]);
     const droneMarkers = useRef<naver.maps.Marker[]>([]);
@@ -73,20 +77,15 @@ export const Main = () => {
 
     useEffect(() => {
         if (mapElement.current && map) {
-            naver.maps.Event.addListener(map, 'idle', () => {
-                console.log('idle');
+            if (weatherData) {
+                naver.maps.Event.addListener(map, 'idle', () => {
+                    getWeather({ latitude: map.getCenter().y, longitude: map.getCenter().x });
+                })
+            } else {
                 getWeather({ latitude: map.getCenter().y, longitude: map.getCenter().x });
-            })
+            }
         }
     }, [map]);
-
-    // useEffect(() => {
-    //     if (map) {
-    //         getWeather({ latitude: map.getCenter().x, longitude: map.getCenter().y });
-    //     } else {
-    //         console.log('not map');
-    //     }
-    // }, []);
 
     const navigate = useNavigate();
 
@@ -154,7 +153,6 @@ export const Main = () => {
         try {
             const response = await api.get(RUNNING_STATION);
             const data = await response.data;
-            console.log("runningMissoin:", data.length, data);
 
             if (data.length > 0) {
                 resetOverlay();
@@ -314,13 +312,15 @@ export const Main = () => {
         return () => clearInterval(httpRequestInterval);
     }, [map]);
 
+    useEffect(() => {
+        console.log(cesiumData);
+    }, [cesiumData]);
+
     const getWeather = async (coords: { latitude: number; longitude: number }) => {
-        console.log('coords:', coords);
 
         try {
             const response = await api.get(`/weather?latitude=${coords.latitude}&longitude=${coords.longitude}`);
             const data = await response.data;
-            console.log(data);
 
             if (response.status === 200) {
                 setWeaherData((prev) => ({
@@ -349,7 +349,7 @@ export const Main = () => {
             />
 
             <div id="map" className="map" ref={mapElement}></div>
-            <CesiumMap isVisibleCesiumMap={is3DMapType} stations={stations} />
+            <CesiumMap isVisibleCesiumMap={is3DMapType} stations={stations} setCesiumData={setCesiumData} />
 
             {activeType === ActiveType.mission && (
                 <Mission
@@ -411,6 +411,10 @@ export const Main = () => {
             {map && weatherData && (
                 <Weather coords={{ latitude: map.getCenter().x, longitude: map.getCenter().y }} weatherData={weatherData} />
             )}
+
+            {/* {cesiumData && (
+                <div>{cesiumData.latitude} {cesiumData.longitude}</div>
+            )} */}
         </MainWrap>
     );
 };

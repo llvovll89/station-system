@@ -4,16 +4,20 @@ import { WeatherDto } from "../../constant/type";
 const WeatherWrap = styled.section`
     position: absolute;
     bottom: 12px;
-    left: 415px;
-    background: ${theme.color.subPrimary};
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(31, 30, 37, 0.88);
     box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.22);
     border-radius: 5px;
     padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    color: ${theme.color.white};
     font-size: 14px;
+    border-radius: 5px
     z-index: 100;
+        
 
     & .forms {
         display: flex;

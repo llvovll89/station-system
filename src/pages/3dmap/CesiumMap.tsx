@@ -5,9 +5,9 @@ import { MarkableModel } from "./interface/MarkableModel.ts";
 declare const Cesium: any;
 export const CesiumMap = (props: any) => {
     const [cesiumViewer, setCesiumViewer] = useState<any>(null);
-    const mapElement = useRef(null)
     const [stationModels, setStationModels] = useState<MarkableModel[]>([]);
     const [droneModels, setDroneModels] = useState<MarkableModel[]>([]);
+    const mapElement = useRef(null)
     const DEFAULT_HEIGHT = 100;
 
     let isCreatedCesiumMap = false;
@@ -22,6 +22,15 @@ export const CesiumMap = (props: any) => {
         const viewer = new Cesium.Viewer('cesiumContainer', {
             terrain: Cesium.Terrain.fromWorldTerrain(),
         });
+
+        const cartographic = new Cesium.Cartographic();
+        console.log(cartographic.latitude, cartographic);
+
+        // props.setCesiumData((prev: any) => ({
+        //     ...prev,
+        //     latitude: new Cesium.Math.toDegrees(center.latitude).toFixed(5),
+        //     longitude: new Cesium.Math.toDegrees(center.longitude).toFixed(6),
+        // }))
 
         viewer.camera.flyTo({
             destination: Cesium.Cartesian3.fromDegrees(128.6107, 35.8774, 400),
