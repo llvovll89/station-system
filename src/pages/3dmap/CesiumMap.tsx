@@ -23,15 +23,6 @@ export const CesiumMap = (props: any) => {
             terrain: Cesium.Terrain.fromWorldTerrain(),
         });
 
-        const cartographic = new Cesium.Cartographic();
-        console.log(cartographic.latitude, cartographic);
-
-        // props.setCesiumData((prev: any) => ({
-        //     ...prev,
-        //     latitude: new Cesium.Math.toDegrees(center.latitude).toFixed(5),
-        //     longitude: new Cesium.Math.toDegrees(center.longitude).toFixed(6),
-        // }))
-
         viewer.camera.flyTo({
             destination: Cesium.Cartesian3.fromDegrees(128.6107, 35.8774, 400),
             orientation: {
@@ -66,7 +57,7 @@ export const CesiumMap = (props: any) => {
             if (foundIndex == -1) {
                 const pointEntity = cesiumViewer.entities.add({
                     position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height),
-                    point: { pixelSize: 50, color: Cesium.Color.RED }
+                    point: { pixelSize: 50, color: Cesium.Color.RED, outlineColor: Cesium.Color.BLACK, outlineWidth: 2}
                 });
 
                 setStationModels(prevState => [...prevState, {
@@ -108,6 +99,27 @@ export const CesiumMap = (props: any) => {
             }
         }
     }, [props.stations])
+
+    useEffect(() => {
+        if(props.runningSchedule) {
+            // const wayLine = cesiumViewer.entities.add({
+            //     polyline: {
+            //         positions: Cesium.Cartesian3.fromDegreesArray(
+            //             props.runningSchedule.map(
+            //                 (schedule: any) => [schedule.startLongitude, schedule.startLatitude, DEFAULT_HEIGHT]
+            //             )
+            //         ),
+            //         width: 5,
+            //         arcType: Cesium.ArcType.RHUMB,
+            //         material: Cesium.Color.YELLOW,
+            //     },
+            // })
+    
+            console.log('running_mission:', props.runningSchedule);
+            // console.log('wayline:', wayLine);
+        }
+
+    }, [props.runningSchedule]);
 
     return (
         <CesiumMapWrap>

@@ -35,13 +35,13 @@ export const ScheduleListWrap = styled.section`
     }
 
     & .container {
-        padding: 0.8rem 1rem;
+        padding: 0.8rem 0.5rem;
         font-size: 14px;
 
         & .schedule_list {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.5rem;
             max-height: calc(100vh - 60px);
             overflow-y: auto;
             overflow-x: hidden;

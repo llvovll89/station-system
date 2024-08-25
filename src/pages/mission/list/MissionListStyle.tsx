@@ -29,12 +29,12 @@ export const MissionListWrap = styled.section`
     }
 
     & .container {
-        padding: 0.8rem 1rem;
+        padding: 0.8rem 0.5rem;
 
         & .content {
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 0.5rem;
             max-height: calc(100vh - 60px);
             overflow-y: auto;
             overflow-x: hidden;

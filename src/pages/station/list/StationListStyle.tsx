@@ -34,8 +34,8 @@ export const StationWrap = styled.section`
     & .container {
         display: flex;
         flex-direction: column;
-        gap: 0.8rem;
-        padding: 0.8rem 1rem;
+        gap: 0.5rem;
+        padding: 0.8rem 0.5rem;
 
         &::-webkit-scrollbar-track {
             background: rgba(16, 33, 22, 0.1);

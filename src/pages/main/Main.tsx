@@ -15,6 +15,7 @@ import api from "../../api/api";
 import { MissionDto } from "../../dto/MissionDto";
 import { CesiumMap } from "../3dmap/CesiumMap.tsx";
 import { Weather } from "./Weather.tsx";
+import { debounce } from "../../util/debounce.ts";
 
 interface RunningMission {
     currentMission: MissionDto;
@@ -78,14 +79,25 @@ export const Main = () => {
     useEffect(() => {
         if (mapElement.current && map) {
             if (weatherData) {
-                naver.maps.Event.addListener(map, 'idle', () => {
-                    getWeather({ latitude: map.getCenter().y, longitude: map.getCenter().x });
-                })
+                naver.maps.Event.addListener(map, "idle", () => {
+                    console.log("idle event");
+                    debounce(
+                        () =>
+                            getWeather({
+                                latitude: map.getCenter().y,
+                                longitude: map.getCenter().x,
+                            }),
+                        1500,
+                    );
+                });
             } else {
-                getWeather({ latitude: map.getCenter().y, longitude: map.getCenter().x });
+                getWeather({
+                    latitude: map.getCenter().y,
+                    longitude: map.getCenter().x,
+                });
             }
         }
-    }, [map]);
+    }, [map, weatherData]);
 
     const navigate = useNavigate();
 
@@ -204,7 +216,7 @@ export const Main = () => {
                                         ),
                                         icon: {
                                             content: `<div class='wayline_marker'>
-                                                ${item.currentMission.type !== 1 && <span>{index + 1}</span>}
+                                                ${item.currentMission.type !== 1 ? `<span>${index + 1}</span>` : ""}
                                             </div>`,
                                             anchor: new naver.maps.Point(
                                                 12,
@@ -225,7 +237,7 @@ export const Main = () => {
                                         way.longitude,
                                     ),
                             ),
-                            strokeColor: "rgb(55, 114, 240)",
+                            strokeColor: `${item.currentMission.type === 1 ? "#ff005e" : "rgb(55, 114, 240)"}`,
                             strokeOpacity: 1,
                             strokeWeight: 4,
                             strokeStyle: "solid",
@@ -282,14 +294,11 @@ export const Main = () => {
             clickable: true,
         });
 
-        naver.maps.Event.addListener(marker, 'click', () => {
-            const position = new naver.maps.LatLng(
-                latitude,
-                longitude,
-            ) as any;
+        naver.maps.Event.addListener(marker, "click", () => {
+            const position = new naver.maps.LatLng(latitude, longitude) as any;
 
             map && map.panToBounds(new naver.maps.LatLngBounds(position));
-        })
+        });
 
         dockMarkers.current.push(marker);
     };
@@ -316,11 +325,16 @@ export const Main = () => {
         console.log(cesiumData);
     }, [cesiumData]);
 
-    const getWeather = async (coords: { latitude: number; longitude: number }) => {
-
+    const getWeather = async (coords: {
+        latitude: number;
+        longitude: number;
+    }) => {
         try {
-            const response = await api.get(`/weather?latitude=${coords.latitude}&longitude=${coords.longitude}`);
+            const response = await api.get(
+                `/weather?latitude=${coords.latitude}&longitude=${coords.longitude}`,
+            );
             const data = await response.data;
+            console.log("getWeather", data);
 
             if (response.status === 200) {
                 setWeaherData((prev) => ({
@@ -330,13 +344,13 @@ export const Main = () => {
                     windDirection: data.windDirection,
                     humidity: data.humidity,
                     skyCode: data.skyCode,
-                    rainStatus: data.rainStatus
-                }))
+                    rainStatus: data.rainStatus,
+                }));
             }
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     return (
         <MainWrap>
@@ -349,7 +363,12 @@ export const Main = () => {
             />
 
             <div id="map" className="map" ref={mapElement}></div>
-            <CesiumMap isVisibleCesiumMap={is3DMapType} stations={stations} setCesiumData={setCesiumData} />
+            <CesiumMap
+                isVisibleCesiumMap={is3DMapType}
+                stations={stations}
+                setCesiumData={setCesiumData}
+                runningSchedule={runningSchedule}
+            />
 
             {activeType === ActiveType.mission && (
                 <Mission
@@ -388,9 +407,12 @@ export const Main = () => {
                         <article>
                             {runningSchedule.map((item, index) => (
                                 <div key={index} className="running_list">
-                                    <span className="chart_number">
-                                        {index + 1}
-                                    </span>
+                                    <div className="header">
+                                        <span className="chart_number">
+                                            {index + 1}
+                                        </span>
+                                        <span>번째 스케줄</span>
+                                    </div>
                                     <div className="running_grid">
                                         <span>스테이션: {item.name}</span>
                                         <span>드론: {item.drone.name}</span>
@@ -409,7 +431,13 @@ export const Main = () => {
             <MapButton setIs3DMapType={setIs3DMapType} />
 
             {map && weatherData && (
-                <Weather coords={{ latitude: map.getCenter().x, longitude: map.getCenter().y }} weatherData={weatherData} />
+                <Weather
+                    coords={{
+                        latitude: map.getCenter().x,
+                        longitude: map.getCenter().y,
+                    }}
+                    weatherData={weatherData}
+                />
             )}
 
             {/* {cesiumData && (

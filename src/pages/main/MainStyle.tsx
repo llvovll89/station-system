@@ -28,23 +28,30 @@ export const MainWrap = styled.section`
                 displaty: flex;
                 flex-direction: column;
                 gap: 6px;
-                font-size: 14px;
+                font-size: 12px;
 
                 & .running_list {
+                    padding: 6px;
                     display: flex;
                     gap: 6px;
                     flex-direction: column;
                     border: 1px solid rgba(255,255,255,0.16);
 
-                    & .chart_number {
-                        border-radius: 100%;
-                        width: 24px;
-                        height: 24px;
-                        border: 1px solid #FFFFFF;
+                    & .header {
                         display: flex;
                         align-items: center;
-                        justify-content: center;
-                        font-size: 12px;
+                        gap: 4px;
+
+                        & .chart_number {
+                            border-radius: 100%;
+                            width: 20px;
+                            height: 20px;
+                            border: 1px solid #FFFFFF;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 12px;
+                        }
                     }
 
                     & .running_grid {
