@@ -5,6 +5,7 @@ import { MarkableModel } from "./interface/MarkableModel.ts";
 declare const Cesium: any;
 export const CesiumMap = (props: any) => {
     const [cesiumViewer, setCesiumViewer] = useState<any>(null);
+    const [entities, setEntities] = useState([]);
     const [stationModels, setStationModels] = useState<MarkableModel[]>([]);
     const [droneModels, setDroneModels] = useState<MarkableModel[]>([]);
     const mapElement = useRef(null)
@@ -57,7 +58,7 @@ export const CesiumMap = (props: any) => {
             if (foundIndex == -1) {
                 const pointEntity = cesiumViewer.entities.add({
                     position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height),
-                    point: { pixelSize: 50, color: Cesium.Color.RED, outlineColor: Cesium.Color.BLACK, outlineWidth: 2}
+                    point: { pixelSize: 50, color: Cesium.Color.RED, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
                 });
 
                 setStationModels(prevState => [...prevState, {
@@ -87,6 +88,8 @@ export const CesiumMap = (props: any) => {
                             seq: props.stations[i].drone.seq,
                             entity: droneEntity
                         }])
+
+                        console.log(dronePoint.height);
                     } else {
                         (droneModels[foundDroneIndex].entity as any).position = Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height)
                     }
@@ -98,28 +101,65 @@ export const CesiumMap = (props: any) => {
                 }
             }
         }
-    }, [props.stations])
 
-    useEffect(() => {
-        if(props.runningSchedule) {
-            // const wayLine = cesiumViewer.entities.add({
-            //     polyline: {
-            //         positions: Cesium.Cartesian3.fromDegreesArray(
-            //             props.runningSchedule.map(
-            //                 (schedule: any) => [schedule.startLongitude, schedule.startLatitude, DEFAULT_HEIGHT]
-            //             )
-            //         ),
-            //         width: 5,
-            //         arcType: Cesium.ArcType.RHUMB,
-            //         material: Cesium.Color.YELLOW,
-            //     },
-            // })
-    
-            console.log('running_mission:', props.runningSchedule);
-            // console.log('wayline:', wayLine);
+        if (props.runningSchedule.length > 0 && cesiumViewer) {
+            // 기존 엔티티 제거
+            entities.forEach(entity => cesiumViewer.entities.remove(entity));
+            setEntities([]); // 상태 초기화
+
+            // 새로운 엔티티 추가
+            const newEntities = props.runningSchedule.map((schedule: {
+                currentMission: {
+                    points: { latitude: number; longitude: number }[];
+                    ways: {
+                        latitude: number;
+                        longitude: number;
+                        height: number;
+                    }[];
+                    type: number;
+                };
+            }) => {
+                if (schedule.currentMission.type === 1) {
+                    console.log('polygon');
+                } else {
+                    console.log('waypoint');
+                }
+
+                const pointEntities = schedule.currentMission.points.map(point => {
+                    return cesiumViewer.entities.add({
+                        position: Cesium.Cartesian3.fromDegrees(point.longitude, point.latitude, 190),
+                        point: { pixelSize: 32, color: Cesium.Color.GREEN, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
+                    });
+                });
+
+                const wayLineEntity = cesiumViewer.entities.add({
+                    polyline: {
+                        positions: Cesium.Cartesian3.fromDegreesArrayHeights(
+                            schedule.currentMission.ways.flatMap(point => [
+                                point.longitude,
+                                point.latitude,
+                                190, // Height 정보도 포함
+                            ])
+                        ),
+                        width: 10,
+                        arcType: Cesium.ArcType.RHUMB,
+                        material: Cesium.Color.BLUE,
+                    },
+                });
+
+                return [...pointEntities, wayLineEntity];
+            }).flat();
+
+            // 새로 추가된 엔티티 상태에 저장
+            setEntities(newEntities);
+
+        } else {
+            // 엔티티가 없을 경우, 상태에 저장된 엔티티들 제거
+            entities.forEach(entity => cesiumViewer.entities.remove(entity));
+            setEntities([]); // 상태 초기화
+            console.log('not Running mission 3d');
         }
-
-    }, [props.runningSchedule]);
+    }, [props.stations])
 
     return (
         <CesiumMapWrap>

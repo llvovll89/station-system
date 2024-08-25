@@ -78,26 +78,19 @@ export const Main = () => {
 
     useEffect(() => {
         if (mapElement.current && map) {
-            if (weatherData) {
-                naver.maps.Event.addListener(map, "idle", () => {
-                    console.log("idle event");
-                    debounce(
-                        () =>
-                            getWeather({
-                                latitude: map.getCenter().y,
-                                longitude: map.getCenter().x,
-                            }),
-                        1500,
-                    );
-                });
-            } else {
-                getWeather({
-                    latitude: map.getCenter().y,
-                    longitude: map.getCenter().x,
-                });
-            }
+            naver.maps.Event.addListener(map, "idle", () => {
+                console.log("idle event");
+                debounce(
+                    () =>
+                        getWeather({
+                            latitude: map.getCenter().y,
+                            longitude: map.getCenter().x,
+                        }),
+                    1500,
+                )();
+            });
         }
-    }, [map, weatherData]);
+    }, [map]);
 
     const navigate = useNavigate();
 
