@@ -24,13 +24,15 @@ const NewSchduleWrqp = styled.section`
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
     z-index: 50;
     color: ${theme.color.white};
+    overflow-y: auto;
+    overflow-x: hidden;
 
     & header {
         display: flex;
         justify-content: space-between;
         align-items: center;
 
-        & h2 {
+        & h1 {
             font-size: 22px;
             font-weight: bold;
         }
@@ -208,6 +210,128 @@ const NewSchduleWrqp = styled.section`
             }
         }
     }
+
+    @media (max-width: 768px) {
+        & {
+            position: absolute;
+            min-width: 95vw;
+            padding: 0.75rem 1rem;
+            gap: 0.75rem;
+        }
+
+        & header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            & h1 {
+                font-size: 14px;
+            }
+
+            & button {
+                height: 24px;
+                width: 24px;
+
+                & svg {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        }
+
+        & .content {
+            gap: 0.5rem;
+
+            & .name {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+
+                & label {
+                font-size: 13px;
+                }
+
+                & input {
+                    height: 36px;
+                    font-size: 12px;
+                }
+            }
+
+            & .station,
+            & .mission {
+                & span {
+                    &.title {
+                        text-align: center;
+                        display: inline-block;
+                        width: 100%;
+                        font-size: 13px;
+                        padding: 0.25rem; 0;
+                    }
+                }
+            }
+
+            & .station {
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+                padding: 0.5 1rem;
+
+                & .station_content {
+                    padding: 0.75rem 0.5rem;  
+
+                    & span {
+                        font-size: 12px;
+                    }
+                }
+            }
+
+            & .mission {
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+                padding: 0.5rem;
+
+                & ul {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    padding: 0.5rem;
+
+                    & li {
+                        cursor: pointer;
+                        padding: 0.75rem 0.5rem;  
+                        border-radius: 5px;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.25rem;
+                        background-color: rgb(31, 30, 37);
+
+                        & span {
+                            font-size: 12px;
+                        }
+
+                        & span:first-child {
+                            max-width: 220px;
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                            white-space: nowrap;
+                        }
+                    }
+                }
+            }
+        }
+
+        & .content_btn {
+            & button {
+                height: 42px;
+
+                & span {
+                    font-size: 13px;
+                }
+            }
+        }
+    }
 `
 
 interface NewSchduleProps {
@@ -338,16 +462,14 @@ export const NewSchdule = ({
                             {stations.length > 0 &&
                                 stations.map((station, index) => (
                                     <li
-                                        className={`station_content ${
-                                            createData.stationSeq ===
+                                        className={`station_content ${createData.stationSeq ===
                                             station?.seq
-                                                ? 'active'
-                                                : ''
-                                        } ${
-                                            station.status === 1
+                                            ? 'active'
+                                            : ''
+                                            } ${station.status === 1
                                                 ? 'running'
                                                 : ''
-                                        }`}
+                                            }`}
                                         onClick={() => {
                                             if (station.status === 1) {
                                                 alert(
@@ -386,7 +508,7 @@ export const NewSchdule = ({
                                     <li
                                         className={
                                             createData.missionSeq ===
-                                            mission.seq
+                                                mission.seq
                                                 ? 'active'
                                                 : ''
                                         }

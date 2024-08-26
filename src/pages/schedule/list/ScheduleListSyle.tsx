@@ -128,4 +128,15 @@ export const ScheduleListWrap = styled.section`
             }
         }
     }
+
+    @media (max-width: 768px) {
+        & {
+            width: 280px;
+            height: 100vh;
+            position: absolute;
+            left: 76px;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.88);
+        }
+    }
 `;

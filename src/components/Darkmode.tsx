@@ -6,9 +6,9 @@ import theme from '../styles/theme'
 const DarkmodeWrap = styled.button<{ isDarkMode: boolean }>`
     position: absolute;
     bottom: 16px;
-    right: 16px;
-    width: 52px;
-    height: 52px;
+    right: 12px;
+    width: 42px;
+    height: 42px;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
     border-radius: 5px;
     display: flex;
@@ -25,7 +25,7 @@ export const DarkMode = () => {
 
     return (
         <DarkmodeWrap isDarkMode={isDarkMode} onClick={toggleDarkMode}>
-            <MdOutlineDarkMode style={{ width: '20px', height: '20px' }} />
+            <MdOutlineDarkMode style={{ width: '24px', height: '24px' }} />
         </DarkmodeWrap>
     )
 }

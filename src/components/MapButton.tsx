@@ -2,13 +2,13 @@ import styled from 'styled-components'
 import theme from '../styles/theme'
 import cesiumLogoIcon from '../assets/image/icon/Cesium_logo_only.png'
 import naverMapIcon from '../assets/image/icon/naver map.png'
-import {Button} from './button/Button'
-import {useState} from 'react'
+import { Button } from './button/Button'
+import { useState } from 'react'
 
 const MapButtonWrap = styled.article`
   position: absolute;
-  bottom: 82px;
-  right: 16px;
+  bottom: 70px;
+  right: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -18,8 +18,8 @@ const MapButtonWrap = styled.article`
 
   & button {
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.26);
-    width: 52px;
-    height: 52px;
+    width: 42px;
+    height: 42px;
     border-radius: 5px;
     background-color: ${theme.color.black};
     color: ${theme.color.white};
@@ -35,7 +35,7 @@ const MapButtonWrap = styled.article`
 interface MapButtonProps {
     setIs3DMapType: (is3DMapType: boolean) => void
 }
-export const MapButton = ({setIs3DMapType}: MapButtonProps) => {
+export const MapButton = ({ setIs3DMapType }: MapButtonProps) => {
     const [isSelectMap, setIsSelectMap] = useState<{
         isSelect3d: boolean
         isSelectNaver: boolean
@@ -84,7 +84,7 @@ export const MapButton = ({setIs3DMapType}: MapButtonProps) => {
                 <img
                     src={cesiumLogoIcon}
                     alt="3dtext"
-                    style={{width: '32px', height: '32px'}}
+                    style={{ width: '24px', height: '24px' }}
                 />
             </Button>
             <Button
@@ -97,7 +97,7 @@ export const MapButton = ({setIs3DMapType}: MapButtonProps) => {
                 <img
                     src={naverMapIcon}
                     alt="naver map"
-                    style={{width: '32px', height: '32px'}}
+                    style={{ width: '24px', height: '24px' }}
                 />
             </Button>
         </MapButtonWrap>

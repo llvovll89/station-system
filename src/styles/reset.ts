@@ -69,7 +69,7 @@ export const GlobalStyles = createGlobalStyle`
 
     section, div, article, ul {
     &::-webkit-scrollbar {
-      width: 12px;
+      width: 4px;
     }
 
     &::-webkit-scrollbar-track {
