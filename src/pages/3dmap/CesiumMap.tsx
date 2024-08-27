@@ -13,6 +13,19 @@ export const CesiumMap = (props: any) => {
 
     let isCreatedCesiumMap = false;
 
+    const getCenterCoordinates = (viewer: any) => {
+        const scene = viewer.scene;
+        const center = scene.camera.positionCartographic;
+        console.log('center', center);
+
+        const latitude = Cesium.Cartographic.fromCartesian(viewer.camera.position).latitude * (180 / Math.PI) // viewer.camera.positionCartographic.latitude * (180 / Math.PI) // 
+        const longitude = Cesium.Cartographic.fromCartesian(viewer.camera.position).longitude * (180 / Math.PI) // viewer.camera.positionCartographic.longitude * (180 / Math.PI)
+
+        const height = viewer.camera.positionCartographic.height
+
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Height: ${height}`);
+    };
+
     useEffect(() => {
         if (!mapElement.current || isCreatedCesiumMap) {
             return
@@ -42,6 +55,7 @@ export const CesiumMap = (props: any) => {
             );
         })();
 
+        getCenterCoordinates(viewer);
         isCreatedCesiumMap = true;
         setCesiumViewer(viewer);
     }, [mapElement]);
@@ -57,8 +71,8 @@ export const CesiumMap = (props: any) => {
 
             if (foundIndex == -1) {
                 const pointEntity = cesiumViewer.entities.add({
-                    position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height),
-                    point: { pixelSize: 50, color: Cesium.Color.RED, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
+                    position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height - 10),
+                    point: { pixelSize: 42, color: Cesium.Color.RED, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
                 });
 
                 setStationModels(prevState => [...prevState, {
@@ -128,7 +142,7 @@ export const CesiumMap = (props: any) => {
                 const pointEntities = schedule.currentMission.points.map(point => {
                     return cesiumViewer.entities.add({
                         position: Cesium.Cartesian3.fromDegrees(point.longitude, point.latitude, 190),
-                        point: { pixelSize: 32, color: Cesium.Color.GREEN, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
+                        point: { pixelSize: 26, color: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
                     });
                 });
 

@@ -76,22 +76,6 @@ export const Main = () => {
         setMap(new naver.maps.Map(mapElement.current, mapOptions));
     }, []);
 
-    useEffect(() => {
-        if (mapElement.current && map) {
-            naver.maps.Event.addListener(map, "idle", () => {
-                console.log("idle event");
-                debounce(
-                    () =>
-                        getWeather({
-                            latitude: map.getCenter().y,
-                            longitude: map.getCenter().x,
-                        }),
-                    1500,
-                )();
-            });
-        }
-    }, [map]);
-
     const navigate = useNavigate();
 
     const toggleActive = (type: ActiveType) => {
@@ -310,7 +294,7 @@ export const Main = () => {
 
         const httpRequestInterval = setInterval(() => {
             getStation();
-        }, 2000);
+        }, 3000);
         return () => clearInterval(httpRequestInterval);
     }, [map]);
 
@@ -318,13 +302,10 @@ export const Main = () => {
         console.log(cesiumData);
     }, [cesiumData]);
 
-    const getWeather = async (coords: {
-        latitude: number;
-        longitude: number;
-    }) => {
+    const getWeather = async () => {
         try {
             const response = await api.get(
-                `/weather?latitude=${coords.latitude}&longitude=${coords.longitude}`,
+                `/weather?latitude=${Number(map?.getCenter().y)}&longitude=${Number(map?.getCenter().x)}`,
             );
             const data = await response.data;
             console.log("getWeather", data);
@@ -344,6 +325,16 @@ export const Main = () => {
             console.log(error);
         }
     };
+
+    const debounceUpdateWeather = debounce(getWeather, 1500);
+
+    useEffect(() => {
+        if (mapElement.current && map) {
+            getWeather();
+
+            naver.maps.Event.addListener(map, "idle", debounceUpdateWeather);
+        }
+    }, [map]);
 
     return (
         <MainWrap>
