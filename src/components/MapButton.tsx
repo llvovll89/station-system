@@ -3,7 +3,6 @@ import theme from '../styles/theme'
 import cesiumLogoIcon from '../assets/image/icon/Cesium_logo_only.png'
 import naverMapIcon from '../assets/image/icon/naver map.png'
 import { Button } from './button/Button'
-import { useState } from 'react'
 
 const MapButtonWrap = styled.article`
   position: absolute;
@@ -32,54 +31,22 @@ const MapButtonWrap = styled.article`
     }
   }
 `
-interface MapButtonProps {
-    setIs3DMapType: (is3DMapType: boolean) => void
-}
-export const MapButton = ({ setIs3DMapType }: MapButtonProps) => {
-    const [isSelectMap, setIsSelectMap] = useState<{
-        isSelect3d: boolean
-        isSelectNaver: boolean
-    }>({
-        isSelect3d: false,
-        isSelectNaver: false,
-    })
+export const MapButton = (props: any) => {
 
-    const onClickMap = (type: string) => {
-        if (type === '3d') {
-            if (isSelectMap.isSelectNaver) {
-                setIsSelectMap((prev) => ({
-                    ...prev,
-                    isSelectNaver: false,
-                }))
-            }
-
-            setIsSelectMap((prev) => ({
-                ...prev,
-                isSelect3d: !prev.isSelect3d,
-            }))
+    const onClickMap = (type: number) => {
+        if(type === 0) {
+            props.setIs3DMapType(true)
         } else {
-            if (isSelectMap.isSelect3d) {
-                setIsSelectMap((prev) => ({
-                    ...prev,
-                    isSelect3d: false,
-                }))
-            }
-
-            setIsSelectMap((prev) => ({
-                ...prev,
-                isSelectNaver: !prev.isSelectNaver,
-            }))
+            props.setIs3DMapType(false)
         }
-
-        setIs3DMapType(type === '3d');
     }
 
     return (
         <MapButtonWrap>
             <Button
-                onClick={() => onClickMap('3d')}
+                onClick={() => onClickMap(0)}
                 type="button"
-                className={isSelectMap.isSelect3d ? '3d_btn active' : '3d_btn'}
+                className={props.is3DMapType ? '3d_btn active' : '3d_btn'}
             >
                 <img
                     src={cesiumLogoIcon}
@@ -87,11 +54,12 @@ export const MapButton = ({ setIs3DMapType }: MapButtonProps) => {
                     style={{ width: '24px', height: '24px' }}
                 />
             </Button>
+
             <Button
-                onClick={() => onClickMap('2d')}
+                onClick={() => onClickMap(1)}
                 type="button"
                 className={
-                    isSelectMap.isSelectNaver ? '2d_btn active' : '2d_btn'
+                    !props.is3DMapType ? '2d_btn active' : '2d_btn'
                 }
             >
                 <img
