@@ -78,7 +78,6 @@ export const Weather = ({ coords, weatherData }: WeatherProps) => {
                 <span>바람속도: {weatherData.windSpeed}</span>
                 <span>바람방향: {weatherData.windDirection}</span>
                 <span>강수량: {weatherData.rainStatus}</span>
-                {/* <span>{weatherData.skyCode}</span> */}
             </div>
         </WeatherWrap>
     )

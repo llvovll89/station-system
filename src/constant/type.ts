@@ -71,6 +71,11 @@ export interface DarkModeContextType {
     toggleDarkMode: () => void;
 }
 
+export interface NaverMapContextType {
+    map: naver.maps.Map | null;
+    setMap: any;
+}
+
 export interface Schedule {
     completedAt: string;
     name: string;

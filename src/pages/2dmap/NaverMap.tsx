@@ -298,10 +298,6 @@ export const NaverMap = (props: any) => {
         return () => clearInterval(httpRequestInterval);
     }, [props.map]);
 
-    useEffect(() => {
-        console.log('네이버맵')
-    }, []);
-
     return (
         <div id="map" className="map" ref={props.mapElement}></div>
     )

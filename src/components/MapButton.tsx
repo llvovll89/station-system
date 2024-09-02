@@ -34,7 +34,7 @@ const MapButtonWrap = styled.article`
 export const MapButton = (props: any) => {
 
     const onClickMap = (type: number) => {
-        if(type === 0) {
+        if (type === 0) {
             props.setIs3DMapType(true)
         } else {
             props.setIs3DMapType(false)
@@ -46,7 +46,7 @@ export const MapButton = (props: any) => {
             <Button
                 onClick={() => onClickMap(0)}
                 type="button"
-                className={props.is3DMapType ? '3d_btn active' : '3d_btn'}
+                className={props.is3DMapType ? 'active' : ''}
             >
                 <img
                     src={cesiumLogoIcon}
@@ -59,7 +59,7 @@ export const MapButton = (props: any) => {
                 onClick={() => onClickMap(1)}
                 type="button"
                 className={
-                    !props.is3DMapType ? '2d_btn active' : '2d_btn'
+                    !props.is3DMapType ? 'active' : ''
                 }
             >
                 <img

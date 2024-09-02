@@ -1,26 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { CesiumMapWrap } from "./CesiumMapStyle.ts";
-// import { debounce } from "../../util/debounce.ts";
+import { debounce } from "../../util/debounce.ts";
 import { WeatherDto } from "../../constant/type.ts";
 import api from "../../api/api.ts";
-import { Weather } from "../main/Weather.tsx";
-// import { MarkableModel } from "./interface/MarkableModel.ts";
+import { MarkableModel } from "./interface/MarkableModel.ts";
+import { RUNNING_STATION } from "../../constant/http";
 
 declare const Cesium: any;
 export const CesiumMap = (props: any) => {
     const [cesiumViewer, setCesiumViewer] = useState<any>(null);
-    const [cesiumPosition, setCesiumPosition] = useState({
-        latitude: 0,
-        longitude: 0,
-    });
-    // const [entities, setEntities] = useState([]);
-    // const [stationModels, setStationModels] = useState<MarkableModel[]>([]);
-    // const [droneModels, setDroneModels] = useState<MarkableModel[]>([]);
+    const [entities, setEntities] = useState([]);
+    const [stationModels, setStationModels] = useState<MarkableModel[]>([]);
+    const [droneModels, setDroneModels] = useState<MarkableModel[]>([]);
+    const [isCreatedCesiumMap, setIsCreatedCesiumMap] = useState(false);
     const mapElement = useRef(null);
 
-    // const DEFAULT_HEIGHT = 100;
-
-    let isCreatedCesiumMap = false;
+    const DEFAULT_HEIGHT = 100;
 
     useEffect(() => {
         if (!mapElement.current || isCreatedCesiumMap) {
@@ -40,20 +35,6 @@ export const CesiumMap = (props: any) => {
             },
         });
 
-        const onMoveEnd = () => {
-            const cartographic = Cesium.Cartographic.fromCartesian(
-                viewer.camera.position,
-            );
-            const latitude = Cesium.Math.toDegrees(cartographic.latitude);
-            const longitude = Cesium.Math.toDegrees(cartographic.longitude);
-
-            getWeather(latitude, longitude);
-            setCesiumPosition({ latitude, longitude });
-            console.log(cesiumViewer);
-        };
-
-        viewer.camera.moveEnd.addEventListener(onMoveEnd);
-
         (async () => {
             viewer.scene.primitives.add(
                 await Cesium.Cesium3DTileset.fromIonAssetId(96188),
@@ -64,126 +45,180 @@ export const CesiumMap = (props: any) => {
             );
         })();
 
-        isCreatedCesiumMap = true;
+        const onMoveEnd = () => {
+            const cartographic = Cesium.Cartographic.fromCartesian(
+                viewer.camera.position,
+            );
+            const latitude = Cesium.Math.toDegrees(cartographic.latitude);
+            const longitude = Cesium.Math.toDegrees(cartographic.longitude);
+
+            debounceUpdateWeather(latitude, longitude);
+            props.setCesiumPosition({ latitude, longitude });
+        };
+
+        viewer.camera.moveEnd.addEventListener(onMoveEnd);
+
+        setIsCreatedCesiumMap(true);
         setCesiumViewer(viewer);
 
         return () => {
             viewer.camera.moveEnd.removeEventListener(onMoveEnd);
             viewer.destroy();
+            console.log(cesiumViewer);
         };
-    }, [mapElement]);
+    }, []);
 
-    // useEffect(() => {
-    //     for (let i = 0; i < props.stations.length; i++) {
-    //         const foundIndex = stationModels.findIndex(station => station.seq == props.stations[i].seq);
-    //         const dataPoint = {
-    //             longitude: props.stations[i].longitude,
-    //             latitude: props.stations[i].latitude,
-    //             height: DEFAULT_HEIGHT
-    //         };
+    useEffect(() => {
+        if (!mapElement.current) return;
 
-    //         if (foundIndex == -1) {
-    //             const pointEntity = cesiumViewer.entities.add({
-    //                 position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height - 10),
-    //                 point: { pixelSize: 42, color: Cesium.Color.RED, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
-    //             });
+        const httpRequestInterval = setInterval(() => {
+            getStation();
+        }, 3000);
 
-    //             setStationModels(prevState => [...prevState, {
-    //                 seq: props.stations[i].seq,
-    //                 entity: pointEntity
-    //             }]);
-    //         } else {
-    //             const foundDroneIndex = droneModels.findIndex(drone => drone.seq == props.stations[i].drone.seq);
+        return () => clearInterval(httpRequestInterval);
+    }, []);
 
-    //             if (props.stations[i].status == 1) {
-    //                 const dronePoint = {
-    //                     longitude: props.stations[i].drone.longitude,
-    //                     latitude: props.stations[i].drone.latitude,
-    //                     height: props.stations[i].drone.height + DEFAULT_HEIGHT
-    //                 };
+    const getStation = async () => {
+        try {
+            const response = await api.get("/station");
+            const data = await response.data;
 
-    //                 if (foundDroneIndex == -1) {
-    //                     const modelPath = `${import.meta.env.BASE_URL}model/drone-m30-240517.glb`;
-    //                     const droneEntity = cesiumViewer.entities.add({
-    //                         position: Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height),
-    //                         model: {
-    //                             uri: modelPath,
-    //                             scale: 50,
-    //                         },
-    //                     });
-    //                     setDroneModels(prevState => [...prevState, {
-    //                         seq: props.stations[i].drone.seq,
-    //                         entity: droneEntity
-    //                     }])
-    //                 } else {
-    //                     (droneModels[foundDroneIndex].entity as any).position = Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height)
-    //                 }
-    //             } else {
-    //                 if (foundDroneIndex != -1) {
-    //                     cesiumViewer.entities.remove(droneModels[foundDroneIndex].entity);
-    //                     setDroneModels(droneModels.filter(drone => drone.seq != droneModels[foundDroneIndex].seq))
-    //                 }
-    //             }
-    //         }
-    //     }
+            if (response.status === 200) {
+                props.setStations(data);
+                runningMission();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-    //     if (props.runningSchedule.length > 0 && cesiumViewer) {
-    //         // 기존 엔티티 제거
-    //         entities.forEach(entity => cesiumViewer.entities.remove(entity));
-    //         setEntities([]); // 상태 초기화
+    const runningMission = async () => {
+        try {
+            const response = await api.get(RUNNING_STATION);
+            const data = await response.data;
 
-    //         // 새로운 엔티티 추가
-    //         const newEntities = props.runningSchedule.map((schedule: {
-    //             currentMission: {
-    //                 points: { latitude: number; longitude: number }[];
-    //                 ways: {
-    //                     latitude: number;
-    //                     longitude: number;
-    //                     height: number;
-    //                 }[];
-    //                 type: number;
-    //             };
-    //         }) => {
-    //             if (schedule.currentMission.type === 1) {
-    //                 console.log('polygon');
-    //             } else {
-    //                 console.log('waypoint');
-    //             }
+            if (data.length > 0) {
+                props.setIsRunningSchedule(true);
+                props.setRunningSchedule(data);
+            } else {
+                props.setIsRunningSchedule(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-    //             const pointEntities = schedule.currentMission.points.map(point => {
-    //                 return cesiumViewer.entities.add({
-    //                     position: Cesium.Cartesian3.fromDegrees(point.longitude, point.latitude, 190),
-    //                     point: { pixelSize: 26, color: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
-    //                 });
-    //             });
+    useEffect(() => {
+        if (!cesiumViewer) return;
 
-    //             const wayLineEntity = cesiumViewer.entities.add({
-    //                 polyline: {
-    //                     positions: Cesium.Cartesian3.fromDegreesArrayHeights(
-    //                         schedule.currentMission.ways.flatMap(point => [
-    //                             point.longitude,
-    //                             point.latitude,
-    //                             190, // Height 정보도 포함
-    //                         ])
-    //                     ),
-    //                     width: 10,
-    //                     arcType: Cesium.ArcType.RHUMB,
-    //                     material: Cesium.Color.BLUE,
-    //                 },
-    //             });
+        for (let i = 0; i < props.stations.length; i++) {
+            const foundIndex = stationModels.findIndex(station => station.seq == props.stations[i].seq);
+            const dataPoint = {
+                longitude: props.stations[i].longitude,
+                latitude: props.stations[i].latitude,
+                height: DEFAULT_HEIGHT
+            };
 
-    //             return [...pointEntities, wayLineEntity];
-    //         }).flat();
+            if (foundIndex == -1) {
+                const pointEntity = cesiumViewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height),
+                    point: { pixelSize: 50, color: Cesium.Color.RED }
+                });
 
-    //         // 새로 추가된 엔티티 상태에 저장
-    //         setEntities(newEntities);
+                setStationModels(prevState => [...prevState, {
+                    seq: props.stations[i].seq,
+                    entity: pointEntity
+                }]);
+            } else {
+                const foundDroneIndex = droneModels.findIndex(drone => drone.seq == props.stations[i].drone.seq);
 
-    //     } else {
-    //         // 엔티티가 없을 경우, 상태에 저장된 엔티티들 제거
-    //         entities.forEach(entity => cesiumViewer.entities.remove(entity));
-    //         setEntities([]); // 상태 초기화
-    //     }
-    // }, [props.stations])
+                if (props.stations[i].status == 1) {
+                    const dronePoint = {
+                        longitude: props.stations[i].drone.longitude,
+                        latitude: props.stations[i].drone.latitude,
+                        height: props.stations[i].drone.height + DEFAULT_HEIGHT
+                    };
+
+                    if (foundDroneIndex == -1) {
+                        const modelPath = `${import.meta.env.BASE_URL}model/drone-m30-240517.glb`;
+                        const droneEntity = cesiumViewer.entities.add({
+                            position: Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height),
+                            model: {
+                                uri: modelPath,
+                                scale: 50,
+                            },
+                        });
+                        setDroneModels(prevState => [...prevState, {
+                            seq: props.stations[i].drone.seq,
+                            entity: droneEntity
+                        }])
+                    } else {
+                        (droneModels[foundDroneIndex].entity as any).position = Cesium.Cartesian3.fromDegrees(dronePoint.longitude, dronePoint.latitude, dronePoint.height)
+                    }
+                } else {
+                    if (foundDroneIndex != -1) {
+                        cesiumViewer.entities.remove(droneModels[foundDroneIndex].entity);
+                        setDroneModels(droneModels.filter(drone => drone.seq != droneModels[foundDroneIndex].seq))
+                    }
+                }
+            }
+        }
+
+        if (props.isRunningSchedule && props.runningSchedule.length > 0 && cesiumViewer) {
+            entities.forEach(entity => {
+                if (cesiumViewer.entities.contains(entity)) {
+                    cesiumViewer.entities.remove(entity);
+                }
+            });
+            setEntities([]);
+
+            const newEntities = props.runningSchedule.map((schedule: {
+                currentMission: {
+                    points: { latitude: number; longitude: number }[];
+                    ways: {
+                        latitude: number;
+                        longitude: number;
+                        height: number;
+                    }[];
+                    type: number;
+                };
+            }) => {
+                const pointEntities = schedule.currentMission.points.map(point => {
+                    return cesiumViewer.entities.add({
+                        position: Cesium.Cartesian3.fromDegrees(point.longitude, point.latitude, 190),
+                        point: { pixelSize: 26, color: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
+                    });
+                });
+
+                const wayLineEntity = cesiumViewer.entities.add({
+                    polyline: {
+                        positions: Cesium.Cartesian3.fromDegreesArrayHeights(
+                            schedule.currentMission.ways.flatMap(point => [
+                                point.longitude,
+                                point.latitude,
+                                190, // Height 정보도 포함
+                            ])
+                        ),
+                        width: 10,
+                        arcType: Cesium.ArcType.RHUMB,
+                        material: Cesium.Color.BLUE,
+                    },
+                });
+
+                return [...pointEntities, wayLineEntity];
+            }).flat();
+
+            setEntities(newEntities);
+        } else {
+            entities.forEach(entity => {
+                if (cesiumViewer.entities.contains(entity)) {
+                    cesiumViewer.entities.remove(entity);
+                }
+            });
+
+            setEntities([]); // 상태 초기화
+        }
+    }, [props.stations, props.isRunningSchedule])
 
     const getWeather = async (lat: any, lng: any) => {
         try {
@@ -209,21 +244,11 @@ export const CesiumMap = (props: any) => {
         }
     };
 
-    // const debounceUpdateWeather = debounce(getWeather, 1500);
+    const debounceUpdateWeather = debounce(getWeather, 1500);
 
     return (
         <CesiumMapWrap>
             <div ref={mapElement} id="cesiumContainer"></div>
-
-            {cesiumPosition && mapElement && (
-                <Weather
-                    coords={{
-                        latitude: cesiumPosition.latitude,
-                        longitude: cesiumPosition.longitude,
-                    }}
-                    weatherData={props.weatherData}
-                />
-            )}
         </CesiumMapWrap>
     );
 };

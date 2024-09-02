@@ -42,7 +42,7 @@ export const Main = () => {
     );
     const [cesiumPosition, setCesiumPosition] = useState({
         latitude: 0,
-        longitude:
+        longitude: 0,
     })
     const [is3DMapType, setIs3DMapType] = useState<boolean>(false);
     const mapElement = useRef(null);
@@ -58,7 +58,7 @@ export const Main = () => {
     }, []);
 
     useEffect(() => {
-        if(!is3DMapType) {
+        if (!is3DMapType) {
             if (!mapElement.current || !naver) return;
 
             const location = new naver.maps.LatLng(35.8774, 128.6107);
@@ -73,11 +73,10 @@ export const Main = () => {
                 tileTransition: false,
                 disableKineticPan: false,
             };
-    
+
             setMap(new naver.maps.Map(mapElement.current, mapOptions));
         }
-
-    }, []);
+    }, [is3DMapType]);
 
     return (
         <MainWrap>
@@ -92,8 +91,13 @@ export const Main = () => {
             {is3DMapType ? (
                 <CesiumMap
                     setWeaherData={setWeaherData}
-                    // stations={stations}
-                    // runningSchedule={runningSchedule}
+                    setCesiumPosition={setCesiumPosition}
+                    stations={stations}
+                    setStations={setStations}
+                    setIsRunningSchedule={setIsRunningSchedule}
+                    setRunningSchedule={setRunningSchedule}
+                    runningSchedule={runningSchedule}
+                    isRunningSchedule={isRunningSchedule}
                 />
             ) : (
                 <NaverMap
@@ -139,7 +143,7 @@ export const Main = () => {
                 <article className="running_schedule">
                     <h1>스케줄 진행 중...</h1>
                     <div className="running_content">
-                        <span>
+                        <span className="mission_length">
                             진행 중인 미션 수 : {runningSchedule.length}
                         </span>
 
@@ -167,17 +171,30 @@ export const Main = () => {
             )}
 
             <DarkMode />
-            <MapButton setIs3DMapType={setIs3DMapType} />
+            <MapButton setIs3DMapType={setIs3DMapType} is3DMapType={is3DMapType} />
 
-            {map && weatherData && (
-                <Weather
-                    coords={{
-                        latitude: map.getCenter().x,
-                        longitude: map.getCenter().y,
-                    }}
-                    weatherData={weatherData}
-                />
+            {!is3DMapType ? (
+                map && weatherData && (
+                    <Weather
+                        coords={{
+                            latitude: map.getCenter().x,
+                            longitude: map.getCenter().y,
+                        }}
+                        weatherData={weatherData}
+                    />
+                )
+            ) : (
+                cesiumPosition && weatherData && (
+                    <Weather
+                        coords={{
+                            latitude: Number(cesiumPosition.latitude.toFixed(6)),
+                            longitude: Number(cesiumPosition.longitude.toFixed(6)),
+                        }}
+                        weatherData={weatherData}
+                    />
+                )
             )}
+
         </MainWrap>
     );
 };

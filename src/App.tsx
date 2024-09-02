@@ -4,6 +4,7 @@ import { GlobalStyles } from './styles/reset'
 import { Home } from './pages/Home'
 import axios from 'axios'
 import { DarkModeProvider } from './context/DarkmodeContext'
+import { NaverMapProvider } from './context/MapContext'
 
 axios.defaults.withCredentials = true
 
@@ -11,8 +12,10 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <DarkModeProvider>
-                <GlobalStyles />
-                <Home />
+                <NaverMapProvider>
+                    <GlobalStyles />
+                    <Home />
+                </NaverMapProvider>
             </DarkModeProvider>
         </ThemeProvider>
     )

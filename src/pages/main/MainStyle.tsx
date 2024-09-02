@@ -22,7 +22,15 @@ export const MainWrap = styled.section`
         transform: translateX(-50%);
         box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.33);
 
+        & h1 {
+            font-size: 14px;
+        }
+
         & .running_content {
+            & .mission_length {
+                font-size: 14px;
+            }
+
             & article {
                 margin-top: 6px;
                 displaty: flex;
@@ -36,6 +44,10 @@ export const MainWrap = styled.section`
                     gap: 6px;
                     flex-direction: column;
                     border: 1px solid rgba(255,255,255,0.16);
+
+                    & span {
+                        font-size: 12px;
+                    }
 
                     & .header {
                         display: flex;
