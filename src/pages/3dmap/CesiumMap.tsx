@@ -186,12 +186,13 @@ export const CesiumMap = (props: any) => {
                 const pointEntities = schedule.currentMission.points.map(point => {
                     return cesiumViewer.entities.add({
                         position: Cesium.Cartesian3.fromDegrees(point.longitude, point.latitude, 190),
-                        point: { pixelSize: 26, color: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 }
+                        point: { pixelSize: 26, color: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLUE, outlineWidth: 2 }
                     });
                 });
 
                 const wayLineEntity = cesiumViewer.entities.add({
-                    polyline: {
+                    name: "wayline",
+                    polylineVolume: {
                         positions: Cesium.Cartesian3.fromDegreesArrayHeights(
                             schedule.currentMission.ways.flatMap(point => [
                                 point.longitude,
@@ -202,8 +203,30 @@ export const CesiumMap = (props: any) => {
                         width: 10,
                         arcType: Cesium.ArcType.RHUMB,
                         material: Cesium.Color.BLUE,
-                    },
+                        shape: [
+                            new Cesium.Cartesian2(-2, -2),
+                            new Cesium.Cartesian2(2, -2),
+                            new Cesium.Cartesian2(2, 2),
+                            new Cesium.Cartesian2(-2, 2),
+                        ],
+                    }
                 });
+
+                if (schedule.currentMission.type === 1) {
+                    const degreesArray = schedule.currentMission.points.flatMap(point => [point.longitude, point.latitude]);
+
+                    const polygonEntity = cesiumViewer.entities.add({
+                        name: "polygon",
+                        polygon: {
+                            hierarchy: Cesium.Cartesian3.fromDegreesArray(degreesArray),
+                            extrudedHeight: 190,
+                            material: Cesium.Color.GREEN,
+                            closeTop: true,  // 상단을 닫음
+                            closeBottom: true,  // 하단을 닫음
+                        },
+                    });
+                    return [...pointEntities, wayLineEntity, polygonEntity];
+                }
 
                 return [...pointEntities, wayLineEntity];
             }).flat();
@@ -215,8 +238,7 @@ export const CesiumMap = (props: any) => {
                     cesiumViewer.entities.remove(entity);
                 }
             });
-
-            setEntities([]); // 상태 초기화
+            setEntities([]);
         }
     }, [props.stations, props.isRunningSchedule])
 
