@@ -21,8 +21,9 @@ const HeaderWrap = styled.header<{ isDarkMode: boolean }>`
     top: 0;
     z-index: 10;
     background-color: ${({ isDarkMode }) =>
-        isDarkMode ? theme.color.primary : 'rgba(0, 0, 0, 0.88)'};
-    color: ${theme.color.white};
+        isDarkMode ? theme.color.white : 'rgba(0, 0, 0, 0.88)'};
+    color: ${({ isDarkMode }) =>
+        isDarkMode ? 'rgba(0,0,0, 0.88)' : theme.color.white};
     border-right: 1px solid rgba(255, 255, 255, 0.3);
 
     & .logo {
